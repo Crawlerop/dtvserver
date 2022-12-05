@@ -25,7 +25,8 @@ app.ws("/ws/dtv",
         })
 
         ev_dtv.on("segment", (payload) => {
-
+            const m = JSON.parse(payload)
+            ws.send("\x00"+JSON.stringify({"type": "segment", "path": m.path, "id": m.channel, "request_id": m.sid}))
         })
 
         ws.on("message", (e) => {

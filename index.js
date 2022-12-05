@@ -153,13 +153,12 @@ var ws_p = null
 const ping = () => {
     ws_p.send(JSON.stringify({type: "ping"}))
     pingInterval = null
-    pingTimeout = setTimeout(async ()=>{console.log("ping timeout, reconnecting"); await ws_p.close()}, 10000)
-    console.log("sent ping")
+    pingTimeout = setTimeout(async ()=>{console.log(`ping timeout for ${config.dtv_forward_host}, reconnecting...`); await ws_p.close()}, 10000)
 }
 
 const do_wss = () => {
     ws_p.open().then(() => {
-        pingInterval = setTimeout(ping, 5000)
+        pingInterval = setTimeout(ping, 2000)
     }).catch((e) => {    
          
     })
@@ -180,10 +179,9 @@ if (config.dtv_forward_key) {
             if (payload[0] == 0x00) {
                 const data = JSON.parse(payload.subarray(1).toString("utf-8"))
                 if (data.type == "pong") {
-                    console.log("pong")
                     if (pingTimeout) clearTimeout(pingTimeout)
                     pingTimeout = null
-                    pingInterval = setTimeout(ping, 5000)   
+                    pingInterval = setTimeout(ping, 2000)   
                     return
                 }
                 try {
@@ -198,7 +196,6 @@ if (config.dtv_forward_key) {
     })
 
     ws_p.onClose.addListener(() => {
-        console.log("closed!")
         if (pingInterval) clearTimeout(pingInterval)
         if (pingTimeout) clearTimeout(pingTimeout)
         setTimeout(do_wss, 5000) 
