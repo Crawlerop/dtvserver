@@ -142,8 +142,10 @@ var RTMPStreamID = {};
 
 const rtmp_server = new nms({
     rtmp: config.rtmp_settings,
-    logType: 1ws
+    logType: 1
 })
+
+
 
 rtmp_server.on('prePlay', async (id, StreamPath, args) => {
     let sid = rtmp_server.getSession(id)    
