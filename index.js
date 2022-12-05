@@ -3,6 +3,7 @@ const path = require("path");
 const fs_sync = require("fs");
 const fs = require("fs/promises");
 const ws = require("websocket-as-promised");
+const ws_a = require("ws")
 const luxon = require("luxon");
 const proc = require("process");
 const dvb2ip = require("./dvb2ip");
@@ -139,13 +140,77 @@ app.use(express.json())
 
 var StreamDTVJobs = {};
 var RTMPStreamID = {};
+var pingInterval = null;
+var pingTimeout = null;
 
 const rtmp_server = new nms({
     rtmp: config.rtmp_settings,
     logType: 1
 })
 
+var ws_p = null
 
+const ping = () => {
+    ws_p.send(JSON.stringify({type: "ping"}))
+    pingInterval = null
+    pingTimeout = setTimeout(async ()=>{console.log("ping timeout, reconnecting"); await ws_p.close()}, 10000)
+    console.log("sent ping")
+}
+
+const do_wss = () => {
+    ws_p.open().then(() => {
+        pingInterval = setTimeout(ping, 5000)
+    }).catch((e) => {    
+         
+    })
+}
+ 
+if (config.dtv_forward_key) {
+    ws_p = new ws(`${config.dtv_protocol}://${config.dtv_forward_host}/ws/dtv?token=${config.dtv_forward_key}`, {
+        createWebSocket: url => new ws_a(url),
+        extractMessageData: event => event
+    })
+
+    ws_p.onMessage.addListener(
+        /**
+         * 
+         * @param {Buffer} payload 
+         */
+        async (payload) => {
+            if (payload[0] == 0x00) {
+                const data = JSON.parse(payload.subarray(1).toString("utf-8"))
+                if (data.type == "pong") {
+                    console.log("pong")
+                    if (pingTimeout) clearTimeout(pingTimeout)
+                    pingTimeout = null
+                    pingInterval = setTimeout(ping, 5000)   
+                    return
+                }
+                try {
+                    const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${data.id}/`
+                    if (!fs_sync.existsSync(`${streams_path}/${data.path}.m3u8`)) return ws_p.send(JSON.stringify({status: "error", type: "notfound", error: "Stream is inactive or non-existent.", request_id: data.request_id}))
+                    const manifest = await fs.readFile(`${streams_path}/${data.path}.m3u8`)
+                } catch (e) {
+                    console.trace(e)
+                    ws_p.send(JSON.stringify({status: "error", type: "exception", error: e.toString(), request_id: data.request_id}))
+                }
+            }
+    })
+
+    ws_p.onClose.addListener(() => {
+        console.log("closed!")
+        if (pingInterval) clearTimeout(pingInterval)
+        if (pingTimeout) clearTimeout(pingTimeout)
+        setTimeout(do_wss, 5000) 
+    })
+
+    ws_p.onError.addListener((e) => {
+        console.trace(e)
+        setTimeout(do_wss, 5000) 
+    })
+
+    do_wss()
+}
 
 rtmp_server.on('prePlay', async (id, StreamPath, args) => {
     let sid = rtmp_server.getSession(id)    
