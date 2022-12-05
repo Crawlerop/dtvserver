@@ -26,6 +26,7 @@ const streams = require("./db/streams");
 const config_defaults_nvenc = {
     "dtv_forward_host": "dvb.ucomsite.my.id",
     "dtv_forward_key": "",
+    "dtv_protocol": "wss",
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
     "hls_settings": {
@@ -56,8 +57,8 @@ const config_defaults_nvenc = {
             "height": 360,
             "speed": 1,
             "profile": "main",
-            "video_bitrate": 750000,
-            "bufsize": 1250000,
+            "video_bitrate": 600000,
+            "bufsize": 1100000,
             "bf": 2,
             "interp_algo": 1,
             "audio_bitrate": 64000,
@@ -78,6 +79,7 @@ const config_defaults_nvenc = {
 const config_defaults = {
     "dtv_forward_host": "dvb.ucomsite.my.id",
     "dtv_forward_key": "",
+    "dtv_protocol": "wss",
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
     "hls_settings": {
@@ -108,8 +110,8 @@ const config_defaults = {
             "height": 360,
             "speed": 2,
             "profile": "main",
-            "video_bitrate": 750000,
-            "bufsize": 1250000,
+            "video_bitrate": 600000,
+            "bufsize": 1100000,
             "bf": 2,
             "interp_algo": 1,
             "audio_bitrate": 64000,
@@ -140,7 +142,7 @@ var RTMPStreamID = {};
 
 const rtmp_server = new nms({
     rtmp: config.rtmp_settings,
-    logType: 1
+    logType: 1ws
 })
 
 rtmp_server.on('prePlay', async (id, StreamPath, args) => {
