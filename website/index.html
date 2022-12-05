@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@microsoft/fast-components/dist/fast-components.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+        <style>
+            html {
+                font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+    Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+                color: #ffffff;
+                background-color: #333333;
+            }
+        </style>
+    </head>
+    <body>
+        <fast-card>
+            <div class="header">
+                <fast-toolbar>
+                    <fast-anchor href="/" appearance="hypertext">LocalCaster</fast-anchor>
+                    <fast-button id="add">Add</fast-button>
+                    <fast-button id="delete">Delete</fast-button>
+                    <fast-button id="activate">Activate</fast-button>
+                </fast-toolbar>
+            </div>
+            <br>
+            <h2>&nbsp;TV Streams:</h2>&nbsp;
+            <fast-listbox id="streams">
+                <fast-option value="">Test</fast-option>
+            </fast-listbox>
+        </fast-card>
+        <fast-dialog id="add_channels" modal="true">
+            <h2>Add Streams</h2>
+            <h4>Stream type:</h4>
+            <fast-radio-group value="dtv">
+                <fast-radio value="dtv">Digital TV Tuner</fast-radio>
+                <fast-radio value="dvb2ip">DVB2IP</fast-radio>
+                <fast-radio value="rtmp">RTMP</fast-radio>
+            </fast-radio-group>
+        </fast-dialog>
+    </body>
+</html>
