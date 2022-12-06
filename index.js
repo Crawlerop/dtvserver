@@ -11,6 +11,7 @@ const crypto = require("crypto");
 const check_output = require('./utils/check_output')
 const cp = require("child_process")
 const nms = require("node-media-server")
+const events = require("events")
 
 const Knex = require("knex")
 const knex = Knex(require("./knexFile"))
@@ -151,7 +152,7 @@ const rtmp_server = new nms({
 var ws_p = null
 
 const ping = () => {
-    ws_p.send(JSON.stringify({type: "ping"}))
+    ws_p.send(Buffer.from("\0"+JSON.stringify({type: "ping"}), "utf-8"))
     pingInterval = null
     pingTimeout = setTimeout(async ()=>{console.log(`ping timeout for ${config.dtv_forward_host}, reconnecting...`); await ws_p.close()}, 10000)
 }
@@ -164,6 +165,25 @@ const do_wss = () => {
     })
 }
  
+const bufPush = new events.EventEmitter()
+const bufTmp = {}
+
+const chunksEV = new events.EventEmitter()
+
+bufPush.on("buffer", (request_id) => {
+    const processBuffer = () => {
+        if (bufTmp[request_id] !== undefined) {
+            const chunk = bufTmp[request_id].splice(0)[0]
+            if (chunk) {
+                ws_p.send(Buffer.concat([Buffer.from("01", "hex"), Buffer.from(request_id, "hex"), chunk]))
+            }
+        }
+
+        setImmediate(processBuffer)
+    }
+    setImmediate(processBuffer)
+})
+
 if (config.dtv_forward_key) {
     ws_p = new ws(`${config.dtv_protocol}://${config.dtv_forward_host}/ws/dtv?token=${config.dtv_forward_key}`, {
         createWebSocket: url => new ws_a(url),
@@ -183,14 +203,98 @@ if (config.dtv_forward_key) {
                     pingTimeout = null
                     pingInterval = setTimeout(ping, 2000)   
                     return
-                }
-                try {
-                    const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${data.id}/`
-                    if (!fs_sync.existsSync(`${streams_path}/${data.path}.m3u8`)) return ws_p.send(JSON.stringify({status: "error", type: "notfound", error: "Stream is inactive or non-existent.", request_id: data.request_id}))
-                    const manifest = await fs.readFile(`${streams_path}/${data.path}.m3u8`)
-                } catch (e) {
-                    console.trace(e)
-                    ws_p.send(JSON.stringify({status: "error", type: "exception", error: e.toString(), request_id: data.request_id}))
+                } else if (data.type == "chunk") {
+                    chunksEV.emit("chunk", data.request_id)
+                } else if (data.type == "manifest") {
+                    try {
+                        const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${data.id}/`
+                        if (!fs_sync.existsSync(`${streams_path}/`)) return ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: "notfound", error: "Stream is inactive or non-existent.", request_id: data.request_id})))
+                        const manifest = await fs.readFile(`${streams_path}/${data.path}.m3u8`)
+                        return ws_p.send(Buffer.from("\0"+JSON.stringify({status: "ok", manifest: manifest.toString('utf-8'), request_id: data.request_id})))
+                    } catch (e) {
+                        console.trace(e)
+                        ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: e.code == "ENOENT" ? "notfound":"exception", error: e.toString(), request_id: data.request_id})))
+                    }
+                } else if (data.type == "segment") {
+                    try {
+                        const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${data.id}/`
+                        if (!fs_sync.existsSync(`${streams_path}/`)) return ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: "notfound", error: "Stream is inactive or non-existent.", request_id: data.request_id})))
+                        
+                        const seg_stat = await fs.stat(`${streams_path}/${data.path}.ts`)                        
+
+                        ws_p.send(Buffer.from("\0"+JSON.stringify({status: "ok", size: seg_stat.size, request_id: data.request_id})))
+
+                        const ss = cp.fork(path.join(__dirname,"utils/sendSegments.js"))
+
+                        ss.send({
+                            'path': `${streams_path}/${data.path}.ts`,
+                            'dtv_forward_host': config.dtv_forward_host,
+                            'dtv_protocol': config.dtv_protocol,
+                            'request_id': data.request_id
+                        })
+
+                        //const seg_fd = await fs.open(`${streams_path}/${data.path}.ts`)
+                        
+                        /*
+                        const rd = seg_fd.createReadStream()
+                        
+                        bufTmp[data.request_id] = []                        
+                        
+                        console.log("push")
+                        bufPush.emit("buffer", data.request_id)  
+                        console.log("tick")                      
+
+                        rd.on("data", (c) => {                     
+                            console.log(c.length)
+                            bufTmp[data.request_id].push(c)
+                        })
+                        */
+
+                        /*
+                        const BLOCK_SIZE = 512*1024
+
+                        let r = await seg_fd.read(Buffer.alloc(BLOCK_SIZE), 0, BLOCK_SIZE)
+                        let total_read = 0
+                        let send_timeout = null
+
+                        const p = async () => {
+                            if (r.bytesRead > 0) {
+                                total_read += r.bytesRead
+                                console.log(r.bytesRead)
+                                ws_p.send(Buffer.concat([Buffer.from("01", "hex"), Buffer.from(data.request_id, "hex"), r.buffer.subarray(0,r.bytesRead)]))
+                                r = await seg_fd.read(Buffer.alloc(BLOCK_SIZE), 0, BLOCK_SIZE)
+                                
+                                setTimeout(p, 500)
+                                /*
+                                chunksEV.once("chunk", (sid) => {
+                                    if (data.request_id == sid) {
+                                        clearTimeout(send_timeout)                                        
+                                        proc.nextTick(p)
+                                    }
+                                })
+
+                                send_timeout = setTimeout(() => {
+                                    console.log("send timeout")
+                                    ws_p.send(Buffer.concat([Buffer.from("01", "hex"), Buffer.from(data.request_id, "hex")]))
+                                    seg_fd.close()
+                                }, 5000)
+                                */
+                               /*
+                            } else {
+                                console.log(total_read)
+                                console.log(seg_stat.size)
+                                send_timeout = null
+                                seg_fd.close()
+                            }
+                        }
+
+                        proc.nextTick(p)
+                        */
+
+                    } catch (e) {
+                        console.trace(e)
+                        ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: e.code == "ENOENT" ? "notfound":"exception", error: e.toString(), request_id: data.request_id})))
+                    }
                 }
             }
     })
