@@ -2,7 +2,7 @@ const ws = require("ws")
 const proc = require("process")
 const fd = require("fs/promises")
 
-const BLOCK_SIZE = 256*1024
+const BLOCK_SIZE = 64*1024
 
 proc.on("message", async(d) => {
     const seg_fd = await fd.open(d.path)
@@ -26,7 +26,8 @@ proc.on("message", async(d) => {
         ws_conn.on("message", (p) => {
             const data = JSON.parse(p)
             if (data.status == "OK" && data.request_id == d.request_id) {
-                setTimeout(() => proc.nextTick(getChunk), 250)
+                setTimeout(() => proc.nextTick(getChunk), 75)
+                //proc.nextTick(getChunk)
             }
         })
     })
