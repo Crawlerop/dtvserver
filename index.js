@@ -169,6 +169,7 @@ const bufPush = new events.EventEmitter()
 const bufTmp = {}
 
 const chunksEV = new events.EventEmitter()
+const ss = cp.fork(path.join(__dirname,"utils/sendSegments.js"))
 
 bufPush.on("buffer", (request_id) => {
     const processBuffer = () => {
@@ -223,9 +224,6 @@ if (config.dtv_forward_key) {
                         const seg_stat = await fs.stat(`${streams_path}/${data.path}.ts`)                        
 
                         ws_p.send(Buffer.from("\0"+JSON.stringify({status: "ok", size: seg_stat.size, request_id: data.request_id})))
-
-                        const ss = cp.fork(path.join(__dirname,"utils/sendSegments.js"))
-
                         ss.send({
                             'path': `${streams_path}/${data.path}.ts`,
                             'dtv_forward_host': config.dtv_forward_host,
