@@ -1,6 +1,8 @@
 const express = require("express");
 const websocket = require("ws");
 const express_sd = require("express-slow-down")
+const fastify = require("fastify")
+const fastify_cors = require("@fastify/cors")
 const path = require('path');
 const proc = require('process')
 const ev = require("events")
@@ -134,10 +136,10 @@ if (cluster.isMaster && USE_WORKERS) {
       console.log(`worker ${worker.process.pid} died`);
     });
 } else {
-    var app = express()
-
+    const app = fastify.fastify()
     var EP = {}
     var EL = {}
+    app.register(fastify_cors)
 
     process.on('message', (p) => {
         //console.log(p.type)
@@ -191,7 +193,7 @@ if (cluster.isMaster && USE_WORKERS) {
         })
     }
 
-    app.get("/api/tv/:channel/:manifest.m3u8", cors(), async (req, res) => {
+    app.get("/api/tv/:channel/:manifest.m3u8", async (req, res) => {
         const request_id = crypto.randomBytes(128).toString("hex")
         EP[request_id] = new EventEmitter()
         proc.send({type: "manifest", data: {path: req.params.manifest, channel: req.params.channel, sid: request_id}})
@@ -199,7 +201,7 @@ if (cluster.isMaster && USE_WORKERS) {
 
         if (!init_response) {
             delete EP[request_id]
-            return res.status(503).header("Retry-After", "5").json({error: "Upstream server is not available."})
+            return res.status(503).header("Retry-After", "5").send({error: "Upstream server is not available."})
         } else if (init_response.status == "error") {
             let status_code = 500
             switch (init_response.type) {
@@ -208,16 +210,16 @@ if (cluster.isMaster && USE_WORKERS) {
                     break
             }
             delete EP[request_id]
-            return res.status(status_code).json({error: init_response.error})
+            return res.status(status_code).send({error: init_response.error})
         }
 
         delete EP[request_id]
 
         if (req.query.step) console.log(`${req.query.step} request was accepted @ ${proc.pid} in ${proc.env["cluster_id"]}`)
-        return res.status(200).header("Content-Type", "application/x-mpegurl").end(init_response.manifest)
+        return res.status(200).header("Content-Type", "application/x-mpegurl").send(init_response.manifest)
     })
 
-    app.get("/api/tv/:channel/:segment.ts", cors(), async (req, res) => {
+    app.get("/api/tv/:channel/:segment.ts", async (req, res) => {
         const request_id = crypto.randomBytes(128).toString("hex")
         proc.send({type: "segment", data: {path: req.params.segment, channel: req.params.channel, sid: request_id}})
         EP[request_id] = new ev.EventEmitter()
@@ -227,7 +229,7 @@ if (cluster.isMaster && USE_WORKERS) {
         if (!init_response) {
             delete EL[request_id]
             delete EP[request_id]
-            return res.status(503).header("Retry-After", "5").json({error: "Upstream server is not available."})
+            return res.status(503).header("Retry-After", "5").send({error: "Upstream server is not available."})
         } else if (init_response.status == "error") {
             let status_code = 500
             switch (init_response.type) {
@@ -238,13 +240,17 @@ if (cluster.isMaster && USE_WORKERS) {
 
             delete EL[request_id]
             delete EP[request_id]
-            return res.status(status_code).json({error: init_response.error})
+            return res.status(status_code).send({error: init_response.error})
         }
 
         if (req.query.step) console.log(`${req.query.step} request was accepted @ ${proc.pid} in ${proc.env["cluster_id"]}`)
-        res.statusCode = 200
-        res.header("Content-Type", "video/MP2T")
-        res.header("Content-Length", init_response.size)
+        
+        res.raw.statusCode = 200
+        res.raw.setHeader("Content-Type", "video/MP2T")
+        res.raw.setHeader("Content-Length", init_response.size)
+        res.raw.setHeader('Access-Control-Allow-Origin', '*')
+
+        res.raw.writeHead(200)
 
         let size_required = init_response.size
 
@@ -258,7 +264,7 @@ if (cluster.isMaster && USE_WORKERS) {
                 //console.log("waited for it at " + request_id)
                 if (!chunk || chunk.length <= 0) {
                     console.log("empty chunk for "+request_id)
-                    res.end()
+                    res.raw.end()
                     
                     delete EL[request_id]
                     delete EP[request_id]
@@ -278,9 +284,9 @@ if (cluster.isMaster && USE_WORKERS) {
                 //setTimeout(() => ev_dtv.emit("file_chunk_sent", request_id), 500)
 
                 if (size_required <= 0) {
-                    res.end(chunk)
+                    res.raw.end(chunk)
                 } else {
-                    res.write(chunk)
+                    res.raw.write(chunk)
                 }
 
                 setTimeout(wChunk, 25)
@@ -296,12 +302,14 @@ if (cluster.isMaster && USE_WORKERS) {
         //console.log("finish send data for "+request_id)
     })
 
+    /*
     app.use((req, res, next) => {
         res.header("X-Worker-ID", process.pid)
         next()
     })
+    */
 
-    app.listen(process.env["PORT"], (port, err) => {
+    app.listen({port: process.env["PORT"]}, (err, port) => {
         if (USE_WORKERS) console.log(err ? err : `worker ${process.pid} is running`);
     })
 }
