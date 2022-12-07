@@ -205,30 +205,31 @@ if (config.dtv_forward_key) {
                     pingInterval = setTimeout(ping, 2000)   
                     return
                 } else if (data.type == "chunk") {
-                    chunksEV.emit("chunk", data.request_id)
+                    chunksEV.emit("chunk", data.request_id, data.worker_id)
                 } else if (data.type == "manifest") {
                     try {
                         const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${data.id}/`
-                        if (!fs_sync.existsSync(`${streams_path}/`)) return ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: "notfound", error: "Stream is inactive or non-existent.", request_id: data.request_id})))
+                        if (!fs_sync.existsSync(`${streams_path}/`)) return ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: "notfound", error: "Stream is inactive or non-existent.", request_id: data.request_id, worker_id: data.worker_id})))
                         const manifest = await fs.readFile(`${streams_path}/${data.path}.m3u8`)
-                        return ws_p.send(Buffer.from("\0"+JSON.stringify({status: "ok", manifest: manifest.toString('utf-8'), request_id: data.request_id})))
+                        return ws_p.send(Buffer.from("\0"+JSON.stringify({status: "ok", manifest: manifest.toString('utf-8'), request_id: data.request_id, worker_id: data.worker_id})))
                     } catch (e) {
                         console.trace(e)
-                        ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: e.code == "ENOENT" ? "notfound":"exception", error: e.toString(), request_id: data.request_id})))
+                        ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: e.code == "ENOENT" ? "notfound":"exception", error: e.toString(), request_id: data.request_id, worker_id: data.worker_id})))
                     }
                 } else if (data.type == "segment") {
                     try {
                         const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${data.id}/`
-                        if (!fs_sync.existsSync(`${streams_path}/`)) return ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: "notfound", error: "Stream is inactive or non-existent.", request_id: data.request_id})))
+                        if (!fs_sync.existsSync(`${streams_path}/`)) return ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: "notfound", error: "Stream is inactive or non-existent.", request_id: data.request_id, worker_id: data.worker_id})))
                         
                         const seg_stat = await fs.stat(`${streams_path}/${data.path}.ts`)                        
 
-                        ws_p.send(Buffer.from("\0"+JSON.stringify({status: "ok", size: seg_stat.size, request_id: data.request_id})))
+                        ws_p.send(Buffer.from("\0"+JSON.stringify({status: "ok", size: seg_stat.size, request_id: data.request_id, worker_id: data.worker_id})))
                         ss.send({
                             'path': `${streams_path}/${data.path}.ts`,
                             'dtv_forward_host': config.dtv_forward_host,
                             'dtv_protocol': config.dtv_protocol,
-                            'request_id': data.request_id
+                            'request_id': data.request_id,
+                            'worker_id': data.worker_id
                         })
 
                         //const seg_fd = await fs.open(`${streams_path}/${data.path}.ts`)
@@ -291,7 +292,7 @@ if (config.dtv_forward_key) {
 
                     } catch (e) {
                         console.trace(e)
-                        ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: e.code == "ENOENT" ? "notfound":"exception", error: e.toString(), request_id: data.request_id})))
+                        ws_p.send(Buffer.from("\0"+JSON.stringify({status: "error", type: e.code == "ENOENT" ? "notfound":"exception", error: e.toString(), request_id: data.request_id, worker_id: data.worker_id})))
                     }
                 }
             }

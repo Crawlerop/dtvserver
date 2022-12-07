@@ -5,33 +5,50 @@ const path = require('path');
 const proc = require('process')
 const ev = require("events")
 const crypto = require("crypto")
+const woe = require('wait-for-event')
 var cors = require('cors');
 const { EventEmitter } = require("stream");
 const cluster = require('cluster');
+const { response } = require("express");
 
-const numCPUs = require('os').cpus().length;
+const workersCount = require('os').cpus().length;
+//const workersCount = 64;
 
-const ev_dtv = new ev.EventEmitter()
-const USE_WORKERS = false
-
-var app = express();
-app = require('express-ws')(app).app;
+const USE_WORKERS = true
 
 if (cluster.isMaster && USE_WORKERS) {
     console.log(`Master ${process.pid} is running`);
+
+    const PORT = proc.env["PORT"] ? proc.env["PORT"] : 62541
+    var app = express();
+    app = require('express-ws')(app).app;
+
   
     // Fork workers.
-    for (let i = 0; i < numCPUs; i++) {
-      cluster.fork();
+    for (let i = 0; i < workersCount; i++) {
+        cluster.fork({cluster_id: i+1, PORT: PORT+1});
     }
-    
-    // This event is firs when worker died
-    cluster.on('exit', (worker, code, signal) => {
-      console.log(`worker ${worker.process.pid} died`);
-    });
-} else {
-    var EP = {}
-    var EL = {}
+
+    const ev_dtv = new ev.EventEmitter()
+
+    const workers = {}
+
+    cluster.on("fork", (w) => {
+        workers[w.process.pid] = w
+        w.process.on("message", (p) => {
+            if (p.type == "manifest") {
+                ev_dtv.emit("manifest", JSON.stringify({worker_id: w.process.pid, ...p.data}))
+            } else if (p.type == "segment") {
+                ev_dtv.emit("segment", JSON.stringify({worker_id: w.process.pid, ...p.data}))
+            } else if (p.type == "chunk") {
+                ev_dtv.emit("chunk", JSON.stringify({worker_id: w.process.pid, ...p.data}))
+            } else if (p.type == "chunk_response") {
+                ev_dtv.emit("file_chunk_sent", p.request_id, p.worker_id)
+            }
+        })
+    })
+
+    app.listen(PORT)
 
     app.ws("/ws/dtv", 
         /**
@@ -44,31 +61,32 @@ if (cluster.isMaster && USE_WORKERS) {
 
             ev_dtv.on("manifest", (payload) => {
                 const m = JSON.parse(payload)
-                ws.send("\x00"+JSON.stringify({"type": "manifest", "path": m.path, "id": m.channel, "request_id": m.sid}))
+                ws.send("\x00"+JSON.stringify({"type": "manifest", "path": m.path, "id": m.channel, "request_id": m.sid, "worker_id": m.worker_id}))
             })
 
             ev_dtv.on("segment", (payload) => {
                 const m = JSON.parse(payload)
-                ws.send("\x00"+JSON.stringify({"type": "segment", "path": m.path, "id": m.channel, "request_id": m.sid}))
+                ws.send("\x00"+JSON.stringify({"type": "segment", "path": m.path, "id": m.channel, "request_id": m.sid, "worker_id": m.worker_id}))
             })
 
-            ev_dtv.on("chunk", (sid) => {
-                ws.send("\x00"+JSON.stringify({"type": "chunk", "request_id": sid}))
+            ev_dtv.on("chunk", (payload) => {
+                const m = JSON.parse(payload)
+                ws.send("\x00"+JSON.stringify({"type": "chunk", "request_id": m.sid, "worker_id": m.worker_id}))
             })
 
-            ws.on("message", (e) => {                                               
+            ws.on("message", (e) => {                                    
                 if (e[0] == 0) {
                     const m = JSON.parse(e.subarray(1).toString("utf-8"))
                     if (m.type == "ping") {
                         ws.send("\x00"+JSON.stringify({type: "pong"}))
-                    } else {
-                        if (EP[m.request_id] === undefined) return ws.close()
-                        EP[m.request_id].emit("response", e.subarray(1).toString("utf-8"), e[0])
+                    } else {                      
+                        workers[m.worker_id].process.send({type: "response", data: e.subarray(1).toString("utf-8"), coding: e[0], request_id: m.request_id})
                     }
                 } else if (e[0] == 1) {
                     const sid = e.subarray(1,129).toString("hex")
-                    if (EP[sid] === undefined) return ws.close()
-                    EP[sid].emit("response", e.subarray(129), e[0])
+                    const w_id = e.readBigUInt64LE(129)
+                    
+                    workers[w_id].process.send({type: "response", data: e.subarray(129+8), coding: e[0], request_id: sid})
                 }
             });
         }
@@ -94,54 +112,89 @@ if (cluster.isMaster && USE_WORKERS) {
             })
             */
             
+            ws.on("open", () => {
+                process.send({})
+            })
 
-            ev_dtv.on("file_chunk_sent", (sid) => {
-                ws.send(JSON.stringify({"status": "OK", "request_id": sid}))
+            ev_dtv.on("file_chunk_sent", (sid, wid) => {
+                ws.send(JSON.stringify({"status": "OK", "request_id": sid, "worker_id": wid}))
             })
 
             ws.on("message", (e) => {                                           
                 const s_id = e.subarray(0,128).toString("hex")
-                if (EL[s_id] === undefined) return ws.close()
-                EL[s_id].emit("chunk", e.subarray(128))
+                const w_id = e.readBigUInt64LE(128)
+                
+                workers[w_id].process.send({type: "file_response", data: e.subarray(128+8), request_id: s_id})
             });
         }
     )
 
+    // This event is firs when worker died
+    cluster.on('exit', (worker, code, signal) => {
+      console.log(`worker ${worker.process.pid} died`);
+    });
+} else {
+    var app = express()
+
+    var EP = {}
+    var EL = {}
+
+    process.on('message', (p) => {
+        //console.log(p.type)
+        if (p.type == "response") {
+            EP[p.request_id].emit("response", p.data, p.coding)
+        } else if (p.type == "file_response") {
+            EL[p.request_id].emit("chunk", Buffer.from(p.data))
+        }
+    })
+
     const wait_for_response = (sid) => {
         return new Promise((res) => {
-            /*
             const timeout = setTimeout(() => {
                 return res()
             }, 10000)
-            */
-            EP[sid].once("response", (msg, type) => {                     
+
+            /*
+            woe.waitFor("response", EP[sid], [(msg, type) => {  
                 if (type == 0) {
                     return res(JSON.parse(msg))
                 } else {
                     return res(msg)
                 }
-            })
-            
+            }])
+            */
+            EP[sid].once("response", (msg, type) => {  
+                if (type == 0) {
+                    return res(JSON.parse(msg))
+                } else {
+                    return res(msg)
+                }
+            })           
         })
     }
 
     const wait_for_response_file = (sid) => {
         return new Promise((res) => {
-            /*
             const timeout = setTimeout(() => {
                 return res()
             }, 10000)
-            */
+
             EL[sid].once("chunk", (msg) => {                     
                 return res(msg)
             })
+
+            /*
+            woe.waitFor("chunk", EL[sid], (msg) => {                     
+                return res(msg)
+            })
+            */
         })
     }
 
     app.get("/api/tv/:channel/:manifest.m3u8", cors(), async (req, res) => {
         const request_id = crypto.randomBytes(128).toString("hex")
         EP[request_id] = new EventEmitter()
-        ev_dtv.emit("manifest", JSON.stringify({path: req.params.manifest, channel: req.params.channel, sid: request_id}))
+        proc.send({type: "manifest", data: {path: req.params.manifest, channel: req.params.channel, sid: request_id}})
         const init_response = await wait_for_response(request_id)
 
         if (!init_response) {
@@ -160,13 +213,13 @@ if (cluster.isMaster && USE_WORKERS) {
 
         delete EP[request_id]
 
-        if (req.query.step) console.log(`${req.query.step} request was accepted`)
+        if (req.query.step) console.log(`${req.query.step} request was accepted @ ${proc.pid} in ${proc.env["cluster_id"]}`)
         return res.status(200).header("Content-Type", "application/x-mpegurl").end(init_response.manifest)
     })
 
     app.get("/api/tv/:channel/:segment.ts", cors(), async (req, res) => {
         const request_id = crypto.randomBytes(128).toString("hex")
-        ev_dtv.emit("segment", JSON.stringify({path: req.params.segment, channel: req.params.channel, sid: request_id}))
+        proc.send({type: "segment", data: {path: req.params.segment, channel: req.params.channel, sid: request_id}})
         EP[request_id] = new ev.EventEmitter()
         EL[request_id] = new ev.EventEmitter()
         const init_response = await wait_for_response(request_id)
@@ -188,7 +241,7 @@ if (cluster.isMaster && USE_WORKERS) {
             return res.status(status_code).json({error: init_response.error})
         }
 
-        if (req.query.step) console.log(`${req.query.step} request was accepted`)
+        if (req.query.step) console.log(`${req.query.step} request was accepted @ ${proc.pid} in ${proc.env["cluster_id"]}`)
         res.statusCode = 200
         res.header("Content-Type", "video/MP2T")
         res.header("Content-Length", init_response.size)
@@ -197,38 +250,48 @@ if (cluster.isMaster && USE_WORKERS) {
 
         let first = false
 
-        while (size_required > 0) {
-            //console.log("waiting for it at " +request_id)
-            const chunk = await wait_for_response_file(request_id)
-            //console.log("waited for it at " + request_id)
-            if (!chunk || chunk.length <= 0) {
-                console.log("empty chunk for "+request_id)
-                res.end()
-                break
-            }
+        const wChunk = async () => {
+            if (size_required > 0) {
+                //console.log("waiting for it at " +request_id)
+                const chunk = await wait_for_response_file(request_id)
+                //console.log(chunk)
+                //console.log("waited for it at " + request_id)
+                if (!chunk || chunk.length <= 0) {
+                    console.log("empty chunk for "+request_id)
+                    res.end()
+                    
+                    delete EL[request_id]
+                    delete EP[request_id]
+                    if (req.query.step) console.log(`${req.query.step} finished it's request @ ${proc.pid} in ${proc.env["cluster_id"]}`)
+                    return
+                }
 
-            if (!first) {
-                if (req.query.step) console.log(`${req.query.step} sent it's first data`)
-                first = true
-            }
+                if (!first) {
+                    if (req.query.step) console.log(`${req.query.step} sent it's first data @ ${proc.pid} in ${proc.env["cluster_id"]}`)
+                    first = true
+                }
 
-            size_required -= chunk.length
-            //console.log(size_required+" for "+request_id)
+                size_required -= chunk.length
+                //console.log(size_required+" for "+request_id)
 
-            ev_dtv.emit("file_chunk_sent", request_id)
-            //setTimeout(() => ev_dtv.emit("file_chunk_sent", request_id), 500)
+                proc.send({type: "chunk_response", request_id, work_id: proc.pid})
+                //setTimeout(() => ev_dtv.emit("file_chunk_sent", request_id), 500)
 
-            if (size_required <= 0) {
-                res.end(chunk)
-                break;
+                if (size_required <= 0) {
+                    res.end(chunk)
+                } else {
+                    res.write(chunk)
+                }
+
+                setTimeout(wChunk, 25)
             } else {
-                res.write(chunk)
-            }
-        }            
-        delete EL[request_id]
-        delete EP[request_id]
-
-        if (req.query.step) console.log(`${req.query.step} finished it's request`)
+                delete EL[request_id]
+                delete EP[request_id]
+                if (req.query.step) console.log(`${req.query.step} finished it's request @ ${proc.pid} in ${proc.env["cluster_id"]}`)
+            }         
+        }
+        
+        proc.nextTick(wChunk)
 
         //console.log("finish send data for "+request_id)
     })
@@ -238,8 +301,7 @@ if (cluster.isMaster && USE_WORKERS) {
         next()
     })
 
-    const PORT = proc.env["PORT"] ? proc.env["PORT"] : 62541
-    app.listen(PORT, (port, err) => {
+    app.listen(process.env["PORT"], (port, err) => {
         if (USE_WORKERS) console.log(err ? err : `worker ${process.pid} is running`);
     })
 }

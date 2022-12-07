@@ -22,6 +22,7 @@
     "node-upnp-control-point": "^0.0.3",
     "objection": "^3.0.1",
     "sqlite3": "^5.1.2",
+    "wait-for-event": "^2.0.1",
     "websocket-as-promised": "^2.0.1",
     "ws": "^8.11.0"
   }

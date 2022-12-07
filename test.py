@@ -17,14 +17,15 @@ if __name__ == "__main__":
     time.sleep(10)
     '''
     
-    '''
-    for i in range(1000):
-        subprocess.Popen(["curl", f"http://localhost:62541/api/tv/test2/2mb.ts?step={i}", "-v", "-o", "/dev/null"])
-        time.sleep(0.25)
+    
+    for i in range(10000):
+        subprocess.Popen(["curl", f"http://localhost:62542/api/tv/test2/2mb.ts?step={i}", "-v", "-o", "/dev/null"])
+        time.sleep(0.1)
         
     time.sleep(10)
-    '''
     
+    '''
     for i in range(500):
         subprocess.Popen(["curl", f"http://localhost:62541/api/tv/test2/2mb.ts?step={i}", "-v", "-o", "/dev/null"])
+    '''
         #time.sleep(0.25)
