@@ -138,7 +138,11 @@ if (cluster.isMaster && USE_WORKERS) {
 } else {
     const app = fastify.fastify()
     var EP = {}
-    var EL = {}
+    var PR = {}
+    var PSR = {}
+
+    // var EL = {}
+
     app.register(fastify_cors)
 
     process.on('message', (p) => {
@@ -147,10 +151,39 @@ if (cluster.isMaster && USE_WORKERS) {
             if (p.type == "response") {
                 EP[p.request_id].emit("response", p.data, p.coding)
             } else if (p.type == "file_response") {
-                EL[p.request_id].emit("chunk", Buffer.from(p.data))
+                // EL[p.request_id].emit("chunk", Buffer.from(p.data))
+                if (PR[p.request_id] !== undefined && PSR[p.request_id] !== undefined) {
+                    if (PSR[p.request_id] > 0) {
+                        let chunk = Buffer.from(p.data)
+
+                        if (!chunk || chunk.length <= 0) {
+                            console.log("empty chunk for "+p.request_id)
+                            PR[p.request_id].raw.end()
+                            
+                            delete PR[p.request_id]
+                            delete PSR[p.request_id]
+                            return
+                        }
+    
+                        PSR[p.request_id] -= chunk.length
+    
+                        if (PSR[p.request_id] <= 0) {
+                            PR[p.request_id].raw.end(chunk)
+                        } else {
+                            PR[p.request_id].raw.write(chunk)
+                        }
+
+                        proc.send({type: "chunk_response", request_id: p.request_id, work_id: proc.pid})
+                    }
+                    
+                    if (PSR[p.request_id] <= 0) {
+                        delete PR[p.request_id]
+                        delete PSR[p.request_id]
+                    }    
+                }
             }
         } catch (e) {
-            
+
         }
     })
 
@@ -179,6 +212,7 @@ if (cluster.isMaster && USE_WORKERS) {
         })
     }
 
+    /*
     const wait_for_response_file = (sid) => {
         return new Promise((res) => {
             const timeout = setTimeout(() => {
@@ -194,8 +228,10 @@ if (cluster.isMaster && USE_WORKERS) {
                 return res(msg)
             })
             */
+           /*
         })
     }
+    */
 
     app.get("/api/tv/:channel/:manifest.m3u8", async (req, res) => {
         const request_id = crypto.randomBytes(128).toString("hex")
@@ -227,11 +263,11 @@ if (cluster.isMaster && USE_WORKERS) {
         const request_id = crypto.randomBytes(128).toString("hex")
         proc.send({type: "segment", data: {path: req.params.segment, channel: req.params.channel, sid: request_id}})
         EP[request_id] = new ev.EventEmitter()
-        EL[request_id] = new ev.EventEmitter()
+        //EL[request_id] = new ev.EventEmitter()
         const init_response = await wait_for_response(request_id)
 
         if (!init_response) {
-            delete EL[request_id]
+            //delete EL[request_id]
             delete EP[request_id]
             return res.status(503).header("Retry-After", "5").send({error: "Upstream server is not available."})
         } else if (init_response.status == "error") {
@@ -242,11 +278,12 @@ if (cluster.isMaster && USE_WORKERS) {
                     break
             }
 
-            delete EL[request_id]
+            //delete EL[request_id]
             delete EP[request_id]
             return res.status(status_code).send({error: init_response.error})
         }
 
+        delete EP[request_id]
         if (req.query.step) console.log(`${req.query.step} request was accepted @ ${proc.pid} in ${proc.env["cluster_id"]}`)
         
         res.raw.statusCode = 200
@@ -256,52 +293,66 @@ if (cluster.isMaster && USE_WORKERS) {
 
         res.raw.writeHead(200)
 
+        /*
         let size_required = init_response.size
 
         let first = false
 
-        const wChunk = async () => {
-            if (size_required > 0) {
-                //console.log("waiting for it at " +request_id)
-                const chunk = await wait_for_response_file(request_id)
-                //console.log(chunk)
-                //console.log("waited for it at " + request_id)
-                if (!chunk || chunk.length <= 0) {
-                    console.log("empty chunk for "+request_id)
-                    res.raw.end()
-                    
+        PR
+        */
+
+        PSR[request_id] = init_response.size
+        PR[request_id] = res
+
+        /*
+        EL[request_id].on("chunk", async (chunk) => {
+            try {
+                if (size_required > 0) {
+                    //console.log("waiting for it at " +request_id)
+                    // const chunk = await wait_for_response_file(request_id)
+                    //console.log(chunk)
+                    //console.log("waited for it at " + request_id)
+                    if (!chunk || chunk.length <= 0) {
+                        console.log("empty chunk for "+request_id)
+                        res.raw.end()
+                        
+                        delete EL[request_id]
+                        delete EP[request_id]
+                        if (req.query.step) console.log(`${req.query.step} finished it's request @ ${proc.pid} in ${proc.env["cluster_id"]}`)
+                        return
+                    }
+
+                    if (!first) {
+                        if (req.query.step) console.log(`${req.query.step} sent it's first data @ ${proc.pid} in ${proc.env["cluster_id"]}`)
+                        first = true
+                    }
+
+                    size_required -= chunk.length
+                    //console.log(size_required+" for "+request_id)
+
+                    proc.send({type: "chunk_response", request_id, work_id: proc.pid})
+                    //setTimeout(() => ev_dtv.emit("file_chunk_sent", request_id), 500)
+
+                    if (size_required <= 0) {
+                        res.raw.end(chunk)
+                    } else {
+                        res.raw.write(chunk)
+                    }
+                } else {
                     delete EL[request_id]
                     delete EP[request_id]
                     if (req.query.step) console.log(`${req.query.step} finished it's request @ ${proc.pid} in ${proc.env["cluster_id"]}`)
-                    return
-                }
-
-                if (!first) {
-                    if (req.query.step) console.log(`${req.query.step} sent it's first data @ ${proc.pid} in ${proc.env["cluster_id"]}`)
-                    first = true
-                }
-
-                size_required -= chunk.length
-                //console.log(size_required+" for "+request_id)
-
-                proc.send({type: "chunk_response", request_id, work_id: proc.pid})
-                //setTimeout(() => ev_dtv.emit("file_chunk_sent", request_id), 500)
-
-                if (size_required <= 0) {
-                    res.raw.end(chunk)
-                } else {
-                    res.raw.write(chunk)
-                }
-
-                setTimeout(wChunk, 25)
-            } else {
+                }    
+            } catch (e) {
+                console.trace(e)
+                res.raw.end()
+                        
                 delete EL[request_id]
                 delete EP[request_id]
                 if (req.query.step) console.log(`${req.query.step} finished it's request @ ${proc.pid} in ${proc.env["cluster_id"]}`)
-            }         
-        }
-        
-        proc.nextTick(wChunk)
+            }     
+        })
+        */
 
         //console.log("finish send data for "+request_id)
     })
