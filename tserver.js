@@ -139,7 +139,10 @@ if (cluster.isMaster && USE_WORKERS) {
     const app = fastify.fastify()
     var EP = {}
     var PR = {}
+
     var PSR = {}
+    var PSS = {}
+    var PSF = {}
 
     // var EL = {}
 
@@ -156,12 +159,23 @@ if (cluster.isMaster && USE_WORKERS) {
                     if (PSR[p.request_id] > 0) {
                         let chunk = Buffer.from(p.data)
 
+                        if (!PSF[p.request_id]) {
+                            if (PSS[p.request_id] !== undefined) console.log(`${PSS[p.request_id]} sent it's first data`)
+                            PSF[p.request_id] = true
+                        }
+
                         if (!chunk || chunk.length <= 0) {
                             console.log("empty chunk for "+p.request_id)
                             PR[p.request_id].raw.end()
                             
+                            if (PSS[p.request_id] !== undefined) {
+                                console.log(`${PSS[p.request_id]} finished it's request`)
+                                delete PSS[p.request_id]
+                            }
+
                             delete PR[p.request_id]
                             delete PSR[p.request_id]
+                            delete PSF[p.request_id]
                             return
                         }
     
@@ -177,8 +191,14 @@ if (cluster.isMaster && USE_WORKERS) {
                     }
                     
                     if (PSR[p.request_id] <= 0) {
+                        if (PSS[p.request_id] !== undefined) {
+                            console.log(`${PSS[p.request_id]} finished it's request`)
+                            delete PSS[p.request_id]
+                        }
+
                         delete PR[p.request_id]
                         delete PSR[p.request_id]
+                        delete PSF[p.request_id]
                     }    
                 }
             }
@@ -301,8 +321,13 @@ if (cluster.isMaster && USE_WORKERS) {
         PR
         */
 
-        PSR[request_id] = init_response.size
         PR[request_id] = res
+        PSR[request_id] = init_response.size
+        PSF[request_id] = false
+
+        if (req.query.step) {
+            PSS[request_id] = req.query.step
+        }
 
         /*
         EL[request_id].on("chunk", async (chunk) => {
