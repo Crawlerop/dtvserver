@@ -143,10 +143,14 @@ if (cluster.isMaster && USE_WORKERS) {
 
     process.on('message', (p) => {
         //console.log(p.type)
-        if (p.type == "response") {
-            EP[p.request_id].emit("response", p.data, p.coding)
-        } else if (p.type == "file_response") {
-            EL[p.request_id].emit("chunk", Buffer.from(p.data))
+        try {
+            if (p.type == "response") {
+                EP[p.request_id].emit("response", p.data, p.coding)
+            } else if (p.type == "file_response") {
+                EL[p.request_id].emit("chunk", Buffer.from(p.data))
+            }
+        } catch (e) {
+            
         }
     })
 
