@@ -490,7 +490,7 @@ app.get("/play/:stream/:file", cors(), async (req, res) => {
         try {
             const hls_ts_file = await fs.readFile(`${streams_path}/${req.params.file}`, {encoding: "utf-8"})
 
-            return res.status(200).end(hls_ts_file.replace(/\r/g, "").replace(/#EXT-X-MEDIA-SEQUENCE/g, `#EXT-X-PLAY-ON:DTVAnywhere\n#EXT-X-STREAM-NAME:${have_stream[0].name}\n#EXT-X-STREAM-SOURCE:${have_stream[0].type}\nEXT-X-STREAM-HOSTNAME:${os.hostname()}\n#EXT-X-MEDIA-SEQUENCE`))
+            return res.status(200).header("Content-Type", "application/x-mpegurl").end(hls_ts_file.replace(/\r/g, "").replace(/#EXT-X-MEDIA-SEQUENCE/g, `#EXT-X-PLAY-ON:DTVAnywhere\n#EXT-X-STREAM-NAME:${have_stream[0].name}\n#EXT-X-STREAM-SOURCE:${have_stream[0].type}\nEXT-X-STREAM-HOSTNAME:${os.hostname()}\n#EXT-X-MEDIA-SEQUENCE`))
         } catch (e) {            
             if (e.code == "ENOENT") {
                 res.status(404).json({error: "Not found"})

@@ -9,7 +9,7 @@ var sub_domains = {}
 var proxy_names = {}
 
 app.get("/tv/:inst/manifest.json", (req, res, next) => {
-    if (sub_domains[req.params.inst] === undefined) return res.status(503).json({"error": "Backend is not available"})
+    if (sub_domains[req.params.inst] === undefined) return res.status(503).json({"error": "This server is not available"})
     next()
 }, proxy('localhost:62310', {
     proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
@@ -22,7 +22,7 @@ app.get("/tv/:inst/manifest.json", (req, res, next) => {
 }))
 
 app.get("/tv/:inst/:stream/:path", (req, res, next) => {
-    if (sub_domains[req.params.inst] === undefined) return res.status(503).json({"error": "Backend is not available"})
+    if (sub_domains[req.params.inst] === undefined) return res.status(503).json({"error": "This server is not available."})
     next()
 }, proxy('localhost:62310', {
     proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
