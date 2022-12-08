@@ -13,6 +13,7 @@ const cp = require("child_process")
 const nms = require("node-media-server")
 const events = require("events")
 const axios = require("axios")
+const os = require("os")
 
 const Knex = require("knex")
 const knex = Knex(require("./knexFile"))
@@ -190,7 +191,7 @@ var frp_cp = null
 
 if (config.dtv_forward_key) {
     if (config.dtv_protocol == "frp") {
-        frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.port, "-s", config.dtv_forward_host, "-n", config.dtv_forward_key, "--log_level", "error"])
+        frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error"])
     } else {
         ws_p = new ws(`${config.dtv_protocol}://${config.dtv_forward_host}/ws/dtv?token=${config.dtv_forward_key}`, {
             createWebSocket: url => new ws_a(url),
@@ -463,9 +464,46 @@ const addDTVJobs = (stream_id, type, params) => {
     })
 }
 
+const cors = require("cors")
+
 app.get("/", (req,res)=>{res.sendFile(path.join(__dirname,"website/index.html"))})
 app.get("/index.html", (req,res)=>{res.sendFile(path.join(__dirname,"website/index.html"))})
 app.use("/static/", express.static(path.join(__dirname, "/website_res/")))
+
+app.get("/play/:stream/:file", cors(), async (req, res) => {
+    if (req.params.file.endsWith(".ts")) {
+        const have_stream = await streams.query().where("stream_id", "=", req.params.stream)
+        if (have_stream.length <= 0) return res.status(404).json({error: "This stream is non-existent."})
+
+        const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${req.params.stream}/`
+        if (!fs_sync.existsSync(`${streams_path}/`)) return res.status(404).json({error: "This stream is not available."})
+        if (!fs_sync.existsSync(`${streams_path}/${req.params.file}`)) return res.status(404).json({error: "Not found"})
+
+        return res.status(200).sendFile(`${streams_path}/${req.params.file}`)                          
+    } else if (req.params.file.endsWith(".m3u8")) {
+        const have_stream = await streams.query().where("stream_id", "=", req.params.stream)
+        if (have_stream.length <= 0) return res.status(404).json({error: "This stream is non-existent."})
+
+        const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${req.params.stream}/`
+        if (!fs_sync.existsSync(`${streams_path}/`)) return res.status(404).json({error: "This stream is not available."})
+
+        try {
+            const hls_ts_file = await fs.readFile(`${streams_path}/${req.params.file}`, {encoding: "utf-8"})
+
+            return res.status(200).end(hls_ts_file.replace(/\r/g, "").replace(/#EXT-X-MEDIA-SEQUENCE/g, `#EXT-X-PLAY-ON:DTVAnywhere\n#EXT-X-STREAM-NAME:${have_stream[0].name}\n#EXT-X-STREAM-SOURCE:${have_stream[0].type}\nEXT-X-STREAM-HOSTNAME:${os.hostname()}\n#EXT-X-MEDIA-SEQUENCE`))
+        } catch (e) {            
+            if (e.code == "ENOENT") {
+                res.status(404).json({error: "Not found"})
+            } else {
+                console.trace(e)
+                res.status(500).json({error: e})
+            }         
+        }
+
+    } else {
+        return res.status(403).json({error: "Not OTT content"})
+    }
+})
 
 /* API */
 app.get("/api/streams", async (req, res) => {
