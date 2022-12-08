@@ -144,6 +144,8 @@ if (cluster.isMaster && USE_WORKERS) {
     var PSS = {}
     var PSF = {}
 
+    var XID = 0
+
     // var EL = {}
 
     app.register(fastify_cors)
@@ -190,7 +192,7 @@ if (cluster.isMaster && USE_WORKERS) {
                         proc.send({type: "chunk_response", request_id: p.request_id, work_id: proc.pid})
                     }
                     
-                    if (PSR[p.request_id] <= 0) {
+                    if (PSR[p.request_id] <= 0 || PR[p.request_id].raw.closed) {
                         if (PSS[p.request_id] !== undefined) {
                             console.log(`${PSS[p.request_id]} finished it's request`)
                             delete PSS[p.request_id]
@@ -304,7 +306,13 @@ if (cluster.isMaster && USE_WORKERS) {
         }
 
         delete EP[request_id]
-        if (req.query.step) console.log(`${req.query.step} request was accepted @ ${proc.pid} in ${proc.env["cluster_id"]}`)
+        const RID = XID++;
+
+        if (req.query.step) {
+            console.log(`${req.query.step} request was accepted @ ${proc.pid} in ${proc.env["cluster_id"]}`)
+        } else {
+            console.log(`${RID} request was accepted @ ${proc.pid} in ${proc.env["cluster_id"]}`)
+        }
         
         res.raw.statusCode = 200
         res.raw.setHeader("Content-Type", "video/MP2T")
@@ -327,6 +335,8 @@ if (cluster.isMaster && USE_WORKERS) {
 
         if (req.query.step) {
             PSS[request_id] = req.query.step
+        } else {
+            PSS[request_id] = `${RID} @ ${proc.pid}`
         }
 
         /*
