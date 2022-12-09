@@ -175,6 +175,10 @@ module.exports = {
             if (audio) {
                 args.push(`-c:a:${i}`)
                 args.push(rendition.audio_codec)
+                if (rendition.audio_codec === "aac") {
+                    args.push(`-aac_coder:a:${i}`)
+                    args.push("twoloop")
+                }
                 args.push(`-b:a:${i}`)
                 args.push(rendition.audio_bitrate)
                 args.push(`-profile:a:${i}`)

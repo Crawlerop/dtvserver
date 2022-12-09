@@ -73,6 +73,18 @@ app.get("/tv/:inst/manifest.json", loadSubDomain, get('http://localhost:62310/ma
 app.get("/tv/:inst/:stream/:path", loadSubDomain, get(`http://localhost:62310/play/(stream)/(path)`))
 app.get("/tv/:inst/streams.json", loadSubDomain, get('http://localhost:62310/api/streams'))
 
+app.post("/login", async (req, res) => {
+    if (!req.body.content.user) return res.status(200).json({
+        reject: true,
+        reject_reason: "a token is required"
+    })
+
+    return res.status(200).json({
+        "reject": false,
+        "unchange": true
+    })
+})
+
 app.post("/open", async (req, res) => {    
     if (!req.body.content.user.user) return res.status(200).json({
         reject: true,
