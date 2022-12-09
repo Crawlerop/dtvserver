@@ -25,6 +25,7 @@
     "node-media-server": "^2.4.9",
     "node-upnp-control-point": "^0.0.3",
     "objection": "^3.0.1",
+    "redis": "^4.5.1",
     "sqlite3": "^5.1.2",
     "tmp": "^0.2.1",
     "wait-for-event": "^2.0.1",
