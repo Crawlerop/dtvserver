@@ -522,8 +522,28 @@ app.get("/play/:stream/:file", cors(), async (req, res) => {
 
 /* API */
 app.get("/api/streams", async (req, res) => {
-    const stream = await streams.query()
-    return res.status(200).json(stream)
+    const streams_ = await streams.query()
+    var streams_out = []
+    for (let i = 0; i<streams_.length; i++) {
+        const stream = streams_[i]
+        streams_out.push({
+            name: stream.name,
+            id: stream.stream_id,
+            type: stream.type,
+            active: Boolean(stream.active)
+        })
+    }
+    return res.status(200).json(streams_out)
+});
+
+app.post("/api/rtmp_publish_url", async (req, res) => {
+    if (!req.body.id) return res.status(400).json({"error": "A channel id must be specified"})
+
+    const stream = await streams.query().where("stream_id", "=", req.body.id)
+    if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
+    if (stream[0].type !== "rtmp") return res.status(400).json({error: `channel ${req.body.id} is not an RTMP stream`})
+
+    return res.status(200).json({publish_url: `rtmp://${req.hostname}:${config.rtmp_settings.port}/live/${JSON.parse(stream[0].params).rtmp_key}`})
 });
 
 app.post("/api/dvb2ip_get", async (req, res) => {
@@ -537,7 +557,7 @@ app.post("/api/dvb2ip_get", async (req, res) => {
 
 proc.nextTick(async () => {
     const active_streams = await streams.query().where("active", '=', true)
-    for (var v = 0; v<active_streams.length; v++) {        
+    for (let v = 0; v<active_streams.length; v++) {        
         addDTVJobs(active_streams[v].stream_id, active_streams[v].type, JSON.parse(active_streams[v].params))
     }
 })
@@ -612,7 +632,7 @@ app.post("/api/get_channels_by_frequency", async (req, res) => {
         var dtv_chunk = null
         var found = false
 
-        for (var b = 0; b<5; b++) {
+        for (let b = 0; b<5; b++) {
             try {
                 dtv_chunk = await check_output('tsp', `-I dvb --signal-timeout 2 --guard-interval auto --receive-timeout 10 --adapter ${req.body.tuner} --delivery-system DVB-T2 --frequency ${req.body.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" "), 128)
                 found = true
@@ -624,12 +644,12 @@ app.post("/api/get_channels_by_frequency", async (req, res) => {
         const probe_streams = JSON.parse((await check_output(config.ffmpeg.replace(/mpeg/g, "probe"), "-loglevel quiet -print_format json -show_error -show_format -show_programs -".split(" "), 0, dtv_chunk)).toString("utf-8")).programs
 
         var channels_temp = []
-        for (var i = 0; i<probe_streams.length; i++) {
+        for (let i = 0; i<probe_streams.length; i++) {
             var program = probe_streams[i];
             var program_streams = [];
             var is_hd = false;
 
-            for (var j = 0; j<program.streams.length; j++) {
+            for (let j = 0; j<program.streams.length; j++) {
                 var stream = program.streams[j];
                 if (stream.codec_type == "video") {
                     if (stream.height >= 720) is_hd = true

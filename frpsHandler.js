@@ -71,6 +71,7 @@ app.get("/tv/:inst/:stream/:path", loadSubDomain, proxy('localhost:62310', {
 
 app.get("/tv/:inst/manifest.json", loadSubDomain, get('http://localhost:62310/manifest.json'))
 app.get("/tv/:inst/:stream/:path", loadSubDomain, get(`http://localhost:62310/play/(stream)/(path)`))
+app.get("/tv/:inst/streams.json", loadSubDomain, get('http://localhost:62310/api/streams'))
 
 app.post("/open", async (req, res) => {    
     if (!req.body.content.user.user) return res.status(200).json({
