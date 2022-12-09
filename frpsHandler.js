@@ -3,9 +3,10 @@ const express = require("express")
 const crypto = require("crypto")
 const app = express()
 app.use(express.json())
-const proxy = require("express-http-proxy")
+const axios = require("axios")
 const redis = require("redis")
 const proc = require("process")
+//const snake_case = require("snake-case")
 
 const redis_client = redis.createClient()
 
@@ -13,6 +14,32 @@ const redis_client = redis.createClient()
 var sub_domains = {}
 var proxy_names = {}
 */
+const get = (url) => {
+    return async (req, res) => {
+        try {
+            const req_url = url.replace(/\(stream\)/g, req.params.stream).replace(/\(path\)/g, req.params.path)
+
+            const req_p = await axios.get(req_url, {
+                headers: {
+                    Host: req.subdomain_to_use
+                },
+                validateStatus: () => {
+                    return true
+                },
+                responseType: 'stream'
+            })
+
+            res.statusCode = req_p.status
+
+            for (i = 0; i<req_p.data.rawHeaders.length; i += 2) {
+                if (req_p.data.rawHeaders[i].toLowerCase() !== "connection") res.header(req_p.data.rawHeaders[i], req_p.data.rawHeaders[i+1])
+            }
+            req_p.data.pipe(res)
+        } catch (e) {
+            return res.status(500).json(e)
+        }
+    }
+}
 
 const loadSubDomain = async (req, res, next) => {
     req.subdomain_to_use = await redis_client.get(`tunnel_domain_${req.params.inst}`)
@@ -20,6 +47,7 @@ const loadSubDomain = async (req, res, next) => {
     next()
 }
 
+/*
 app.get("/tv/:inst/manifest.json", loadSubDomain, proxy('localhost:62310', {
     proxyReqOptDecorator: function(proxyReqOpts, req) {
         proxyReqOpts.headers['Host'] = req.subdomain_to_use;
@@ -39,6 +67,10 @@ app.get("/tv/:inst/:stream/:path", loadSubDomain, proxy('localhost:62310', {
         return `/play/${req.params.stream}/${req.params.path}`
       }
 }))
+*/
+
+app.get("/tv/:inst/manifest.json", loadSubDomain, get('http://localhost:62310/manifest.json'))
+app.get("/tv/:inst/:stream/:path", loadSubDomain, get(`http://localhost:62310/play/(stream)/(path)`))
 
 app.post("/open", async (req, res) => {    
     if (!req.body.content.user.user) return res.status(200).json({
