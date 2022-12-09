@@ -14,11 +14,20 @@ const nms = require("node-media-server")
 const events = require("events")
 const axios = require("axios")
 const os = require("os")
+const nc = require("nominatim-client")
+const geoip = require("geoip-lite")
 
 const Knex = require("knex")
 const knex = Knex(require("./knexFile"))
 const objection = require("objection");
+const dtv_postcode = require("./dtv_postcodes.json")
+
 objection.Model.knex(knex)
+
+const nominatim = nc.createClient({
+    "useragent": "DTV Backend",
+    "referer": "https://dvb.ucomsite.my.id/"
+})
 
 /*
 const bull = require("bull");
@@ -28,6 +37,7 @@ const {CancelablePromise} = require("cancelable-promise");
 const streams = require("./db/streams");
 
 const config_defaults_nvenc = {
+    "name": "DTV Uplink Server",
     "dtv_forward_host": "dvb.ucomsite.my.id",
     "dtv_forward_key": "",
     "dtv_protocol": "frp",
@@ -81,6 +91,7 @@ const config_defaults_nvenc = {
 }
 
 const config_defaults = {
+    "name": "DTV Uplink Server",
     "dtv_forward_host": "dvb.ucomsite.my.id",
     "dtv_forward_key": "",
     "dtv_protocol": "frp",
@@ -152,6 +163,9 @@ const rtmp_server = new nms({
 })
 
 var ws_p = null
+
+var geoip_data = null
+var manifest_data = null
 
 const ping = () => {
     ws_p.send(Buffer.from("\0"+JSON.stringify({type: "ping"}), "utf-8"))
@@ -655,18 +669,76 @@ app.get("/api/tuners", async (req, res) => {
   })
 })
 
+app.get("/manifest.json", cors(), (req, res) => {
+    return res.status(200).json(manifest_data)
+})
+
 const PORT = proc.env["PORT"] ? proc.env["PORT"] : config.port
 
 check_output("tsp", ["--version"]).then(()=>{
     check_output(config.ffmpeg, ["-version"]).then(()=>{
-        app.listen(PORT, () => {
+        app.listen(PORT, async () => {
             rtmp_server.run()
+            geoip_data = (await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")).data
+            const n_res = await nominatim.reverse({lat: geoip.ll[0], lon: geoip.ll[1], zoom: 17})
+
+            manifest_data = {
+                name: config.name,
+                hostname: os.hostname(),
+                server_uptime: os.uptime(),
+                os_name: os.release(),
+                num_streams: (await streams.query()).length,
+                country: geoip_data.country,
+                region_id: null
+            }
+
+            if (!n_res.error) {
+                const zip_code = n_res.address.postcode
+                switch (geoip_data.country) {
+                    case "ID":
+                        for (d in dtv_postcode) {
+                            if (zip_code.slice(0,3) == d) {
+                                manifest_data.region_id = dtv_postcode[d]
+                                break
+                            }
+                        }
+                    default:
+                        manifest_data.region_id = n_res.address.city
+                }
+            }
             console.log(`Live on port ${PORT}`)
         })
     }).catch(()=>{
         check_output(path.join(__dirname, "/bin/ffmpeg"), ["-version"]).then(()=>{
-            app.listen(PORT, () => {
+            app.listen(PORT, async () => {
                 rtmp_server.run()
+                geoip_data = (await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")).data
+                const n_res = await nominatim.reverse({lat: geoip.ll[0], lon: geoip.ll[1], zoom: 17})
+
+                manifest_data = {
+                    name: config.name,
+                    hostname: os.hostname(),
+                    server_uptime: os.uptime(),
+                    os_name: os.release(),
+                    num_streams: (await streams.query()).length,
+                    country: geoip_data.country,
+                    region_id: null
+                }
+
+                if (!n_res.error) {
+                    const zip_code = n_res.address.postcode
+                    switch (geoip_data.country) {
+                        case "ID":
+                            for (d in dtv_postcode) {
+                                if (zip_code.slice(0,3) == d) {
+                                    manifest_data.region_id = dtv_postcode[d]
+                                    break
+                                }
+                            }
+                        default:
+                            manifest_data.region_id = n_res.address.city
+                    }
+                }
                 console.log(`Live on port ${PORT}`)
             })
         }).catch(()=>{
