@@ -703,6 +703,7 @@ check_output("tsp", ["--version"]).then(()=>{
                                 break
                             }
                         }
+                        break
                     default:
                         manifest_data.region_id = n_res.address.city
                 }
@@ -738,6 +739,7 @@ check_output("tsp", ["--version"]).then(()=>{
                                     break
                                 }
                             }
+                            break
                         default:
                             manifest_data.region_id = n_res.address.city
                     }
