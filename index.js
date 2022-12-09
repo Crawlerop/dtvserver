@@ -164,7 +164,9 @@ const rtmp_server = new nms({
 
 var ws_p = null
 
-var manifest_data = null
+var geo_params = {}
+
+// /var manifest_data = null
 
 const ping = () => {
     ws_p.send(Buffer.from("\0"+JSON.stringify({type: "ping"}), "utf-8"))
@@ -668,8 +670,16 @@ app.get("/api/tuners", async (req, res) => {
   })
 })
 
-app.get("/manifest.json", cors(), (req, res) => {
-    return res.status(200).json(manifest_data)
+app.get("/manifest.json", cors(), async (req, res) => {
+    return res.status(200).json({
+        name: config.name,
+        hostname: os.hostname(),
+        server_uptime: os.uptime(),
+        os_name: `${os.type()} ${os.release()}`,
+        num_streams: (await streams.query()).length,
+        country: geo_params.country,
+        region_id: geo_params.region_id
+    })
 })
 
 const PORT = proc.env["PORT"] ? proc.env["PORT"] : config.port
@@ -681,6 +691,12 @@ check_output("tsp", ["--version"]).then(()=>{
             const geoip_res = await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")
             const geoip_data = geoip_res.data
 
+            geo_params = {
+                country: geoip_data.country,
+                region_id: null
+            }
+
+            /*
             manifest_data = {
                 name: config.name,
                 hostname: os.hostname(),
@@ -690,6 +706,7 @@ check_output("tsp", ["--version"]).then(()=>{
                 country: geoip_data.country,
                 region_id: null
             }
+            */
 
             const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
 
@@ -699,13 +716,13 @@ check_output("tsp", ["--version"]).then(()=>{
                     case "ID":
                         for (d in dtv_postcode) {
                             if (zip_code.slice(0,3) == d) {
-                                manifest_data.region_id = dtv_postcode[d]
+                                geo_params.region_id = dtv_postcode[d]
                                 break
                             }
                         }
                         break
                     default:
-                        manifest_data.region_id = n_res.address.city
+                        geo_params.region_id = n_res.address.city
                 }
             }
             console.log(`Live on port ${PORT}`)
@@ -717,6 +734,12 @@ check_output("tsp", ["--version"]).then(()=>{
                 const geoip_res = await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")
                 const geoip_data = geoip_res.data
 
+                geo_params = {
+                    country: geoip_data.country,
+                    region_id: null
+                }
+
+                /*
                 manifest_data = {
                     name: config.name,
                     hostname: os.hostname(),
@@ -726,6 +749,7 @@ check_output("tsp", ["--version"]).then(()=>{
                     country: geoip_data.country,
                     region_id: null
                 }
+                */
 
                 const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
 
@@ -735,13 +759,13 @@ check_output("tsp", ["--version"]).then(()=>{
                         case "ID":
                             for (d in dtv_postcode) {
                                 if (zip_code.slice(0,3) == d) {
-                                    manifest_data.region_id = dtv_postcode[d]
+                                    geo_params.region_id = dtv_postcode[d]
                                     break
                                 }
                             }
                             break
                         default:
-                            manifest_data.region_id = n_res.address.city
+                            geo_params.region_id = n_res.address.city
                     }
                 }
                 console.log(`Live on port ${PORT}`)
