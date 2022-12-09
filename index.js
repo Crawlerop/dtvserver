@@ -685,7 +685,7 @@ check_output("tsp", ["--version"]).then(()=>{
                 name: config.name,
                 hostname: os.hostname(),
                 server_uptime: os.uptime(),
-                os_name: os.release(),
+                os_name: `${os.type()} ${os.release()}`,
                 num_streams: (await streams.query()).length,
                 country: geoip_data.country,
                 region_id: null
@@ -721,7 +721,7 @@ check_output("tsp", ["--version"]).then(()=>{
                     name: config.name,
                     hostname: os.hostname(),
                     server_uptime: os.uptime(),
-                    os_name: os.release(),
+                    os_name: `${os.type()} ${os.release()}`,
                     num_streams: (await streams.query()).length,
                     country: geoip_data.country,
                     region_id: null
