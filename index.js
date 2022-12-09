@@ -164,7 +164,6 @@ const rtmp_server = new nms({
 
 var ws_p = null
 
-var geoip_data = null
 var manifest_data = null
 
 const ping = () => {
@@ -679,8 +678,8 @@ check_output("tsp", ["--version"]).then(()=>{
     check_output(config.ffmpeg, ["-version"]).then(()=>{
         app.listen(PORT, async () => {
             rtmp_server.run()
-            geoip_data = (await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")).data
-            const n_res = await nominatim.reverse({lat: geoip.ll[0], lon: geoip.ll[1], zoom: 17})
+            const geoip_res = await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")
+            const geoip_data = geoip_res.data
 
             manifest_data = {
                 name: config.name,
@@ -691,6 +690,8 @@ check_output("tsp", ["--version"]).then(()=>{
                 country: geoip_data.country,
                 region_id: null
             }
+
+            const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
 
             if (!n_res.error) {
                 const zip_code = n_res.address.postcode
@@ -712,8 +713,8 @@ check_output("tsp", ["--version"]).then(()=>{
         check_output(path.join(__dirname, "/bin/ffmpeg"), ["-version"]).then(()=>{
             app.listen(PORT, async () => {
                 rtmp_server.run()
-                geoip_data = (await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")).data
-                const n_res = await nominatim.reverse({lat: geoip.ll[0], lon: geoip.ll[1], zoom: 17})
+                const geoip_res = await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")
+                const geoip_data = geoip_res.data
 
                 manifest_data = {
                     name: config.name,
@@ -724,6 +725,8 @@ check_output("tsp", ["--version"]).then(()=>{
                     country: geoip_data.country,
                     region_id: null
                 }
+
+                const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
 
                 if (!n_res.error) {
                     const zip_code = n_res.address.postcode
