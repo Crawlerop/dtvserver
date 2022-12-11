@@ -630,14 +630,15 @@ app.post("/api/add", async (req, res) => {
 });
 
 app.post("/api/get_channels_by_frequency", async (req, res) => {
-    if (req.body.tuner == undefined || req.body.frequency == undefined) return res.status(400).json({"error": "A tuner and frequency parameters were required."})
+    if (req.body.tuner === undefined || req.body.frequency === undefined || req.body.bandwidth === undefined || req.body.system_type === undefined) return res.status(400).json({"error": "A tuner, frequency, system type, and bandwidth parameters were required."})
+    //if (req.body.system_type === "ISDB-T" && req.body.isdb_type === undefined) req.res.status(400).json({error: "The system type must be specified for ISDB-T streams"})
     try {
         var dtv_chunk = null
         var found = false
 
         for (let b = 0; b<5; b++) {
             try {
-                dtv_chunk = await check_output('tsp', `-I dvb --signal-timeout 2 --guard-interval auto --receive-timeout 10 --adapter ${req.body.tuner} --delivery-system DVB-T2 --frequency ${req.body.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" "), 128)
+                dtv_chunk = await check_output('tsp', `-I dvb --signal-timeout 2 --guard-interval auto --receive-timeout 10 --adapter ${req.body.tuner} --delivery-system ${req.body.system_type} --frequency ${req.body.frequency*1e6} --bandwidth ${req.body.bandwidth*1e6} --transmission-mode auto --spectral-inversion off`.split(" "), 128)
                 found = true
                 break;
             } catch (e) {}
@@ -701,9 +702,50 @@ app.get("/manifest.json", cors(), async (req, res) => {
         os_name: `${os.type()} ${os.release()}`,
         num_streams: (await streams.query()).length,
         country: geo_params.country,
-        region_id: geo_params.region_id
+        region_id: geo_params.region_id,
+        dtv_area: geo_params.dtv_area
     })
 })
+
+const getDistance = (lat1, lon1, lat2, lon2, unit) => {
+	if ((lat1 == lat2) && (lon1 == lon2)) {
+		return 0;
+	}
+	else {
+		var radlat1 = Math.PI * lat1/180;
+		var radlat2 = Math.PI * lat2/180;
+		var theta = lon1-lon2;
+		var radtheta = Math.PI * theta/180;
+		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		if (dist > 1) {
+			dist = 1;
+		}
+		dist = Math.acos(dist);
+		dist = dist * 180/Math.PI;
+		dist = dist * 60 * 1.1515;
+		if (unit=="K") { dist = dist * 1.609344 }
+		if (unit=="N") { dist = dist * 0.8684 }
+		return dist;
+	}
+}
+
+const dtvRegions = require("./dtv_areas.json")
+
+const getRegion = (lat, lng) => {
+    var min_dist = null
+    var min_region = null
+
+    for (let i = 0; i<dtvRegions.length; i++) {
+        const dtvRegion = dtvRegions[i]
+        const dist = getDistance(lat, lng, dtvRegion.lat, dtvRegion.lng, "K")
+        if (min_dist === null || dist<min_dist) {
+            min_dist = dist
+            min_region = dtvRegion.area
+        }
+    }
+
+    return min_region
+}
 
 const PORT = proc.env["PORT"] ? proc.env["PORT"] : config.port
 
@@ -716,7 +758,8 @@ check_output("tsp", ["--version"]).then(()=>{
 
             geo_params = {
                 country: geoip_data.country,
-                region_id: null
+                region_id: null,
+                dtv_area: null
             }
 
             /*
@@ -738,14 +781,17 @@ check_output("tsp", ["--version"]).then(()=>{
                 switch (geoip_data.country) {
                     case "ID":
                         for (d in dtv_postcode) {
-                            if (zip_code.slice(0,3) == d) {
+                            if (zip_code.slice(0,3) == d) {                                
                                 geo_params.region_id = dtv_postcode[d]
+                                geo_params.dtv_area = getRegion(geoip_data.ll[0], geoip_data.ll[1])
                                 break
                             }
                         }
                         break
                     default:
-                        geo_params.region_id = n_res.address.city
+                        geo_params.region_id = `${n_res.address["ISO3166-2-lvl4"]}/${n_res.address.city.toUpperCase()}`
+                        geo_params.dtv_area = `${n_res.address["ISO3166-2-lvl4"]}/n.n_res.city`.dtv_area = n_res.city
+                        break
                 }
             }
             console.log(`Live on port ${PORT}`)
@@ -759,7 +805,8 @@ check_output("tsp", ["--version"]).then(()=>{
 
                 geo_params = {
                     country: geoip_data.country,
-                    region_id: null
+                    region_id: null,
+                    dtv_area: null
                 }
 
                 /*
@@ -781,14 +828,17 @@ check_output("tsp", ["--version"]).then(()=>{
                     switch (geoip_data.country) {
                         case "ID":
                             for (d in dtv_postcode) {
-                                if (zip_code.slice(0,3) == d) {
+                                if (zip_code.slice(0,3) == d) {                                
                                     geo_params.region_id = dtv_postcode[d]
+                                    geo_params.dtv_area = getRegion(geoip_data.ll[0], geoip_data.ll[1])
                                     break
                                 }
                             }
                             break
                         default:
-                            geo_params.region_id = n_res.address.city
+                            geo_params.region_id = `${n_res.address["ISO3166-2-lvl4"]}/${n_res.address.city.toUpperCase()}`
+                            geo_params.dtv_area = `${n_res.address["ISO3166-2-lvl4"]}/n.n_res.city`
+                            break
                     }
                 }
                 console.log(`Live on port ${PORT}`)

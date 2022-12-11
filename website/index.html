@@ -1,22 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <title>DTV Uplink Control Panel</title>
         <script type="module" src="https://cdn.jsdelivr.net/npm/@microsoft/fast-components/dist/fast-components.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
         <style>
             html {
-                font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
-    Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica,
-    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+                font-family: sans-serif;
                 color: #ffffff;
-                background-color: #333333;
+                background-color: #333333;                                       
+            }   
+            fast-radio {
+                --accent-fill-rest: #0080ff;
+                --accent-fill-hover: #40c0ff;
+            }
+            fast-checkbox {
+                --accent-fill-rest: #0080ff;
+                --accent-fill-hover: #40c0ff;
+            }
+            fast-number-field {
+                --accent-fill-rest: #004080;
+                --accent-fill-hover: #0080ff;
+            }
+            fast-text-field {
+                --accent-fill-rest: #0080ff;
+                --accent-fill-hover: #00c0ff;
+                --accent-fill-active: #80c0ff;
+            }
+            fast-dialog {
+                --dialog-width: 720px;
+                --dialog-height: 500px;
+            }
+            fast-button {
+                --accent-fill-rest: #004080;
+                --accent-fill-hover: #0080ff;
+                --accent-fill-active: #00c0ff;
+            }
+            fast-option {
+                --accent-fill-rest: #0080ff;
+                --accent-fill-hover: #00c0ff;
+                --accent-fill-active: #80c0ff;
+            }
+            fast-select {
+                --accent-fill-rest: #0080ff;
+                --accent-fill-hover: #00c0ff;
+                --accent-fill-active: #80c0ff;
+            }
+            fast-progress {
+                --accent-foreground-rest: #00a0e0;                
             }
         </style>
     </head>
-    <body>
+    <body>        
         <fast-card>
             <div class="header">
-                <fast-toolbar>
+                <fast-toolbar id="toolbar">
                     <fast-anchor href="/" appearance="hypertext">LocalCaster</fast-anchor>
                     <fast-button id="add">Add</fast-button>
                     <fast-button id="delete">Delete</fast-button>
@@ -27,20 +65,653 @@
             <h2>&nbsp;TV Streams:</h2>&nbsp;
             <fast-listbox id="streams">
                 <fast-option value="">Test</fast-option>
-            </fast-listbox>
+            </fast-listbox>            
+            <fast-divider></fast-divider>
+            <p style="text-align: right;">&copy; 2022&nbsp;</p>
         </fast-card>
-        <fast-dialog id="add_channels" modal="true">
-            <h2>Add Streams</h2>
-            <h4>Stream type:</h4>
-            <fast-radio-group value="dtv">
-                <fast-radio value="dtv">Digital TV Tuner</fast-radio>
-                <fast-radio value="dvb2ip">DVB2IP</fast-radio>
-                <fast-radio value="rtmp">RTMP</fast-radio>
-                <fast-radio value="udp">UDP</fast-radio>
-            </fast-radio-group>
+        <fast-dialog id="add-channels" modal="true" hidden>
+            <div style="width:640px; height:440px;" id="add-channels-options">
+                <h2>Add Streams</h2>
+                <h4>Stream type:</h4>
+                <fast-radio-group id="dtv-type" value="dtv">
+                    <fast-radio value="dtv">Digital TV Tuner</fast-radio>
+                    <fast-radio value="dvb2ip">DVB2IP</fast-radio>
+                    <fast-radio value="rtmp">RTMP</fast-radio>
+                    <fast-radio value="udp" disabled>UDP</fast-radio>                
+                </fast-radio-group>
+                <div id="dvb-setting">
+                    <p id="dvb-msg"></p>
+                    <!-- <fast-number-field min="0" value="0" id="adapter">Adapter</fast-number-field> -->
+                    Adapter:
+                    <fast-select id="adapter" value="0" style="width: 175px; min-width: 0px;">
+                        
+                    </fast-select>
+                    <fast-button appearance="accent" id="auto-scan">Auto Scan</fast-button>
+                    <fast-button appearance="accent" id="manual-scan">Manual Scan</fast-button>
+                    <fast-button appearance="accent" id="recent-scan" disabled>Obtain from recent scan</fast-button>
+                    <fieldset>
+                        <legend>Scan frequencies</legend>
+                        <fast-radio-group id="scan-frequencies" value="vhf_uhf">
+                            <fast-radio value="vhf_uhf">VHF/UHF</fast-radio>         
+                            <fast-radio value="vhf">VHF</fast-radio>         
+                            <fast-radio value="uhf">UHF</fast-radio>                
+                        </fast-radio-group>
+                    </fieldset>
+                    <fieldset>
+                        <legend>DTV System</legend>
+                        <fast-radio-group id="dtv-system" value="dvbt2">
+                            <fast-radio value="dvbt2">DVB-T2</fast-radio>         
+                            <fast-radio value="dvbt">DVB-T</fast-radio>         
+                            <fast-radio value="atsc" disabled>ATSC</fast-radio>         
+                            <fast-radio value="isdb" disabled>ISDB</fast-radio>        
+                            <fast-radio value="dtmb" disabled>DTMB</fast-radio>            
+                        </fast-radio-group>
+                    </fieldset>
+                    <fieldset id="isdb-system-type" hidden>
+                        <legend>ISDB System Type</legend>
+                        <fast-radio-group id="isdb-type" value="japan">
+                            <fast-radio value="japan">Japan</fast-radio>         
+                            <fast-radio value="latam">LATAM</fast-radio>         
+                            <fast-radio value="philippines">Philippines</fast-radio>                                     
+                        </fast-radio-group>
+                    </fieldset>
+                </div>            
+                <div id="dvb2ip-setting" hidden>
+                    <p id="dvb2ip-msg"></p>
+                    <fast-text-field type="text" id="source">Source address</fast-text-field>
+                    <fast-button appearance="accent" id="scan">Scan</fast-button>                
+                </div>
+            </div>
+            <fast-button appearance="accent" id="cancel" style="float: left">Cancel</fast-button>                
+            <fast-button appearance="accent" id="apply" style="float: right" disabled>Apply</fast-button>                
+
+            <fast-dialog style="--dialog-width: 480px; --dialog-height: 120px" id="auto-scan-progress" hidden>
+                <h2>Scanning for channels</h2>
+                <p id="status"></p>
+                <fast-progress min="0" max="0" value="0" id="scan-progress"></fast-progress>
+            </fast-dialog>
+
+            <fast-dialog id="dvb-results" hidden>
+                <div id="multiplexes" style="width:640px; height:440px;" hidden>
+                    <h2>Available multiplexes</h2>
+                    <label id="freq-text">Select the multiplex you'll be using for:</label>
+                    <br />
+                    <fast-select aria-labelledby="freq-text" id="frequency">
+                        <!-- <fast-option value="value">12345</fast-option> -->
+                    </fast-select>
+                    <br />
+                </div>
+                <div id="channels" style="width:720px; height:440px;" hidden>
+                    <h2>Select the channels</h2>
+                    <div id="channels-list" style="width:720px; height:300px; overflow-y: scroll;">
+                        <fieldset>
+                            <legend>Select the channels you'll be streaming from:</legend>
+                            <div id="channels-listbox"></div>
+                            <!--
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            <fast-checkbox id="s1" checked>Stream</fast-checkbox><br>
+                            -->
+                        </fieldset>
+                    </div><br />
+                    
+                    <center>
+                        <fast-text-field id="ffmpeg-params" size="72" type="text" placeholder="Additional FFmpeg parameters"></fast-text-field>
+                    </center>
+                    <br />
+                </div>
+                <fast-button appearance="accent" id="cancel" style="float: left" hidden>Cancel</fast-button>                
+                <fast-button appearance="accent" id="back" style="float: left">Back</fast-button>                
+                <fast-button appearance="accent" id="next" style="float: right" hidden>Next</fast-button>                
+                <fast-button appearance="accent" id="apply" style="float: right">Apply</fast-button>                
+            </fast-dialog>
+
+            <fast-dialog id="dvb2ip-results" hidden>
+                <div id="dvb2ip-channels" style="width:720px; height:440px;">
+                    <h2>Select a channel</h2>
+                    <div id="channels-list" style="width:720px; height:240px;">
+                        <fieldset>
+                            <legend>Select the channel you'll be streaming from:</legend>
+                            <fast-select id="channel">
+                                <!--
+                                <fast-option value="value">12345</fast-option>
+                                <fast-option value="value">12345</fast-option>
+                                -->
+                            </fast-select>
+                        </fieldset>
+                    </div><br />
+                    <center>
+                        <fast-text-field id="ffmpeg-params" size="72" type="text" placeholder="Additional FFmpeg parameters"></fast-text-field>
+                    </center>
+                    <br />
+                </div>
+                <fast-button appearance="accent" id="cancel" style="float: left">Cancel</fast-button>                
+                <fast-button appearance="accent" id="apply" style="float: right">Apply</fast-button>                
+            </fast-dialog>
+
+            <fast-dialog id="manual-scan-menu" hidden>
+                <div id="manual-scan-box" style="width:640px; height:440px;">
+                    <h2>Manual Scan</h2>
+                    Channel: 
+                    <fast-select id="channel">
+                        <!--
+                        <fast-option value="value">12345</fast-option>
+                        <fast-option value="value">12345</fast-option>
+                        -->
+                    </fast-select><br/><br/>
+                    Frequency (Mhz):
+                    <fast-number-field min="48.0" max="870.0" maxLength="8" value="177.5" id="frequency"></fast-number-field><br/><br/>
+                    Bandwidth
+                    <fast-select id="bandwidth" value="8">
+                        <!--
+                        <fast-option value="value">12345</fast-option>
+                        <fast-option value="value">12345</fast-option>
+                        -->
+                        <fast-option value="6">6M</fast-option>
+                        <fast-option value="7">7M</fast-option>
+                        <fast-option value="8">8M</fast-option>
+                    </fast-select>
+                </div>
+                <fast-button appearance="accent" id="back" style="float: left">Back</fast-button>                
+                <fast-button appearance="accent" id="start" style="float: right">Start</fast-button>                
+            </fast-dialog>
         </fast-dialog>
-        <script>
-        
+        <script>.0
+            $(() => {                
+                /* Those frequencies only applies to DVB-T standard */
+
+                const VHF_START_NUM = 5
+                const UHF_START_NUM = 21
+
+                const VHF_FREQUENCIES = [
+                    177.5, // 5
+                    184.5, // 6
+                    191.5, // 7
+                    198.5, // 8
+                    205.5, // 9
+                    212.2, // 10
+                    219.5, // 11
+                    226.5, // 12
+                    // Those were Nexmedia channels
+                    /*
+                    290.5, // S01
+                    313.5, // S02
+                    320.5 // S03
+                    */
+                ]
+
+                const UHF_FREQUENCIES = [
+                    474, // 21
+                    482, // 22
+                    490, // 23
+                    498, // 24
+                    506, // 25
+                    514, // 26
+                    522, // 27
+                    530, // 28
+                    538, // 29
+                    546, // 30
+                    554, // 31
+                    562, // 32
+                    570, // 33
+                    578, // 34
+                    586, // 35
+                    594, // 36
+                    602, // 37
+                    610, // 38
+                    618, // 39
+                    626, // 40
+                    634, // 41
+                    642, // 42
+                    650, // 43
+                    658, // 44
+                    666, // 45
+                    674, // 46
+                    682, // 47
+                    690, // 48
+                    698, // 49
+                    706, // 50
+                    714, // 51
+                    722, // 52
+                    730, // 53
+                    738, // 54
+                    746, // 55
+                    754, // 56
+                    762, // 57
+                    770, // 58
+                    778, // 59
+                    786, // 60
+                    794, // 61
+                    802, // 62
+                    810, // 63
+                    818, // 64
+                    826, // 65
+                    834, // 66
+                    842, // 67
+                    850, // 68
+                    858 // 69
+                ]
+            
+                /* ATSC frequencies */
+
+                const VHF_START_NUM_ATSC = 1
+                const UHF_START_NUM_ATSC = 14
+
+                const VHF_FREQUENCIES_ATSC = [
+                    47, // 1
+                    57, // 2
+                    63, // 3
+                    69, // 4
+                    79, // 5
+                    85, // 6
+                    177, // 7
+                    183, // 8
+                    189, // 9
+                    195, // 10
+                    201, // 11
+                    207, // 12
+                    213 // 13
+                ]
+
+                const UHF_FREQUENCIES_ATSC = [
+                    473, // 14
+                    479, // 15
+                    485, // 16 
+                    491, // 17
+                    497, // 18
+                    503, // 19
+                    509, // 20
+                    515, // 21
+                    521, // 22
+                    527, // 23
+                    533, // 24
+                    539, // 25
+                    545, // 26
+                    551, // 27
+                    557, // 28
+                    563, // 29
+                    569, // 30
+                    575, // 31
+                    581, // 32
+                    587, // 33
+                    593, // 34
+                    599, // 35
+                    605, // 36
+                    611, // 37
+                    617, // 38
+                    623, // 39
+                    629, // 40
+                    635, // 41
+                    641, // 42
+                    647, // 43
+                    653, // 44
+                    659, // 45
+                    665, // 46
+                    671, // 47
+                    677, // 48
+                    683, // 49
+                    689, // 50
+                    695, // 51
+                    701, // 52
+                    707, // 53
+                    713, // 54
+                    719, // 55
+                    725, // 56
+                    731, // 57
+                    737, // 58
+                    743, // 59
+                    749, // 60
+                    755, // 61
+                    761, // 62
+                    767, // 63
+                    773, // 64
+                    779, // 65
+                    785, // 66
+                    791, // 67
+                    797, // 68
+                    803 // 69
+                ]
+
+                /* ISDB-T Frequencies */
+
+                const VHF_START_NUM_ISDB = 1
+                const VHF_START_NUM_ISDB_LATAM = 7
+                const UHF_START_NUM_ISDB = 13
+                const UHF_START_NUM_ISDB_LATAM = 14
+
+                const VHF_FREQUENCIES_ISDB = [
+                    93, // 1
+                    99, // 2
+                    105, // 3
+                    173, // 4
+                    179, // 5
+                    185, // 6
+                    191, // 7
+                    197, // 8
+                    203, // 9
+                    209, // 10
+                    215, // 11
+                    221 // 12
+                ]
+
+                const VHF_FREQUENCIES_ISDB_LATAM = [
+                    177.142857, // 7
+                    183.142857, // 8
+                    189.142857, // 9
+                    195.142857, // 10
+                    201.142857, // 11              
+                    207.142857, // 12               
+                    213.142857 // 13
+                ]
+
+                const UHF_FREQUENCIES_ISDB = [
+                    473.142857, // 14
+                    479.142857, // 15
+                    485.142857, // 16
+                    491.142857, // 17
+                    497.142857, // 18
+                    503.142857, // 19
+                    509.142857, // 20
+                    515.142857, // 21
+                    521.142857, // 22
+                    527.142857, // 23
+                    533.142857, // 24
+                    539.142857, // 25
+                    545.142857, // 26
+                    551.142857, // 27
+                    557.142857, // 28
+                    563.142857, // 29
+                    569.142857, // 30
+                    575.142857, // 31
+                    581.142857, // 32
+                    587.142857, // 33
+                    593.142857, // 34
+                    599.142857, // 35
+                    605.142857, // 36
+                    611.142857, // 37
+                    617.142857, // 38
+                    623.142857, // 39
+                    629.142857, // 40
+                    635.142857, // 41
+                    641.142857, // 42
+                    647.142857, // 43
+                    653.142857, // 44
+                    659.142857, // 45
+                    665.142857, // 46
+                    671.142857, // 47
+                    677.142857, // 48
+                    683.142857, // 49
+                    689.142857, // 50
+                    695.142857, // 51
+                    701.142857, // 52
+                    707.142857, // 53
+                    713.142857, // 54
+                    719.142857, // 55
+                    725.142857, // 56
+                    731.142857, // 57
+                    737.142857, // 58
+                    743.142857, // 59
+                    749.142857, // 60
+                    755.142857, // 61
+                    761.142857, // 62
+                    767.142857, // 63
+                    773.142857, // 64
+                    779.142857, // 65
+                    785.142857, // 66
+                    791.142857, // 67
+                    797.142857, // 68
+                    803.142857 // 69
+                ]
+
+                for (let i = 0; i<VHF_FREQUENCIES.length; i++) {
+                    $("#manual-scan-box > #channel").append(`<fast-option value="vhf_${i}">CH${(i+VHF_START_NUM).toString().padStart(2,"0")}</fast-option>`)   
+                }
+
+                for (let i = 0; i<UHF_FREQUENCIES.length; i++) {
+                    $("#manual-scan-box > #channel").append(`<fast-option value="uhf_${i}">CH${(i+UHF_START_NUM).toString().padStart(2,"0")}</fast-option>`)   
+                }
+
+                $.get("/api/tuners").done((d) => {
+                    for (let i = 0; i<d.tuners.length; i++) {
+                        $("#dvb-setting > #adapter").append(`<fast-option value="${i}">${d.tuners[i]}</fast-option>`)
+                    }
+                })
+
+                $("#manual-scan-box > #channel").val("vhf_0")
+
+                $("#manual-scan-box > #channel").change(() => {
+                    const val = $("#manual-scan-box > #channel").val()
+                    const channel_id = parseInt(val.split("_")[1])
+                    if (val.startsWith("vhf_")) {
+                        $("#manual-scan-box > #frequency").val(VHF_FREQUENCIES[channel_id])
+                    } else {
+                        $("#manual-scan-box > #frequency").val(UHF_FREQUENCIES[channel_id])
+                    }
+                })
+
+                $("#manual-scan-menu > #back").click(() => {
+                    $("#manual-scan-menu").prop("hidden", true)
+                })
+
+                $("#add-channels > #cancel").click(() => {
+                    $("#add-channels").prop("hidden", true)
+                })
+
+                $("#toolbar > #add").click(() => {                        
+                    $("#add-channels").prop("hidden", false)
+                })
+
+                var dvb_menu_page = 0;
+
+                $('#dvb-results > #cancel').click(() => {
+                    $('#dvb-results').prop("hidden", true)
+                })
+
+                var autoScanSaved = {}
+                var DTV_SYSTEM = "DVB-T2"
+
+                const showMultiplexersList = () => {                    
+                    $('#dvb-results > #multiplexes > #frequency').empty()
+                    $('#dvb-results > #multiplexes > #frequency').val(0)
+                    
+                    if (Object.keys(autoScanSaved).length <= 0) {
+                        $("#dvb-setting > #recent-scan").prop("disabled", true)                        
+                        $('#dvb-setting > #dvb-msg').text("No channels found!")
+                        return
+                    }
+                    $("#dvb-setting > #recent-scan").prop("disabled", false)
+                    $('#dvb-results').prop("hidden", false)
+                    $('#dvb-results > #cancel').prop("hidden", false)
+                    $('#dvb-results > #back').prop("hidden", true)
+                    $('#dvb-results > #next').prop("hidden", false)
+                    $('#dvb-results > #apply').prop("hidden", true)
+
+                    dvb_menu_page = 0;
+                    
+                    $('#dvb-results > #multiplexes').prop("hidden", false)  
+                    $('#dvb-results > #channels').prop("hidden", true)
+
+                    for (let i in autoScanSaved) {
+                        $('#dvb-results > #multiplexes > #frequency').append(`<fast-option value="${i}">${i}mhz`)
+                    }
+                }
+                
+                var listBoxCH = []
+
+                const setupPage2DVB = () => {
+                    const freq = $('#dvb-results > #multiplexes > #frequency').val()
+                    $('#channels-listbox').empty()
+                    listBoxCH = []
+                    for (let i = 0; i<autoScanSaved[freq].length; i++) {
+                        const chn = autoScanSaved[freq][i]
+                        if (chn.streams.length > 0) {
+                            $('#channels-listbox').append(`<fast-checkbox id="ch${i}">${chn.name}</fast-checkbox>`)
+                            $('#channels-listbox').append(`<fast-select id="ch${i}_vs" style="width: 225px; min-width: 0px;"></fast-select>&nbsp;`)
+                            $('#channels-listbox').append(`<fast-select id="ch${i}_as" style="width: 225px; min-width: 0px;"></fast-select>`)
+                        }
+
+                        for (let j = 0; j<chn.streams.length; j++) {
+                            switch (chn.streams[j].type) {
+                                case "video":
+                                    $(`#channels-listbox > #ch${i}_vs`).append(`<fast-option value="${j}">${chn.streams[j].height}${chn.streams[j].interlace === "progressive" ? 'p' : 'i'} / ${chn.streams[j].interlace === "progressive" ? chn.streams[j].fps : chn.streams[j].fps*2}fps / ${chn.streams[j].codec} @ ${chn.streams[j].id}</fast-option>`)
+                                    break
+                                case "audio":
+                                    $(`#channels-listbox > #ch${i}_as`).append(`<fast-option value="${j}">${chn.streams[j].sample_rate} / ${chn.streams[j].channels} / ${Math.round(chn.streams[j].bitrate)}kbps / ${chn.streams[j].codec} @ ${chn.streams[j].id}</fast-option>`)
+                                    break
+                            }
+                        }
+                            
+                            
+
+                        $('#channels-listbox').append('<br>')
+                    }
+                }
+
+                const updateMenuPageDVB = () => {
+                    $('#dvb-results > #multiplexes').prop("hidden", true)  
+                    $('#dvb-results > #channels').prop("hidden", true)
+
+                    $('#dvb-results > #cancel').prop("hidden", true)
+                    $('#dvb-results > #back').prop("hidden", true)
+                    $('#dvb-results > #next').prop("hidden", true)
+                    $('#dvb-results > #apply').prop("hidden", true)
+
+                    switch (dvb_menu_page) {
+                        case 0:
+                            $('#dvb-results > #multiplexes').prop("hidden", false)  
+                            $('#dvb-results > #cancel').prop("hidden", false)
+                            $('#dvb-results > #next').prop("hidden", false)
+                            break
+                        case 1:
+                            $('#dvb-results > #channels').prop("hidden", false)
+                            $('#dvb-results > #back').prop("hidden", false)
+                            $('#dvb-results > #apply').prop("hidden", false)
+
+                            setupPage2DVB()
+                            break
+                    }
+                }
+                $('#dvb-results > #next').click(() => {
+                    dvb_menu_page++
+                    updateMenuPageDVB()
+                })
+                $('#dvb-results > #back').click(() => {
+                    dvb_menu_page--
+                    updateMenuPageDVB()
+                })
+
+                $('#dvb-results > #apply').click(() => {
+                    $('#dvb-results').prop("hidden", true) 
+                })
+
+                const autoScan = (adapter, pending_list, progress=0, bandwidth=8) => {
+                    const next_scan = pending_list.slice(1)
+                    $('#dvb-setting > #dvb-msg').text("")
+                    $('#auto-scan-progress > #scan-progress').val(progress)
+                    $('#auto-scan-progress > #status').text(`${pending_list[0]}mhz / ${bandwidth}M / ${Object.keys(autoScanSaved).length} channels found`)
+                    $.ajax("/api/get_channels_by_frequency", {
+                        data: JSON.stringify({
+                            tuner: adapter,
+                            frequency: pending_list[0],
+                            bandwidth,
+                            system_type: DTV_SYSTEM
+                            //isdb_type: DTV_SYSTEM === "ISDB-T" ? $("#isdb-type") : undefined
+                        }),
+                        contentType: "application/JSON",
+                        type: "POST"
+                    }).done((d) => {
+                        if (d.channels.length > 0) {
+                            autoScanSaved[pending_list[0]] = d.channels
+                        }
+
+                        if (next_scan.length > 0) {
+                            autoScan(adapter, next_scan, ++progress, bandwidth)
+                        } else {
+                            $('#auto-scan-progress').prop("hidden", true)
+                            showMultiplexersList()
+                        }
+                    })
+                }
+
+                $("#dvb-setting > #manual-scan").click(() => {
+                    $("#manual-scan-menu").prop("hidden", false)
+                })
+
+                $("#dvb-setting > #recent-scan").click(showMultiplexersList)
+
+                $("#manual-scan-menu > #start").click(() => {
+                    $("#manual-scan-menu").prop("hidden", true)
+                    $('#auto-scan-progress').prop("hidden", false)
+                    $('#auto-scan-progress > #scan-progress').attr("max", 1)
+                    autoScanSaved = {}
+
+                    autoScan($("#dvb-setting > #adapter").val(), [$("#manual-scan-box > #frequency").val()], 0, parseInt($("#manual-scan-box > #bandwidth").val()))
+                })
+
+                $("#dvb-setting > #auto-scan").click(() => {
+                    var FREQUENCIES = VHF_FREQUENCIES.concat(UHF_FREQUENCIES)
+                    switch ($("#scan-frequencies").val()) {
+                        case "vhf":
+                            FREQUENCIES = VHF_FREQUENCIES
+                            break
+                        case "uhf":
+                            FREQUENCIES = UHF_FREQUENCIES
+                            break
+                    }
+                    $('#auto-scan-progress').prop("hidden", false)
+                    $('#auto-scan-progress > #scan-progress').attr("max", FREQUENCIES.length-1)
+                    autoScanSaved = {}
+
+                    autoScan($("#dvb-setting > #adapter").val(), FREQUENCIES)
+                })
+
+                $("#dtv-system").change(() => {
+                    $("#dvb-setting > #recent-scan").prop("disabled", true)  
+                    $("#isdb-type").prop("hidden", true)
+                    switch ($("#dtv-system").val()) {
+                        case "dvbt2":
+                            DTV_SYSTEM = "DVB-T2"
+                            break
+                        case "dvbt":
+                            DTV_SYSTEM = "DVB-T"
+                            break
+                        case "atsc":
+                            DTV_SYSTEM = "ATSC"
+                            break
+                        case "isdb":
+                            $("#isdb-type").prop("hidden", false)
+                            DTV_SYSTEM = "ISDB"                            
+                            break
+                    }                    
+                })
+
+                $("#add-channels-options > #dtv-type").change(() => {
+                    $("#dvb-setting").prop("hidden", true)
+                    $("#dvb2ip-setting").prop("hidden", true)                    
+                    switch ($("#add-channels-options > #dtv-type").val()) {
+                        case "dtv":
+                            $("#dvb-setting").prop("hidden", false)                            
+                            $("#add-channels > #apply").prop("disabled", true)
+                            break
+                        case "dvb2ip":
+                            $("#dvb2ip-setting").prop("hidden", false)
+                            $("#add-channels > #apply").prop("disabled", true)
+                            break
+                        case "rtmp":
+                            $("#add-channels > #apply").prop("disabled", false)
+                            break
+                    }
+                })
+            })
         </script>
     </body>
 </html>
