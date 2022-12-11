@@ -49,7 +49,7 @@ const config_defaults_nvenc = {
         "unreferenced_segments": 10
     },
     "multiple_renditions": false,
-    "dtv_use_tsduck": true,
+    "dtv_use_fork": true,
     "renditions": [
         {
             "hwaccel": "nvenc",
@@ -103,7 +103,7 @@ const config_defaults = {
         "unreferenced_segments": 10
     },
     "multiple_renditions": false,
-    "dtv_use_tsduck": true,
+    "dtv_use_fork": true,
     "renditions": [
         {
             "hwaccel": "nvenc",
