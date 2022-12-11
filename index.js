@@ -488,27 +488,33 @@ app.get("/", (req,res)=>{res.sendFile(path.join(__dirname,"website/index.html"))
 app.get("/index.html", (req,res)=>{res.sendFile(path.join(__dirname,"website/index.html"))})
 app.use("/static/", express.static(path.join(__dirname, "/website_res/")))
 
-app.get("/play/:stream/:file", cors(), async (req, res) => {
-    if (req.params.file.endsWith(".ts")) {
+app.get("/play/:stream/:file/:file2?", cors(), async (req, res) => {
+    const file_path = req.params.file+"/"+req.params.file2
+
+    if (file_path.endsWith(".ts")) {
         const have_stream = await streams.query().where("stream_id", "=", req.params.stream)
-        if (have_stream.length <= 0) return res.status(404).json({error: "This stream is non-existent."})
+        if (have_stream.length <= 0) {
+            return res.status(404).json({error: "This stream is non-existent."})
+        }
 
         const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${req.params.stream}/`
         if (!fs_sync.existsSync(`${streams_path}/`)) return res.status(404).json({error: "This stream is not available."})
-        if (!fs_sync.existsSync(`${streams_path}/${req.params.file}`)) return res.status(404).json({error: "Not found"})
+        if (!fs_sync.existsSync(`${streams_path}/${file_path}`)) return res.status(404).json({error: "Not found"})
 
-        return res.status(200).sendFile(`${streams_path}/${req.params.file}`)                          
-    } else if (req.params.file.endsWith(".m3u8")) {
+        return res.status(200).sendFile(`${streams_path}/${file_path}`)                          
+    } else if (file_path.endsWith(".m3u8")) {
         const have_stream = await streams.query().where("stream_id", "=", req.params.stream)
-        if (have_stream.length <= 0) return res.status(404).json({error: "This stream is non-existent."})
+        if (have_stream.length <= 0) {
+            return res.status(404).json({error: "This stream is non-existent."})
+        }
 
         const streams_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${req.params.stream}/`
         if (!fs_sync.existsSync(`${streams_path}/`)) return res.status(404).json({error: "This stream is not available."})
 
         try {
-            const hls_ts_file = await fs.readFile(`${streams_path}/${req.params.file}`, {encoding: "utf-8"})
+            const hls_ts_file = await fs.readFile(`${streams_path}/${file_path}`, {encoding: "utf-8"})
 
-            return res.status(200).header("Content-Type", "application/x-mpegurl").end(hls_ts_file.replace(/\r/g, "").replace(/#EXT-X-MEDIA-SEQUENCE/g, `#EXT-X-PLAY-ON:DTVAnywhere\n#EXT-X-STREAM-NAME:${have_stream[0].name}\n#EXT-X-STREAM-SOURCE:${have_stream[0].type}\nEXT-X-STREAM-HOSTNAME:${os.hostname()}\n#EXT-X-MEDIA-SEQUENCE`))
+            return res.status(200).header("Content-Type", "application/x-mpegurl").end(hls_ts_file.replace(/\r/g, "").replace(/#EXT-X-MEDIA-SEQUENCE/g, `#EXT-X-PLAY-ON:DTVAnywhere\n#EXT-X-STREAM-NAME:${have_stream[0].name}\n#EXT-X-STREAM-SOURCE:${have_stream[0].type}\n#EXT-X-STREAM-HOSTNAME:${os.hostname()}\n#EXT-X-MEDIA-SEQUENCE`))
         } catch (e) {            
             if (e.code == "ENOENT") {
                 res.status(404).json({error: "Not found"})
@@ -578,6 +584,16 @@ app.post("/api/active", async (req, res) => {
     return res.status(200).json({status: "ok"})
 });
 
+app.post("/api/delete", async (req, res) => {    
+    if (!req.body.id) return res.status(400).json({error: "A channel id must be specified."})
+    const stream = await streams.query().where("stream_id", '=', req.body.id)
+    if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})    
+    if (StreamDTVJobs[req.body.id]) StreamDTVJobs[req.body.id].send({quit: true, stream_id: req.body.id})
+    
+    await streams.query().delete().where("stream_id", '=', req.body.id)
+    return res.status(200).json({status: "ok"})
+});
+
 app.post("/api/add", async (req, res) => {
     if (!req.body.type) return res.status(400).json({error: "You must specify the stream type"})    
     var random_id = crypto.randomBytes(32).toString("hex")
@@ -591,8 +607,7 @@ app.post("/api/add", async (req, res) => {
                 type: req.body.type,
                 active: true,
                 params: {
-                    rtmp_key: crypto.randomBytes(32).toString("hex"),
-                    audio_filters: req.body.audio_filters
+                    rtmp_key: crypto.randomBytes(32).toString("hex")
                 }
             })
             return res.status(200).json({status: "ok", id: random_id})            
@@ -605,13 +620,12 @@ app.post("/api/add", async (req, res) => {
                 params: {
                     src: req.body.source_address,
                     src_id: req.body.source_id,
-                    audio_filters: req.body.audio_filters
+                    additional_params: req.body.additional_params
                 }
             })
-            return res.status(200).json({status: "ok", id: random_id})            
-            break
+            return res.status(200).json({status: "ok", id: random_id})                        
         case "dtv":
-            if (!req.body.name || !req.body.tuner || !req.body.frequency || !req.body.channels) return res.status(400).json({error: "A stream name, tuner id, frequency, and channels must be specified"}) 
+            if (!req.body.name || req.body.tuner === undefined || !req.body.frequency || !req.body.channels) return res.status(400).json({error: "A stream name, tuner id, frequency, and channels must be specified"}) 
             await streams.query().insert({
                 stream_id: random_id,
                 name: req.body.name,
@@ -620,10 +634,97 @@ app.post("/api/add", async (req, res) => {
                     tuner: req.body.tuner,
                     frequency: req.body.frequency,
                     channels: req.body.channels,
-                    audio_filters: req.body.audio_filters
+                    additional_params: req.body.additional_params
                 }
             })
-            break
+            return res.status(200).json({status: "ok", id: random_id})                                    
+        default:
+            return res.status(400).json({error: "Invalid channel input type"})
+    }
+});
+
+/*
+streams.query().insert({
+    stream_id: "updatetest",
+    name: "a",
+    type: "rtmp",
+    active: true,
+    params: {
+        rtmp_key: "12345"
+    }
+}).then(() => {
+    streams.query().where("stream_id", "=", "updatetest").then((d) => {
+        console.log(d[0])
+        streams.query().patch({
+            stream_id: "updatetest2",
+            name: "a2",
+            type: "rtmp",
+            active: true,
+            params: {
+                rtmp_key: "12345"
+            }
+        }).where("stream_id", "=", "updatetest").then(() => {
+            streams.query().where("stream_id", "=", "updatetest2").then((d) => {
+                console.log(d[0])                
+            })
+        })
+    })
+})
+*/
+
+app.post("/api/edit", async (req, res) => {
+    if (!req.body.type || !req.body.id) return res.status(400).json({error: "A channel id and stream type must be specified"})    
+    const stream = await streams.query().where("stream_id", '=', req.body.id)
+    if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
+
+    if (StreamDTVJobs[req.body.id]) StreamDTVJobs[req.body.id].send({quit: true, stream_id: req.body.id})
+
+    switch (req.body.type) {
+        case "rtmp":
+            if (!req.body.name) return res.status(400).json({error: "A stream name must be specified"}) 
+            await streams.query().patch({                
+                name: req.body.name,
+                type: req.body.type            
+            }).where("stream_id", '=', req.body.id)
+            return res.status(200).json({status: "ok"})            
+        case "dvb2ip":
+            if (!req.body.name || !req.body.source_id || !req.body.source_address) return res.status(400).json({error: "A stream name, channel source id, and source address must be specified"}) 
+            await streams.query().patch({
+                name: req.body.name,
+                type: req.body.type,
+                params: JSON.stringify({
+                    src: req.body.source_address,
+                    src_id: req.body.source_id,
+                    additional_params: req.body.additional_params
+                })
+            }).where("stream_id", '=', req.body.id)
+
+            if (stream[0].active) addDTVJobs(req.body.id, req.body.type, {
+                src: req.body.source_address,
+                src_id: req.body.source_id,
+                additional_params: req.body.additional_params
+            })
+            return res.status(200).json({status: "ok"})                        
+        case "dtv":
+            if (!req.body.name || req.body.tuner === undefined || !req.body.frequency || !req.body.channels) return res.status(400).json({error: "A stream name, tuner id, frequency, and channels must be specified"}) 
+            await streams.query().patch({                
+                name: req.body.name,
+                type: req.body.type,
+                params: JSON.stringify({
+                    tuner: req.body.tuner,
+                    frequency: req.body.frequency,
+                    channels: req.body.channels,
+                    additional_params: req.body.additional_params
+                })
+            }).where("stream_id", '=', req.body.id)
+
+            if (stream[0].active) addDTVJobs(req.body.id, req.body.type, {
+                tuner: req.body.tuner,
+                frequency: req.body.frequency,
+                channels: req.body.channels,
+                additional_params: req.body.additional_params
+            })
+            return res.status(200).json({status: "ok"})                                    
         default:
             return res.status(400).json({error: "Invalid channel input type"})
     }
@@ -645,7 +746,7 @@ app.post("/api/get_channels_by_frequency", async (req, res) => {
         }
 
         if (!found) throw new Error("no channels were found at this frequency")
-        const probe_streams = JSON.parse((await check_output(config.ffmpeg.replace(/mpeg/g, "probe"), "-loglevel quiet -print_format json -show_error -show_format -show_programs -".split(" "), 0, dtv_chunk)).toString("utf-8")).programs
+        const probe_streams = JSON.parse((await check_output(config.ffmpeg.replace(/mpeg/g, "probe"), "-loglevel quiet -print_format json -show_error -probesize 32M -show_format -show_programs -".split(" "), 0, dtv_chunk)).toString("utf-8")).programs
 
         var channels_temp = []
         for (let i = 0; i<probe_streams.length; i++) {
@@ -678,7 +779,7 @@ app.post("/api/get_channels_by_frequency", async (req, res) => {
                 }
             }
 
-            channels_temp.push({name:program.tags ? program.tags.service_name : `CH${program.program_id}_${program.pmt_pid}_${program.pcr_pid}`, provider:program.tags ? program.tags.service_provider : "",channel_id:program.program_id,channel_pid:[program.pmt_pid,program.pcr_pid],is_hd, streams:program_streams})
+            channels_temp.push({name:program.tags ? program.tags.service_name.replace(/(HD$)/g, "") : `CH${program.program_id}_${program.pmt_pid}_${program.pcr_pid}`, provider:program.tags ? program.tags.service_provider : "",channel_id:program.program_id,channel_pid:[program.pmt_pid,program.pcr_pid],is_hd, streams:program_streams})
         }
         return res.status(200).json({channels: channels_temp})
     } catch (e) {
@@ -688,9 +789,15 @@ app.post("/api/get_channels_by_frequency", async (req, res) => {
 
 app.get("/api/tuners", async (req, res) => {
   const tuners = (await check_output("tslsdvb")).toString("ascii").replace(/\r/g, "").split("\n")
+  var tuner = [];
+  
+  for (let i = 0; i<tuners.length; i++) {
+    if (tuners[i]) tuner.push(tuners[i])
+  }
+
   return res.status(200).json({
     status: "ok",
-    tuners: tuners
+    tuners: tuner
   })
 })
 
@@ -704,6 +811,18 @@ app.get("/manifest.json", cors(), async (req, res) => {
         country: geo_params.country,
         region_id: geo_params.region_id,
         dtv_area: geo_params.dtv_area
+    })
+})
+
+app.post("/api/get_channel_info", async (req, res) => {
+    if (!req.body.id) return res.status(400).json({error: "A channel id must be specified."})
+    const stream = await streams.query().where("stream_id", '=', req.body.id)
+    if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
+
+    return res.status(200).json({
+        name: stream[0].name,
+        type: stream[0].type,
+        params: JSON.parse(stream[0].params)
     })
 })
 

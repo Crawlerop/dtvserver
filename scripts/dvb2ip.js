@@ -32,7 +32,7 @@ setInterval(QuitCheck, 2000);
 RunSignal.once("run", (params) => {    
     const src_url = `http://${params.src}:8999/stream=${params.src_id}.ts`
 
-    check_output(params.ffmpeg.replace(/mpeg/g, "probe"), [..."-probesize 2M -loglevel quiet -print_format json -show_error -show_format -show_streams".split(" "), src_url]).then((o) => {
+    check_output(params.ffmpeg.replace(/mpeg/g, "probe"), [..."-probesize 8M -loglevel quiet -print_format json -show_error -show_format -show_streams".split(" "), src_url]).then((o) => {
         const probe_streams = JSON.parse(o).streams
         if (probe_streams.length <= 0) {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {

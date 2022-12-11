@@ -4,6 +4,8 @@ const check_output = require("../utils/check_output")
 const events = require("events")
 const ffmp_args = require("../utils/genFFmpegArgs")
 const fs = require("fs")
+const fs_p = require("fs/promises")
+const path = require("path")
 
 //var passed_params = {}
 //var is_ready = false
@@ -50,6 +52,11 @@ ExecSignal.once("exec", (args, folders) => {
                     console.trace(e)
                 }
             }
+            try {
+                fs.rmSync(passed_params.output_path, {force: true, recursive: true})
+            } catch (e) {
+                console.trace(e)
+            }
             console.log("dtv shut down gracefully")
             process.exit(0)
         }
@@ -67,6 +74,8 @@ RunSignal.once("run", async (params) => {
         const channel = params.channels[i]
         const current_rendition = channel.is_hd ? (params.multiple_renditions ? params.renditions : [params.renditions[0]]) : [params.renditions[1]]
         const out_folder = `${params.output_path}/${channel.id}/`
+        await fs_p.mkdir(out_folder, {recursive: true})
+        
         folders.push(out_folder)
 
         var streams = [{type: "video", ...channel.video}]
@@ -78,6 +87,9 @@ RunSignal.once("run", async (params) => {
     }
     tsp_args.push("-O")
     tsp_args.push("drop")
+
+    // console.log(tsp_args)
+    // console.log(folders)
 
     ExecSignal.emit("exec", tsp_args, folders)
    } catch (e) {
@@ -96,6 +108,7 @@ process.on('message', (params) => {
         is_quit = true
         process.send({retry: false, stream_id: params.stream_id})
     } else {
+        //console.log(params)
         RunSignal.emit("run", params)
     }
 });
