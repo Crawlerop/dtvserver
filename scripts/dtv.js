@@ -83,7 +83,7 @@ RunSignal.once("run", async (params) => {
         const tsp_fork_prm = ["-re", "-y", "-loglevel", "error"].concat(await ffmp_args.genSingle("-", current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, true))
         tsp_args.push("-P")
         tsp_args.push("fork")        
-        tsp_args.push(`tsp | ${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
+        tsp_args.push(`tsresync -c - | tsp | ${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
     }
     tsp_args.push("-O")
     tsp_args.push("drop")
