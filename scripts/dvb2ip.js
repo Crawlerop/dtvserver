@@ -76,7 +76,7 @@ RunSignal.once("run", (params) => {
         const current_rendition = is_hd ? (params.multiple_renditions ? params.renditions : [params.renditions[0]]) : [params.renditions[1]]
         //console.log(current_rendition)
 
-        ffmp_args.genSingle("-", current_rendition, program_streams, params.output_path, params.hls_settings).then((e) => {
+        ffmp_args.genSingle("-", current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, params.additional_params).then((e) => {
             // "-loglevel", "quiet", 
             const args = ["-loglevel", "error", "-re", "-y"].concat(e)
             
