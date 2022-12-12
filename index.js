@@ -451,7 +451,8 @@ const addDTVJobs = (stream_id, type, params) => {
                 output_path: out_path, 
                 renditions: config.renditions, 
                 multiple_renditions: config.multiple_renditions, 
-                hls_settings: config.hls_settings
+                hls_settings: config.hls_settings,
+                additional_params: params.additional_params
             })
         } else if (type == "dtv") {
             cur_proc.send({
@@ -465,7 +466,8 @@ const addDTVJobs = (stream_id, type, params) => {
                 renditions: config.renditions, 
                 multiple_renditions: config.multiple_renditions, 
                 hls_settings: config.hls_settings,
-                dtv_use_fork: config.dtv_use_fork
+                dtv_use_fork: config.dtv_use_fork,
+                additional_params: params.additional_params
             })
         }
         cur_proc.on("message", (d) => {

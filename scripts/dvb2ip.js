@@ -37,14 +37,15 @@ RunSignal.once("run", (params) => {
         if (probe_streams.length <= 0) {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                 src: params.src,
-                src_id: params.src_id
+                src_id: params.src_id,
+                additional_params: params.additional_params
             }})
             process.exit(1)
         }
         var is_hd = false;
         var program_streams = []
         
-        for (var j = 0; j<probe_streams.length; j++) {
+        for (let j = 0; j<probe_streams.length; j++) {
             var stream = probe_streams[j];
             if (stream.codec_type == "video") {
                 if (stream.height >= 720) is_hd = true
@@ -101,7 +102,8 @@ RunSignal.once("run", (params) => {
                 if (!is_quit) {
                     process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                         src: params.src,
-                        src_id: params.src_id
+                        src_id: params.src_id,
+                        additional_params: params.additional_params
                     }})
                     process.exit(1)
                 } else {
@@ -159,14 +161,16 @@ RunSignal.once("run", (params) => {
             console.trace(e)
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                 src: params.src,
-                src_id: params.src_id
+                src_id: params.src_id,
+                additional_params: params.additional_params
             }})
             process.exit(1)
         })
     }).catch((e) => {
         process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
             src: params.src,
-            src_id: params.src_id
+            src_id: params.src_id,
+            additional_params: params.additional_params
         }})
         process.exit(1)
     });    

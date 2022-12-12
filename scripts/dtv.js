@@ -42,10 +42,11 @@ ExecSignal.once("exec", (args, folders) => {
                 tuner: passed_params.tuner,
                 frequency: passed_params.frequency,
                 channels: passed_params.channels,
+                additional_params: params.additional_params
             }})
             process.exit(1)
         } else {
-            for (var i = 0; i<folders.length; i++) {
+            for (let i = 0; i<folders.length; i++) {
                 try {
                     fs.rmSync(folders[i], {force: true, recursive: true})
                 } catch (e) {
@@ -78,8 +79,13 @@ RunSignal.once("run", async (params) => {
     passed_params = params    
     var tsp_args = `-I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     var folders = []
+    var ad_param;
 
-    for (var i = 0; i<params.channels.length; i++) {
+    if (params.additional_params) {
+        ad_param = JSON.parse(params.additional_params)
+    }
+
+    for (let i = 0; i<params.channels.length; i++) {
         const channel = params.channels[i]
         const current_rendition = channel.is_hd ? (params.multiple_renditions ? params.renditions : [params.renditions[0]]) : [params.renditions[1]]
         const out_folder = `${params.output_path}/${channel.id}/`
@@ -89,7 +95,18 @@ RunSignal.once("run", async (params) => {
 
         var streams = [{type: "video", ...channel.video}]
         if (channel.audio) streams.push({type: "audio", ...channel.audio})
-        const tsp_fork_prm = ["-re", "-y", "-loglevel", "error"].concat(await ffmp_args.genSingle("-", current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, true))
+
+        var audio_filters = ""
+        if (ad_param) {
+            for (let j = 0; j<ad_param.length; j++) {
+                const ad_parm = ad_param[j]
+                if (ad_parm.for.indexOf(channel.id) !== -1) {
+                    audio_filters = ad_param.audio_filters
+                }
+            }
+        }
+
+        const tsp_fork_prm = ["-re", "-y", "-loglevel", "error"].concat(await ffmp_args.genSingle("-", current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, audio_filters, true))
         tsp_args.push("-P")
         tsp_args.push("fork")        
         tsp_args.push(`tsresync -c - | tsp | node ${path.join(__dirname, "/cmds")}/repeat.js ${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
@@ -100,12 +117,13 @@ RunSignal.once("run", async (params) => {
     // console.log(tsp_args)
     // console.log(folders)
 
-    ExecSignal.emit("exec", tsp_args, folders)
+    // ExecSignal.emit("exec", tsp_args, folders)
    } catch (e) {
     process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
         tuner: params.tuner,
         frequency: params.frequency,
         channels: params.channels,
+        additional_params: params.additional_params
     }})
     process.exit(1)
    } 

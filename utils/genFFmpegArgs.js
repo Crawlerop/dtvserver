@@ -11,7 +11,7 @@ const _globAsync = (pattern) => {
 }
 
 module.exports = {
-    genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, escape_filters=false) => {
+    genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false) => {
         var args = [];
 
         var video = null;
@@ -183,6 +183,14 @@ module.exports = {
                 args.push(rendition.audio_bitrate)
                 args.push(`-profile:a:${i}`)
                 args.push("aac_"+rendition.audio_profile)
+                if (audio_filters) {
+                    args.push(`-filter:a:${i}`)
+                    if (escape_filters) {
+                        args.push(`"${audio_filters}"`)
+                    } else {
+                        args.push(audio_filters)
+                    }
+                }
             }
         }
 
