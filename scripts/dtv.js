@@ -42,7 +42,7 @@ ExecSignal.once("exec", (args, folders) => {
                 tuner: passed_params.tuner,
                 frequency: passed_params.frequency,
                 channels: passed_params.channels,
-                additional_params: params.additional_params
+                additional_params: passed_params.additional_params
             }})
             process.exit(1)
         } else {
@@ -100,7 +100,8 @@ RunSignal.once("run", async (params) => {
         if (ad_param) {
             for (let j = 0; j<ad_param.length; j++) {
                 const ad_parm = ad_param[j]
-                if (ad_parm.for.indexOf(channel.id) !== -1) {
+                if (ad_parm.for.indexOf(channel.video.id) !== -1 || ad_parm.for.indexOf(channel.audio.id) !== -1) {
+                    ///console.log(ad_param)
                     audio_filters = ad_param.audio_filters
                 }
             }
