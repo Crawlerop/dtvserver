@@ -5,11 +5,13 @@ const startProcess = () => {
     //process.stderr.write(args.slice(3).join(" ")+"\n")
     const app = cp.spawn(args[2], args.slice(3))
 
-    app.on("close", () => {
+    app.on("exit", () => {
         startProcess()
     })
 
+    process.stdin.pipe(app.stdin)
     app.stderr.pipe(process.stderr)
+    app.stdout.pipe(process.stdout)
 }
 
 startProcess()
