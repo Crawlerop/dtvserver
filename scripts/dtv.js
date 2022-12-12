@@ -117,7 +117,7 @@ RunSignal.once("run", async (params) => {
     // console.log(tsp_args)
     // console.log(folders)
 
-    // ExecSignal.emit("exec", tsp_args, folders)
+    ExecSignal.emit("exec", tsp_args, folders)
    } catch (e) {
     process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
         tuner: params.tuner,
