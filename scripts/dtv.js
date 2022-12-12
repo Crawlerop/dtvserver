@@ -101,11 +101,12 @@ RunSignal.once("run", async (params) => {
             for (let j = 0; j<ad_param.length; j++) {
                 const ad_parm = ad_param[j]
                 if (ad_parm.for.indexOf(channel.video.id) !== -1 || ad_parm.for.indexOf(channel.audio.id) !== -1) {
-                    ///console.log(ad_param)
-                    audio_filters = ad_param.audio_filters
+                    // console.log(ad_param)
+                    audio_filters = ad_parm.audio_filters
                 }
             }
         }
+        // console.log(audio_filters)
 
         const tsp_fork_prm = ["-re", "-y", "-loglevel", "error"].concat(await ffmp_args.genSingle("-", current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, audio_filters, true))
         tsp_args.push("-P")

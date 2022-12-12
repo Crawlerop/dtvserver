@@ -184,6 +184,7 @@ module.exports = {
                 args.push(`-profile:a:${i}`)
                 args.push("aac_"+rendition.audio_profile)
                 if (audio_filters) {
+                    // console.log(audio_filters)
                     args.push(`-filter:a:${i}`)
                     if (escape_filters) {
                         args.push(`"${audio_filters}"`)
