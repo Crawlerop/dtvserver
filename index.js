@@ -491,7 +491,7 @@ app.get("/index.html", (req,res)=>{res.sendFile(path.join(__dirname,"website/ind
 app.use("/static/", express.static(path.join(__dirname, "/website_res/")))
 
 app.get("/play/:stream/:file/:file2?", cors(), async (req, res) => {
-    const file_path = req.params.file+"/"+req.params.file2
+    const file_path = req.params.file+(req.params.file2 ? ("/"+req.params.file2) : "")
 
     if (file_path.endsWith(".ts")) {
         const have_stream = await streams.query().where("stream_id", "=", req.params.stream)
@@ -531,18 +531,76 @@ app.get("/play/:stream/:file/:file2?", cors(), async (req, res) => {
     }
 })
 
+app.use(function(req, res, next) {
+    var schema = req.headers["x-forwarded-proto"];
+
+    req.schema = schema ? schema : "http"
+
+    next();
+});
+
 /* API */
+app.get("/playlist.m3u", async (req, res) => {
+    const streams_ = await streams.query()
+    var streams_out = []
+    var m3u = "#EXTM3U\n"
+
+    for (let i = 0; i<streams_.length; i++) {
+        const stream = streams_[i]
+        if (stream.type === "dtv") {
+            const sp = JSON.parse(stream.params)
+            var ch_mux = []
+            for (let j = 0; j<sp.channels.length; j++) {
+                const st_channel = sp.channels[j]
+                m3u += `#EXTINF:-1 tvg-id="${stream.stream_id}-${st_channel.id}",${st_channel.name}\n${req.schema}://${req.headers.host}/play/${stream.stream_id}/${st_channel.id}/index.m3u8\n`
+            }
+        } else {
+            m3u += `#EXTINF:-1 tvg-id="${stream.stream_id}",${stream.name}\n${req.schema}://${req.headers.host}/play/${stream.stream_id}/index.m3u8\n`
+        }
+    }
+    return res.status(200).header("Content-Type", "application/x-mpegurl").end(m3u)
+})
+
 app.get("/api/streams", async (req, res) => {
     const streams_ = await streams.query()
     var streams_out = []
     for (let i = 0; i<streams_.length; i++) {
         const stream = streams_[i]
-        streams_out.push({
-            name: stream.name,
-            id: stream.stream_id,
-            type: stream.type,
-            active: Boolean(stream.active)
-        })
+        if (stream.type === "dtv") {
+            const sp = JSON.parse(stream.params)
+            var ch_mux = []
+            for (let j = 0; j<sp.channels.length; j++) {
+                const st_channel = sp.channels[j]
+                ch_mux.push(
+                    {
+                        name: st_channel.name,
+                        is_hd: st_channel.is_hd,
+                        playback_url: `/play/${stream.stream_id}/${st_channel.id}/index.m3u8`
+                    }
+                )
+            }
+            streams_out.push({
+                name: stream.name,
+                id: stream.stream_id,
+                type: stream.type,
+                active: Boolean(stream.active),
+                channels: ch_mux
+            })
+        } else {
+            streams_out.push({
+                name: stream.name,
+                id: stream.stream_id,
+                type: stream.type,
+                active: Boolean(stream.active),
+                channels: [
+                    {
+                        name: stream.name,
+                        is_hd: false,
+                        playback_url: `/play/${stream.stream_id}/index.m3u8`
+                    }
+                ]
+            })
+        }
     }
     return res.status(200).json(streams_out)
 });
