@@ -61,6 +61,15 @@ ExecSignal.once("exec", (args, folders) => {
             process.exit(0)
         }
     })
+
+    QuitSignal.once("quit", () => {
+        process.nextTick(() => {
+            try {
+                tsduck.kill("SIGINT")
+            } catch {}
+        })
+    })
+
     tsduck.stderr.pipe(process.stderr)
 })
 

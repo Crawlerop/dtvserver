@@ -558,7 +558,14 @@ app.post("/api/rtmp_publish_url", async (req, res) => {
 app.post("/api/dvb2ip_get", async (req, res) => {
     if (!req.body.src) return res.status(400).json({"error": "A source address must be specified."})
     try {
-        return res.status(200).json({channels: await dvb2ip(req.body.src)})
+        const dvb2ip_arr = await dvb2ip(req.body.src)
+        var dvb2ip_ar = []
+
+        for (let i = 0; i<dvb2ip_arr.length; i++) {
+            dvb2ip_ar.push({name: dvb2ip_arr[i].name.replace(/(HD$)/g, ""), stream_id: dvb2ip_arr[i].stream_id})
+        }
+
+        return res.status(200).json({channels: dvb2ip_ar})
     } catch (e) {
         return res.status(200).json({channels: []})
     }

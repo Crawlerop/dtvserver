@@ -597,7 +597,9 @@
                             $('#dvb-results > #multiplexes > #frequency').val(d.params.frequency)
                             $("#dvb-results > #channels > center > #additional-params").val(d.params.additional_params)
                         } else if (d.type == "dvb2ip") {
-                            $("#dvb2ip-setting > #source").val(d.params.source)
+                            $("#dvb2ip-setting > #source").val(d.params.src)
+                            DVB2IPSelectedStream = d.params.src_id
+                            $("#dvb2ip-results > #dvb2ip-channels > center > #additional-params").val(d.params.additional_params)
                         }
                     })
                 })
@@ -843,6 +845,23 @@
                                 updateStreamsList()
                             })
                             break
+                        case "dvb2ip":
+                            $.ajax(`/api/${EditMode ? "edit" : "add"}`, {
+                                data: JSON.stringify({
+                                    id: EditMode ? StreamsList[streamVal].id : undefined,
+                                    name: $("#add-channels-options > #name").val(),
+                                    type: "dvb2ip",
+                                    source_address: $("#dvb2ip-setting > #source").val(),
+                                    source_id: $("#dvb2ip-results > #dvb2ip-channels > #channels-list > fieldset > #channel").val(),
+                                    additional_params: $("#dvb2ip-results > #dvb2ip-channels > center > #additional-params").val()
+                                }),
+                                contentType: "application/JSON",
+                                type: "POST"
+                            }).done((d) => {
+                                $("#add-channels").prop("hidden", true)
+                                updateStreamsList()
+                            })
+                            break
                         case "rtmp":
                             $.ajax(`/api/${EditMode ? "edit" : "add"}`, {
                                 data: JSON.stringify({
@@ -866,12 +885,47 @@
                             $("#add-channels > #create").prop("disabled", DVBAppliedStreams ? $("#add-channels-options > #name").val() <= 0 : true)
                             break
                         case "dvb2ip":
-                            $("#add-channels > #create").prop("disabled", true)
+                            $("#add-channels > #create").prop("disabled", DVB2IPSelectedStream !== -1 ? $("#add-channels-options > #name").val() <= 0 : true)
                             break
                         case "rtmp":
                             $("#add-channels > #create").prop("disabled", $("#add-channels-options > #name").val().length <= 0)
                             break
                     }
+                })
+
+                $("#dvb2ip-setting > #scan").click(() => {
+                    $.ajax(`/api/dvb2ip_get`, {
+                        data: JSON.stringify({
+                            src: $("#dvb2ip-setting > #source").val()
+                        }),
+                        contentType: "application/JSON",
+                        type: "POST"
+                    }).done((d) => {
+                        $("#dvb2ip-channels > #channels-list > fieldset > #channel").empty()
+                        $("#dvb2ip-channels > #channels-list > fieldset > #channel").val(0)
+                        $("#dvb2ip-results").prop("hidden", false)
+                        for (let i = 0; i<d.channels.length; i++) {
+                            const channel = d.channels[i]
+                            $("#dvb2ip-channels > #channels-list > fieldset > #channel").append(`<fast-option value=${channel.stream_id}>${channel.name}</fast-option<`)
+                        }
+                    })
+                })
+
+                var DVB2IPSelectedStream = -1
+
+                $("#dvb2ip-results > #cancel").click(() => {
+                    $("#dvb2ip-results").prop("hidden", true)
+                })
+
+                $("#dvb2ip-results > #apply").click(() => {
+                    DVB2IPSelectedStream = $("#dvb2ip-channels > #channels-list > fieldset > #channel").val()
+                    const selStreamName = $(`#dvb2ip-channels > #channels-list > fieldset > #channel > [value=${DVB2IPSelectedStream}]`).text()
+
+                    $("#dvb2ip-setting > #dvb2ip-msg").text(`Selected DVB2IP channel: ${selStreamName}`) 
+                    if ($("#add-channels-options > #name").val().length <= 0) $("#add-channels-options > #name").val(selStreamName)
+                    
+                    $("#add-channels > #create").prop("disabled", false)
+                    $("#dvb2ip-results").prop("hidden", true)
                 })
 
                 $("#streams").click(() => {
@@ -946,7 +1000,7 @@
                             break
                         case "dvb2ip":
                             $("#dvb2ip-setting").prop("hidden", false)
-                            $("#add-channels > #create").prop("disabled", true)
+                            $("#add-channels > #create").prop("disabled", DVB2IPSelectedStream !== -1 ? $("#add-channels-options > #name").val() <= 0 : true)
                             break
                         case "rtmp":
                             $("#add-channels > #create").prop("disabled", $("#add-channels-options > #name").val().length <= 0)
