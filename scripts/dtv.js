@@ -67,7 +67,7 @@ ExecSignal.once("exec", (args, folders) => {
 RunSignal.once("run", async (params) => {    
    try {
     passed_params = params    
-    var tsp_args = `-I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
+    var tsp_args = `-I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     var folders = []
 
     for (var i = 0; i<params.channels.length; i++) {
@@ -83,7 +83,7 @@ RunSignal.once("run", async (params) => {
         const tsp_fork_prm = ["-re", "-y", "-loglevel", "error"].concat(await ffmp_args.genSingle("-", current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, true))
         tsp_args.push("-P")
         tsp_args.push("fork")        
-        tsp_args.push(`tsresync -c - | tsp | ${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
+        tsp_args.push(`tsresync -c - | tsp | node ${path.join(__dirname, "/cmds")}/repeat.js ${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
     }
     tsp_args.push("-O")
     tsp_args.push("drop")
