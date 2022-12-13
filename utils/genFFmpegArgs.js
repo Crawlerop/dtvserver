@@ -71,6 +71,14 @@ module.exports = {
                         args.push("h264_vaapi")
                     }
                     */
+                    args.push("-async")
+                    args.push("1")
+
+                    /*
+                    args.push("-vsync")
+                    args.push("1")
+                    */
+
                     args.push("-i")
                     args.push(source)
                 }
@@ -136,6 +144,14 @@ module.exports = {
                         args.push("mpeg1_cuvid")
                     }
 
+                    args.push("-async")
+                    args.push("1")
+
+                    /*
+                    args.push("-vsync")
+                    args.push("1")
+                    */
+
                     args.push("-i")
                     args.push(source)
                 }
@@ -172,6 +188,8 @@ module.exports = {
                 }
                 args.push(`-preset:v:${i}`)
                 args.push(`p${rendition.speed}`)
+            } else {
+                throw new Error("hwaccel not implemented yet")
             }
             
             args.push(`-profile:v:${i}`)
