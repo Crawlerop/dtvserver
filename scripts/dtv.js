@@ -108,10 +108,10 @@ RunSignal.once("run", async (params) => {
         }
         // console.log(audio_filters)
 
-        const tsp_fork_prm = ["-re", "-y", "-loglevel", "error"].concat(await ffmp_args.genSingle("-", current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, audio_filters, true))
+        const tsp_fork_prm = ["-re", "-y", "-loglevel", "quiet"].concat(await ffmp_args.genSingle("-", current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, audio_filters, true))
         tsp_args.push("-P")
         tsp_args.push("fork")        
-        tsp_args.push(`tsresync -c - | tsp | node ${path.join(__dirname, "/cmds")}/repeat.js ${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
+        tsp_args.push(`tsresync -c - | tsp | node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
     }
     tsp_args.push("-O")
     tsp_args.push("drop")
