@@ -1056,8 +1056,10 @@ check_output("tsp", ["--version"]).then(()=>{
             })
         }).catch(()=>{
             console.error("FFmpeg is not available. Please download FFmpeg files at https://ffmpeg.org and put into the \"bin\" folder.")
+            proc.exit(1)
         })
     })
 }).catch(()=>{
     console.error("TSDuck is not installed. You can install TSDuck at https://tsduck.io")
+    proc.exit(1)
 })
