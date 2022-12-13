@@ -62,6 +62,15 @@ module.exports = {
                     args.push(dri_to_use)
                     args.push("-hwaccel_output_format")
                     args.push("vaapi")
+                    /*
+                    if (video.codec === "h264") {
+                        args.push(`-c:v:${i}`)
+                        args.push("h264_vaapi")
+                    } else if (video.codec === "mpeg2video") {
+                        args.push(`-c:v:${i}`)
+                        args.push("h264_vaapi")
+                    }
+                    */
                     args.push("-i")
                     args.push(source)
                 }
@@ -112,6 +121,21 @@ module.exports = {
                     args.push("cuda")
                     args.push("-hwaccel_output_format")
                     args.push("cuda")
+
+                    if (video.codec === "h264") {
+                        args.push(`-c:v:${i}`)
+                        args.push("h264_cuvid")
+                    } else if (video.codec === "mpeg4") {
+                        args.push(`-c:v:${i}`)
+                        args.push("mpeg4_cuvid")
+                    } else if (video.codec === "mpeg2video") {
+                        args.push(`-c:v:${i}`)
+                        args.push("mpeg2_cuvid")
+                    } else if (video.codec === "mpeg1video") {
+                        args.push(`-c:v:${i}`)
+                        args.push("mpeg1_cuvid")
+                    }
+
                     args.push("-i")
                     args.push(source)
                 }
