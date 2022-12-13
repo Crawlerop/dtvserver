@@ -30,6 +30,9 @@ module.exports = {
         var is_start = false
         var stream_map = ""
 
+        args.push("-threads")
+        args.push("4")
+
         for (var i =0; i<renditions.length; i++) {
             const rendition = renditions[i]
                 
