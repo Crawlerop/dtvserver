@@ -78,7 +78,7 @@ RunSignal.once("run", (params) => {
 
         ffmp_args.genSingle("-", current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, params.additional_params).then((e) => {
             // "-loglevel", "quiet", 
-            const args = ["-loglevel", "error", "-re", "-y"].concat(e)
+            const args = ["-re", "-y"].concat(e)
             
             //throw new Error("e")
             //console.log(args)
