@@ -70,6 +70,8 @@
                     <fast-button id="delete" disabled>Delete</fast-button>
                     <fast-button id="activate" disabled>Activate</fast-button>
                     <fast-button id="publish-url" disabled>Copy publish url to clipboard</fast-button>
+                    <fast-button id="tuner-status">Tuner status</fast-button>
+                    <fast-button id="settings">Settings</fast-button>
                 </fast-toolbar>
             </div>
             <br>
@@ -243,7 +245,15 @@
             </div>
             <fast-button appearance="accent" id="no" style="float: left">No</fast-button>                
             <fast-button appearance="accent" id="yes" style="float: right">Yes</fast-button>                
-        <script>.0
+        </fast-dialog>
+        <fast-dialog id="tuner-status-box" style="--dialog-width: 640px; --dialog-height: 480px" hidden>
+            <h2>Tuner status</h2>
+            <div style="width: 640px; height: 370px; overflow-y: scroll;" id="tuner-status">
+                
+            </div>
+            <fast-button appearance="accent" id="close" style="float: left">Close</fast-button>                
+        </fast-dialog>
+        <script>
             $(() => {                
                 /* Those frequencies only applies to DVB-T standard */
 
@@ -1034,6 +1044,29 @@
                     $("#delete-msg").prop("hidden", false)
                 })
                 
+
+                const updateDTVStatus = () => {
+                    $.get("/api/status").done((d) => {
+                        $("#tuner-status-box > #tuner-status").empty()
+                        for (let i = 0; i<d.length; i++) {
+                            $("#tuner-status-box > #tuner-status").append(`<h4>${d[i].name}</h4>`)
+                            $("#tuner-status-box > #tuner-status").append(`<p><b>${d[i].status}</b></p>`)
+                            $("#tuner-status-box > #tuner-status").append(`<p><b>${d[i].current}</b></p>`)
+                        }
+                        setTimeout(updateDTVStatus, 1000)
+                    })
+                }
+
+                setTimeout(updateDTVStatus, 1000)
+                
+                $("#toolbar > #tuner-status").click(() => {
+                    $("#tuner-status-box").prop("hidden", false)
+                })
+
+                $("#tuner-status-box > #close").click(() => {
+                    $("#tuner-status-box").prop("hidden", true)
+                })
+
                 updateStreamsList()
             })
         </script>
