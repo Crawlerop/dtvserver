@@ -27,6 +27,8 @@ const QuitCheck = () => {
     }
 }
 
+const USE_TSDUCK = false
+
 setInterval(QuitCheck, 2000);
 
 RunSignal.once("run", (params) => {    
@@ -76,96 +78,159 @@ RunSignal.once("run", (params) => {
         const current_rendition = is_hd ? (params.multiple_renditions ? params.renditions : [params.renditions[0]]) : [params.renditions[1]]
         //console.log(current_rendition)
 
-        ffmp_args.genSingle("-", current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, params.additional_params).then((e) => {
-            // "-loglevel", "quiet", 
-            const args = ["-loglevel", "quiet", "-re", "-y"].concat(e)
-            
-            //throw new Error("e")
-            //console.log(args)
-            //process.exit(1)
+        if (USE_TSDUCK) {
+            ffmp_args.genSingle("-", current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, params.additional_params).then((e) => {
+                // "-loglevel", "quiet", 
+                const args = ["-loglevel", "quiet", "-re", "-y"].concat(e)
+                
+                //throw new Error("e")
+                //console.log(args)
+                //process.exit(1)
 
-            /*
-                Multiple processes have to be used because we're mostly dealing with out of sync TS packets from a DVB2IP device.
+                /*
+                    Multiple processes have to be used because we're mostly dealing with out of sync TS packets from a DVB2IP device.
 
-                pipe = "obtain TS packets as raw from HTTP"
-                tssync = "normalize TS packets"
-                tsp = "prevents FFmpeg from complaining"
-                ffmp = "output the normalized packets to the transcoder"
-            */
+                    pipe = "obtain TS packets as raw from HTTP"
+                    tssync = "normalize TS packets"
+                    tsp = "prevents FFmpeg from complaining"
+                    ffmp = "output the normalized packets to the transcoder"
+                */
 
-            pipe = cp.spawn(params.ffmpeg, ["-raw_packet_size", "385024", "-loglevel", "quiet", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-f", "data", "-i", src_url, "-c", "copy", "-map", "0:0", "-f", "data", "-"])
-            const tssync = cp.spawn("tsresync", ["-c", "-"])
-            const tsduck = cp.spawn("tsp")
-            const ffmp = cp.spawn(params.ffmpeg, args)                
+                pipe = cp.spawn(params.ffmpeg, ["-raw_packet_size", "385024", "-loglevel", "quiet", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-f", "data", "-i", src_url, "-c", "copy", "-map", "0:0", "-f", "data", "-"])
+                const tssync = cp.spawn("tsresync", ["-c", "-"])
+                const tsduck = cp.spawn("tsp")
+                const ffmp = cp.spawn(params.ffmpeg, args)                
 
-            ffmp.on("close", () => {
-                if (!is_quit) {
-                    process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
-                        src: params.src,
-                        src_id: params.src_id,
-                        additional_params: params.additional_params
-                    }})
-                    process.exit(1)
-                } else {
-                    try {
-                        fs.rmSync(params.output_path, {force: true, recursive: true})
-                    } catch (e) {
-                        console.trace(e)
+                ffmp.on("close", () => {
+                    if (!is_quit) {
+                        process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
+                            src: params.src,
+                            src_id: params.src_id,
+                            additional_params: params.additional_params
+                        }})
+                        process.exit(1)
+                    } else {
+                        try {
+                            fs.rmSync(params.output_path, {force: true, recursive: true})
+                        } catch (e) {
+                            console.trace(e)
+                        }
+                        console.log("dvb2ip shut down gracefully")
+                        process.exit(0)
                     }
-                    console.log("dvb2ip shut down gracefully")
-                    process.exit(0)
-                }
-            })
-
-            pipe.stdout.on("error", (e) => {
-                
-            })
-
-            ffmp.stdin.on("error", (e) => {
-
-            })
-
-            tssync.stdin.on("error", (e) => {
-
-            })
-
-            tssync.stdout.on("error", (e) => {
-
-            })
-
-            tsduck.stdin.on("error", (e) => {
-
-            })
-
-            tsduck.stdout.on("error", (e) => {
-                
-            })
-
-            QuitSignal.once("quit", () => {
-                process.nextTick(() => {
-                    try {
-                        ffmp.stdin.destroy()
-                    } catch {}
                 })
-            })                
 
-            pipe.stdout.pipe(tssync.stdin)                
-            tssync.stdout.pipe(tsduck.stdin)
-            tsduck.stdout.pipe(ffmp.stdin)
+                pipe.stdout.on("error", (e) => {
+                    
+                })
 
-            tsduck.stderr.pipe(process.stderr)
-            tssync.stderr.pipe(process.stderr)
-            pipe.stderr.pipe(process.stderr)
-            ffmp.stderr.pipe(process.stderr)
-        }).catch((e) => {
-            console.trace(e)
-            process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
-                src: params.src,
-                src_id: params.src_id,
-                additional_params: params.additional_params
-            }})
-            process.exit(1)
-        })
+                ffmp.stdin.on("error", (e) => {
+
+                })
+
+                tssync.stdin.on("error", (e) => {
+
+                })
+
+                tssync.stdout.on("error", (e) => {
+
+                })
+
+                tsduck.stdin.on("error", (e) => {
+
+                })
+
+                tsduck.stdout.on("error", (e) => {
+                    
+                })
+
+                QuitSignal.once("quit", () => {
+                    process.nextTick(() => {
+                        try {
+                            ffmp.stdin.destroy()
+                        } catch {}
+                    })
+                })                
+
+                pipe.stdout.pipe(tssync.stdin)                
+                tssync.stdout.pipe(tsduck.stdin)
+                tsduck.stdout.pipe(ffmp.stdin)
+
+                tsduck.stderr.pipe(process.stderr)
+                tssync.stderr.pipe(process.stderr)
+                pipe.stderr.pipe(process.stderr)
+                ffmp.stderr.pipe(process.stderr)
+            }).catch((e) => {
+                console.trace(e)
+                process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
+                    src: params.src,
+                    src_id: params.src_id,
+                    additional_params: params.additional_params
+                }})
+                process.exit(1)
+            })
+        } else (
+            ffmp_args.genSingle(src_url, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, params.additional_params).then((e) => {
+                // "-loglevel", "quiet", 
+                const args = ["-loglevel", "quiet", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-re", "-y"].concat(e)
+                
+                //throw new Error("e")
+                //console.log(args)
+                //process.exit(1)
+
+                /*
+                    Multiple processes have to be used because we're mostly dealing with out of sync TS packets from a DVB2IP device.
+
+                    pipe = "obtain TS packets as raw from HTTP"
+                    tssync = "normalize TS packets"
+                    tsp = "prevents FFmpeg from complaining"
+                    ffmp = "output the normalized packets to the transcoder"
+                */
+                
+                const ffmp = cp.spawn(params.ffmpeg, args)                
+
+                ffmp.on("close", () => {
+                    if (!is_quit) {
+                        process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
+                            src: params.src,
+                            src_id: params.src_id,
+                            additional_params: params.additional_params
+                        }})
+                        process.exit(1)
+                    } else {
+                        try {
+                            fs.rmSync(params.output_path, {force: true, recursive: true})
+                        } catch (e) {
+                            console.trace(e)
+                        }
+                        console.log("dvb2ip shut down gracefully")
+                        process.exit(0)
+                    }
+                })
+
+                ffmp.stdin.on("error", (e) => {
+
+                })
+
+                QuitSignal.once("quit", () => {
+                    process.nextTick(() => {
+                        try {
+                            ffmp.stdin.destroy()
+                        } catch {}
+                    })
+                })                
+
+                ffmp.stderr.pipe(process.stderr)
+            }).catch((e) => {
+                console.trace(e)
+                process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
+                    src: params.src,
+                    src_id: params.src_id,
+                    additional_params: params.additional_params
+                }})
+                process.exit(1)
+            })
+        )
     }).catch((e) => {
         process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
             src: params.src,
