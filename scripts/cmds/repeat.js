@@ -1,4 +1,5 @@
 const cp = require("child_process")
+const { start } = require("repl")
 const args = require("process").argv
 
 process.stdin.on("close", () => {
@@ -26,10 +27,13 @@ const startProcess = () => {
         process.stderr.write(`Restart transcode stream for channel ${args[2]}\n`)
         LAST_FRAME = -1
         TIMEOUT_VAL = -1
-        startProcess()
+
+        setTimeout(startProcess, 2000)
+        //startProcess()
     })
 
     app.stdin.on("error", ()=>{})
+    app.stdout.on("error", ()=>{})
 
     process.stdin.pipe(app.stdin)
     app.stderr.pipe(process.stderr)
