@@ -911,6 +911,10 @@
                         contentType: "application/JSON",
                         type: "POST"
                     }).done((d) => {
+                        if (d.channels.length <= 0) {
+                            $("#dvb2ip-setting > #dvb2ip-msg").text('Unable to get channels from a DVB2IP device.') 
+                            return
+                        }
                         $("#dvb2ip-channels > #channels-list > fieldset > #channel").empty()
                         $("#dvb2ip-channels > #channels-list > fieldset > #channel").val(0)
                         $("#dvb2ip-results").prop("hidden", false)
