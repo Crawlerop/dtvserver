@@ -153,6 +153,8 @@ app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal'])
 app.use(express.json())
 
 var StreamDTVJobs = {};
+var StreamDTVOutput = {};
+
 var RTMPStreamID = {};
 var pingInterval = null;
 var pingTimeout = null;
@@ -388,6 +390,7 @@ rtmp_server.on('prePublish', async (id, StreamPath, args) => {
         if (!d.retry) {
             try {
                 delete StreamDTVJobs[found_id]
+                delete StreamDTVOutput[found_id]
                 delete RTMPStreamID[found_id]
                 sid.reject()   
             } catch (e) {
@@ -436,6 +439,7 @@ rtmp_server.on('donePublish', async (id, StreamPath, args) => {
 
 //const StreamDTV = new bull("broadcast dtv");
 
+
 const addDTVJobs = (stream_id, type, params) => {
     if (type == "rtmp") return;
     const out_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${stream_id}/`
@@ -475,7 +479,8 @@ const addDTVJobs = (stream_id, type, params) => {
                 console.log("stream has encountered an error, retrying.")                
                 addDTVJobs(d.stream_id, d.type, d.params)
             } else {            
-                delete StreamDTVJobs[d.stream_id]                                
+                delete StreamDTVJobs[d.stream_id]     
+                delete StreamDTVOutput[found_id]                           
             }
         })
         StreamDTVJobs[stream_id] = cur_proc
@@ -586,6 +591,25 @@ app.get("/playlist.m3u", async (req, res) => {
     return res.status(200).header("Content-Type", "application/x-mpegurl").end(m3u)
 })
 
+app.get("/api/config", (req,res) => {
+    res.status(200).json(config)
+})
+
+app.post("/api/config", async (req,res) => {
+    await fs.writeFile(path.join(__dirname, "/config.json"), JSON.stringify(req.body, null, 4))
+    res.status(200).json({status: "OK"})
+    setTimeout(() => {
+        process.on("exit", function () {
+            cp.spawn(process.argv.shift(), process.argv, {
+                cwd: process.cwd(),
+                detached : true,
+                stdio: "inherit"
+            });
+        });
+        process.exit(0);
+    }, 3000)
+})
+
 app.get("/api/streams", async (req, res) => {
     const streams_ = await streams.query()
     var streams_out = []
@@ -629,6 +653,20 @@ app.get("/api/streams", async (req, res) => {
     }
     return res.status(200).json(streams_out)
 });
+
+app.post("/api/shutdown", (req, res) => {
+    res.status(200).json({status: "OK"})
+    setTimeout(async () => {
+        for (k in StreamDTVJobs) {
+            StreamDTVJobs[k].kill("SIGKILL")
+            try {
+                await fs.rm(StreamDTVOutput[k], {force: true, recursive: true})
+            } catch (e) {}
+        }
+
+        process.exit(0)
+    }, 2000)
+})
 
 app.post("/api/rtmp_publish_url", async (req, res) => {
     if (!req.body.id) return res.status(400).json({"error": "A channel id must be specified"})

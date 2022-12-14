@@ -72,6 +72,7 @@
                     <fast-button id="publish-url" disabled>Copy publish url to clipboard</fast-button>
                     <fast-button id="tuner-status">Tuner status</fast-button>
                     <fast-button id="settings">Settings</fast-button>
+                    <fast-button id="shutdown">Shutdown server</fast-button>
                 </fast-toolbar>
             </div>
             <br>
@@ -139,13 +140,13 @@
             <fast-button appearance="accent" id="cancel" style="float: left">Cancel</fast-button>                
             <fast-button appearance="accent" id="create" style="float: right" disabled>Create</fast-button>                
 
-            <fast-dialog style="--dialog-width: 480px; --dialog-height: 120px" id="auto-scan-progress" hidden>
+            <fast-dialog modal="true" style="--dialog-width: 480px; --dialog-height: 120px" id="auto-scan-progress" hidden>
                 <h2>Scanning for channels</h2>
                 <p id="status"></p>
                 <fast-progress min="0" max="0" value="0" id="scan-progress"></fast-progress>
             </fast-dialog>
 
-            <fast-dialog id="dvb-results" hidden>
+            <fast-dialog modal="true" id="dvb-results" hidden>
                 <div id="multiplexes" style="width:640px; height:540px;" hidden>
                     <h2>Available multiplexes</h2>
                     <label id="freq-text">Select the multiplex you'll be using for:</label>
@@ -189,7 +190,7 @@
                 <fast-button appearance="accent" id="apply" style="float: right">Apply</fast-button>                
             </fast-dialog>
 
-            <fast-dialog id="dvb2ip-results" hidden>
+            <fast-dialog modal="true" id="dvb2ip-results" hidden>
                 <div id="dvb2ip-channels" style="width:720px; height:540px;">
                     <h2>Select a channel</h2>
                     <div id="channels-list" style="width:720px; height:240px;">
@@ -212,7 +213,7 @@
                 <fast-button appearance="accent" id="apply" style="float: right">Apply</fast-button>                
             </fast-dialog>
 
-            <fast-dialog id="manual-scan-menu" hidden>
+            <fast-dialog modal="true" id="manual-scan-menu" hidden>
                 <div id="manual-scan-box" style="width:640px; height:540px;">
                     <h2>Manual Scan</h2>
                     Channel: 
@@ -239,19 +240,48 @@
                 <fast-button appearance="accent" id="start" style="float: right">Start</fast-button>                
             </fast-dialog>
         </fast-dialog>
-        <fast-dialog id="delete-msg" style="--dialog-width: 640px; --dialog-height: 320px" hidden>
+        <fast-dialog modal="true" id="delete-msg" style="--dialog-width: 640px; --dialog-height: 320px" hidden>
             <div style="width: 640px; height: 260px">
                 <center><h1>Are you sure you want to delete this stream?</h1></center>
             </div>
             <fast-button appearance="accent" id="no" style="float: left">No</fast-button>                
             <fast-button appearance="accent" id="yes" style="float: right">Yes</fast-button>                
         </fast-dialog>
-        <fast-dialog id="tuner-status-box" style="--dialog-width: 640px; --dialog-height: 480px" hidden>
+        <fast-dialog modal="true" id="tuner-status-box" style="--dialog-width: 640px; --dialog-height: 480px" hidden>
             <h2>Tuner status</h2>
             <div style="width: 640px; height: 370px; overflow-y: scroll;" id="tuner-status">
                 
             </div>
             <fast-button appearance="accent" id="close" style="float: left">Close</fast-button>                
+        </fast-dialog>
+        <fast-dialog modal="true" id="settings-box" style="--dialog-width: 640px; --dialog-height: 480px" hidden>
+            <h2>Settings</h2>
+            <div style="width: 640px; height: 370px;" id="settings">
+                <p>Edit the config.json used for this server.</p>    
+                <div id="status"></div>
+                <fast-text-area id="data" rows="15" cols="100"></fast-text-area>
+            </div>
+            <fast-button appearance="accent" id="cancel" style="float: left">Cancel</fast-button>                
+            <fast-button appearance="accent" id="apply" style="float: right">Apply and Restart</fast-button>                
+        </fast-dialog>
+        <fast-dialog modal="true" id="restart-required" style="--dialog-width: 320px; --dialog-height: 180px" hidden>
+            <center>
+                <h2>Restart required</h2>
+                <p>A restart is required to complete this operation. This page will be reloaded in 5 seconds.</p>
+            </center>
+        </fast-dialog>
+        <fast-dialog modal="true" id="shutdown-msg" style="--dialog-width: 640px; --dialog-height: 320px" hidden>
+            <div style="width: 640px; height: 260px">
+                <center><h1>Are you sure you want to shutdown this server?</h1></center>
+            </div>
+            <fast-button appearance="accent" id="no" style="float: left">No</fast-button>                
+            <fast-button appearance="accent" id="yes" style="float: right">Yes</fast-button>                
+        </fast-dialog>
+        <fast-dialog modal="true" id="shutdown-ok" style="--dialog-width: 320px; --dialog-height: 180px" hidden>
+            <center>
+                <h2>Server is shutting down</h2>
+                <p>This server is shutting down...</p>
+            </center>
         </fast-dialog>
         <script>
             $(() => {                
@@ -693,6 +723,13 @@
                     }
                 }
 
+                const restartRequired = () => {
+                    $("#restart-required").prop("hidden", false)
+                    setTimeout(() => {
+                        document.location.reload()
+                    }, 5000) 
+                }
+
                 const updateMenuPageDVB = () => {
                     $('#dvb-results > #multiplexes').prop("hidden", true)  
                     $('#dvb-results > #channels').prop("hidden", true)
@@ -1069,6 +1106,42 @@
 
                 $("#tuner-status-box > #close").click(() => {
                     $("#tuner-status-box").prop("hidden", true)
+                })
+
+                $("#toolbar > #settings").click(() => {
+                    $.get("/api/config").done((d) => {
+                        $("#settings-box").prop("hidden", false)
+                        $("#settings-box > #settings > #data").val(JSON.stringify(d, null, 4))
+                    })
+                })
+
+                $("#settings-box > #apply").click(() => {
+                    $.ajax("/api/config", {
+                        data: $("#settings-box > #settings > #data").val(),
+                        contentType: "application/JSON",
+                        type: "POST"
+                    }).done((d) => {
+                        restartRequired()
+                    })
+                })
+
+                $("#settings-box > #cancel").click(() => {
+                    $("#settings-box").prop("hidden", true)
+                })
+
+                $("#toolbar > #shutdown").click(() => {
+                    $("#shutdown-msg").prop("hidden", false)
+                })
+
+                $("#shutdown-msg > #no").click(() => {
+                    $("#shutdown-msg").prop("hidden", true)
+                })
+
+                $("#shutdown-msg > #yes").click(() => {
+                    $.ajax("/api/shutdown", {type: "POST"}).done(() => {
+                        $("#shutdown-msg").prop("hidden", true)
+                        $("#shutdown-ok").prop("hidden", false)
+                    })
                 })
 
                 updateStreamsList()

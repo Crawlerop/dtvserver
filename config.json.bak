@@ -1,0 +1,53 @@
+{
+    "name": "DTV Uplink Server",
+    "dtv_forward_host": "localhost:31460",
+    "dtv_protocol": "frp",
+    "dtv_forward_key": "token",
+    "streams_path": "/drive1/live_cache/",
+    "ffmpeg": "ffmpeg-v59",
+    "multiple_renditions": false,
+    "dtv_use_fork": true,
+    "hls_settings": {
+        "duration": 2,
+        "list_size": 15,
+        "unreferenced_segments": 10
+    },
+    "renditions": [
+        {
+            "hwaccel": "nvenc",
+            "width": 1280,
+            "height": 720,
+            "speed": 1,
+            "profile": "high",
+            "video_bitrate": 2000000,
+            "bufsize": 2500000,
+            "bf": 2,
+            "interp_algo": 1,
+            "audio_bitrate": 128000,
+            "audio_profile": "low",
+            "audio_codec": "libaac"
+        },
+        {
+            "hwaccel": "vaapi",
+            "width": 640,
+            "height": 360,
+            "speed": 2,
+            "profile": "main",
+            "video_bitrate": 600000,
+            "bufsize": 1100000,
+            "bf": 2,
+            "interp_algo": 1,
+            "audio_bitrate": 64000,
+            "audio_profile": "he",
+            "audio_codec": "libaac"
+        }
+    ],
+    "rtmp_settings": {
+        "port": 1935,
+        "chunk_size": 60000,
+        "gop_cache": true,
+        "ping": 30,
+        "ping_timeout": 60
+    },
+    "port": 65510
+}
