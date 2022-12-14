@@ -128,7 +128,7 @@ module.exports = {
                     args.push("-hwaccel")
                     args.push("cuda")
                     args.push("-hwaccel_output_format")
-                    args.push("cuda")
+                    args.push("nv12")
 
                     if (video.codec === "h264") {
                         args.push(`-c:v:${i}`)
@@ -182,9 +182,9 @@ module.exports = {
                 args.push("h264_nvenc")
                 args.push(`-filter:v:${i}`)
                 if (escape_filters) {
-                    args.push(`"format=yuv420p|cuda,hwupload,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1"`)
+                    args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1"`)
                 } else {
-                    args.push(`format=yuv420p|cuda,hwupload,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1`)
+                    args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1`)
                 }
                 args.push(`-preset:v:${i}`)
                 args.push(`p${rendition.speed}`)
