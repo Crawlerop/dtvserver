@@ -35,7 +35,7 @@ const QuitCheck = () => {
     }
 }
 
-const RESTART_EACH_STREAMS = false
+const RESTART_EACH_STREAMS = true
 
 setInterval(QuitCheck, 2000);
 
@@ -166,7 +166,8 @@ RunSignal.once("run", async (params) => {
             tsp_args.push("5000")            
             
             if (RESTART_EACH_STREAMS) {
-                tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
+                //tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
+                tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
             } else {
                 tsp_args.push(`${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
             }
