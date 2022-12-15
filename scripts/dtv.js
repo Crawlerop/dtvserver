@@ -77,7 +77,7 @@ ExecSignal.once("exec", (args, folders) => {
 RunSignal.once("run", async (params) => {    
    try {
     passed_params = params    
-    var tsp_args = `--buffer-size-mb 32 --max-flushed-packets 6 --max-output-packets 12 --max-input-packets 24 --realtime -I dvb --demux-buffer-size 67108864 --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
+    var tsp_args = `--buffer-size-mb 32 --max-flushed-packets 2500 --max-output-packets 1000 --max-input-packets 5000 --realtime -I dvb --demux-buffer-size 67108864 --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     //var tsp_args = `--realtime -I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     var folders = []
     var ad_param;
@@ -113,8 +113,10 @@ RunSignal.once("run", async (params) => {
         tsp_args.push("-P")
         tsp_args.push("fork")    
             
+        /*
         tsp_args.push("--buffered-packets")
         tsp_args.push("1")
+        */
         
         tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
     }
