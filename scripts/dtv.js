@@ -82,25 +82,34 @@ ExecSignal.once("exec", (args, folders) => {
         })
     })
 
-    for (let i = 0; i<ffmpeg_params.length; i++) {        
-        try {
-            const p = cp.spawn("node", [path.join(__dirname, "/cmds/repeat_cp.js")])                                
-            p.stdin.write(JSON.stringify({
-                name: ch_names[i],
-                cmd_proc: passed_params.ffmpeg,
-                cmd_args: ffmpeg_params[i]
-            }))                
-            p.stdout.pipe(process.stdout)
-            p.stderr.pipe(process.stderr)
-            tsduck.stdout.pipe(p.stdin)
-            p.stdin.on("error", ()=>{})
-            ffmpeg.push(p)   
-        } catch (e) {
-            console.trace(e)
-        }     
-    }    
+    if (!passed_params.dtv_use_fork) {
+        for (let i = 0; i<ffmpeg_params.length; i++) {        
+            try {
+                const p = cp.spawn("node", [path.join(__dirname, "/cmds/repeat_cp.js")])                                
+                p.stdin.write(JSON.stringify({
+                    name: ch_names[i],
+                    cmd_proc: passed_params.ffmpeg,
+                    cmd_args: ffmpeg_params[i]
+                }))                
+                p.stdout.pipe(process.stdout)
+                p.stderr.pipe(process.stderr)
+                tsduck.stdout.pipe(p.stdin)
+                p.stdin.on("error", ()=>{})
+                ffmpeg.push(p)   
+            } catch (e) {
+                console.trace(e)
+            }     
+        }  
+    }  
 
     tsduck.stdout.on("error", ()=>{})
+
+    /*
+    tsduck.stdout.on("data", (d) => {
+        process.send(d.to)
+    })
+    */
+
     tsduck.stderr.pipe(process.stderr)
 })
 
@@ -114,6 +123,10 @@ RunSignal.once("run", async (params) => {
 
     if (params.additional_params) {
         ad_param = JSON.parse(params.additional_params)
+    }
+
+    if (params.dtv_use_fork) {
+        tsp_args.push("-m")        
     }
 
     for (let i = 0; i<params.channels.length; i++) {
