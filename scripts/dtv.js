@@ -107,7 +107,7 @@ ExecSignal.once("exec", (args, folders) => {
 RunSignal.once("run", async (params) => {    
    try {
     passed_params = params    
-    var tsp_args = `--buffer-size-mb 32 --max-flushed-packets 25000 --max-output-packets 10000 --max-input-packets 50000 --realtime -I dvb --demux-buffer-size 67108864 --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
+    var tsp_args = `--buffer-size-mb 64 --max-flushed-packets 25000 --max-output-packets 10000 --max-input-packets 50000 --realtime -I dvb --demux-buffer-size 67108864 --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     //var tsp_args = `--realtime -I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     var folders = []
     var ad_param;
