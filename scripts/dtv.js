@@ -167,7 +167,7 @@ RunSignal.once("run", async (params) => {
             
             if (RESTART_EACH_STREAMS) {
                 //tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
-                tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
+                tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
             } else {
                 tsp_args.push(`${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
             }

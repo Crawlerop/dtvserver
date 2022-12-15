@@ -7,7 +7,12 @@ process.stdin.on("close", () => {
 
 const startProcess = () => {
     //process.stderr.write(args.slice(3).join(" ")+"\n")
-    cp.execSync(`${args[3]} ${args.slice(4).join(" ")}`, {stdio: "inherit"})
+    /*
+    process.stderr.write(`${args[3]} ${args.slice(4).join(" ")}\n`)
+    process.exit(0)
+    */
+
+    cp.execSync(args[3], {stdio: "inherit"})
 
     process.stderr.write(`Restart transcode stream for channel ${args[2]}\n`)
     setTimeout(startProcess, 2000)
