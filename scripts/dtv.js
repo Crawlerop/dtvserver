@@ -122,6 +122,13 @@ RunSignal.once("run", async (params) => {
         ad_param = JSON.parse(params.additional_params)
     }    
 
+    if (params.dtv_use_fork) {
+        tsp_args.push("-P")
+        tsp_args.push("regulate")
+    }
+
+    const LS_SOCKET = path.join(__dirname, `/../sock/${params.stream_id}`)
+
     for (let i = 0; i<params.channels.length; i++) {
         const channel = params.channels[i]
         const current_rendition = channel.is_hd ? (params.multiple_renditions ? params.renditions : [params.renditions[0]]) : [params.renditions[1]]
@@ -145,7 +152,7 @@ RunSignal.once("run", async (params) => {
         }
         // console.log(audio_filters)
 
-        const tsp_fork_prm = ["-re", "-y", "-loglevel", current_rendition[0].hwaccel === "nvenc" ? "error": "quiet"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${path.join(__dirname, `/sock/${params.stream_id}`)}`, current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, audio_filters, passed_params.dtv_use_fork ? true : false))
+        const tsp_fork_prm = ["-re", "-y", "-loglevel", current_rendition[0].hwaccel === "nvenc" ? "error": "quiet"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, audio_filters, passed_params.dtv_use_fork ? true : false))
         
         if (passed_params.dtv_use_fork) {
             tsp_args.push("-P")
@@ -165,16 +172,19 @@ RunSignal.once("run", async (params) => {
         tsp_args.push("-O") 
         tsp_args.push("drop")
     } else {
+        tsp_args.push("-P")
+        tsp_args.push("regulate")
+
         tsp_args.push("-O")
         tsp_args.push("fork")
         
-        if (fs.existsSync(path.join(__dirname, `/sock/${params.stream_id}`))) {
+        if (fs.existsSync(LS_SOCKET)) {
             try {
-                await fs_p.unlink(path.join(__dirname, `/sock/${params.stream_id}`))
+                await fs_p.unlink(LS_SOCKET)
             } catch (e) {}
         }
 
-        tsp_args.push(`ncat -U -l -k -m 64 ${path.join(__dirname, `/sock/${params.stream_id}`)}`)
+        tsp_args.push(`tsresync -c - | ncat --send-only -U -k -m 64 -l "${LS_SOCKET}"`)
     }
 
     // console.log(tsp_args)

@@ -30,7 +30,7 @@ const startProcess = (cmd, args) => {
         LAST_FRAME = -1
         TIMEOUT_VAL = -1
 
-        setTimeout(startProcess, 2000)
+        setTimeout(() => {startProcess(cmd, args)}, 2000)
         //startProcess()
     })
 
