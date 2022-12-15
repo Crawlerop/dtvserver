@@ -25,6 +25,10 @@ const QuitSignal = new events.EventEmitter()
 const RunSignal = new events.EventEmitter()
 const ExecSignal = new events.EventEmitter()
 
+const ffmpeg_params = []
+const ffmpeg = []
+const ch_names = []
+
 const QuitCheck = () => {
     if (is_quit) {
         QuitSignal.emit("quit")
@@ -33,7 +37,14 @@ const QuitCheck = () => {
 
 setInterval(QuitCheck, 2000);
 
-ExecSignal.once("exec", (args, folders) => {
+ExecSignal.once("exec", (args, folders) => {    
+    /*
+    if (!passed_params.dtv_use_fork) {
+        console.log(args)
+        process.exit(0)
+    }    
+    */
+
     const tsduck = cp.spawn("tsp", args)
 
     tsduck.on("exit", () => {
@@ -71,13 +82,32 @@ ExecSignal.once("exec", (args, folders) => {
         })
     })
 
+    for (let i = 0; i<ffmpeg_params.length; i++) {        
+        try {
+            const p = cp.spawn("node", [path.join(__dirname, "/cmds/repeat_cp.js")])                                
+            p.stdin.write(JSON.stringify({
+                name: ch_names[i],
+                cmd_proc: passed_params.ffmpeg,
+                cmd_args: ffmpeg_params[i]
+            }))                
+            p.stdout.pipe(process.stdout)
+            p.stderr.pipe(process.stderr)
+            tsduck.stdout.pipe(p.stdin)
+            p.stdin.on("error", ()=>{})
+            ffmpeg.push(p)   
+        } catch (e) {
+            console.trace(e)
+        }     
+    }    
+
+    tsduck.stdout.on("error", ()=>{})
     tsduck.stderr.pipe(process.stderr)
 })
 
 RunSignal.once("run", async (params) => {    
    try {
     passed_params = params    
-    var tsp_args = `--buffer-size-mb 32 --max-flushed-packets 2500 --max-output-packets 1000 --max-input-packets 5000 --realtime -I dvb --demux-buffer-size 67108864 --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
+    var tsp_args = `--buffer-size-mb 32 --max-flushed-packets 25000 --max-output-packets 10000 --max-input-packets 50000 --realtime -I dvb --demux-buffer-size 67108864 --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     //var tsp_args = `--realtime -I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     var folders = []
     var ad_param;
@@ -109,19 +139,26 @@ RunSignal.once("run", async (params) => {
         }
         // console.log(audio_filters)
 
-        const tsp_fork_prm = ["-re", "-y", "-loglevel", current_rendition[0].hwaccel === "nvenc" ? "error": "quiet"].concat(await ffmp_args.genSingle("-", current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, audio_filters, true))
-        tsp_args.push("-P")
-        tsp_args.push("fork")    
-            
-        /*
-        tsp_args.push("--buffered-packets")
-        tsp_args.push("1")
-        */
+        const tsp_fork_prm = ["-re", "-y", "-loglevel", current_rendition[0].hwaccel === "nvenc" ? "error": "quiet"].concat(await ffmp_args.genSingle("-", current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : 1, audio_filters, passed_params.dtv_use_fork ? true : false))
         
-        tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
+        if (passed_params.dtv_use_fork) {
+            tsp_args.push("-P")
+            tsp_args.push("fork")    
+                        
+            tsp_args.push("--buffered-packets")
+            tsp_args.push("5000")            
+            
+            tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
+        } else {
+            ffmpeg_params.push(tsp_fork_prm)
+            ch_names.push(channel.name)
+        }
     }
-    tsp_args.push("-O")
-    tsp_args.push("drop")
+
+    if (passed_params.dtv_use_fork) {
+        tsp_args.push("-O") 
+        tsp_args.push("drop")
+    }
 
     // console.log(tsp_args)
     // console.log(folders)
