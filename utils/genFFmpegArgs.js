@@ -33,6 +33,8 @@ module.exports = {
         args.push("-threads")
         args.push("4")
 
+        args.push("-nostdin")
+
         for (var i =0; i<renditions.length; i++) {
             const rendition = renditions[i]
                 
