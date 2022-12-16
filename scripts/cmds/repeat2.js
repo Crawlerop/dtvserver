@@ -2,6 +2,7 @@ const cp = require("child_process")
 const args = require("process").argv
 
 process.stdin.on("close", () => {
+    console.log("stdin is closed")
     process.exit(0)
 })
 
@@ -12,7 +13,9 @@ const startProcess = () => {
     process.exit(0)
     */
 
-    cp.execSync(args[3], {stdio: "inherit"})
+    try {
+        cp.execSync(args[3], {stdio: "inherit"})
+    } catch (e) {}
 
     process.stderr.write(`Restart transcode stream for channel ${args[2]}\n`)
     setTimeout(startProcess, 2000)

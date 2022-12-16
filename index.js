@@ -43,6 +43,7 @@ const config_defaults_nvenc = {
     "dtv_protocol": "frp",
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
+    "watermark": "",
     "hls_settings": {
         "duration": 2,
         "list_size": 15,
@@ -97,6 +98,7 @@ const config_defaults = {
     "dtv_protocol": "frp",
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
+    "watermark": "",
     "hls_settings": {
         "duration": 2,
         "list_size": 15,
