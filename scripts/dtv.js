@@ -159,7 +159,7 @@ RunSignal.once("run", async (params) => {
         }
         // console.log(audio_filters)
 
-        const tsp_fork_prm = ["-re", "-y", "-loglevel", channel.id == 5 ? "error": "quiet"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, -1, -1, audio_filters, passed_params.dtv_use_fork ? true : false))
+        const tsp_fork_prm = ["-re", "-y", "-loglevel", "quiet"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, -1, -1, audio_filters, passed_params.dtv_use_fork ? true : false))
         
         if (passed_params.dtv_use_fork) {
             tsp_args.push("-P")
