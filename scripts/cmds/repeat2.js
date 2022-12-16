@@ -18,7 +18,12 @@ const startProcess = () => {
     } catch (e) {}
 
     process.stderr.write(`Restart transcode stream for channel ${args[2]}\n`)
-    setTimeout(startProcess, 2000)
+    process.stdin.read()
+
+    setTimeout(() => {
+        process.stdin.read()
+        startProcess()
+    }, 2000)
     //app.stdout.pipe(process.stdout)
 }
 
