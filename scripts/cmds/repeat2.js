@@ -2,7 +2,7 @@ const cp = require("child_process")
 const args = require("process").argv
 
 process.stdin.on("close", () => {
-    console.log("stdin is closed")
+    process.stderr.write(`stdin is closed ${args[2]}\n`)
     process.exit(0)
 })
 
