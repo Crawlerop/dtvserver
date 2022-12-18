@@ -584,10 +584,10 @@ app.get("/playlist.m3u", async (req, res) => {
             var ch_mux = []
             for (let j = 0; j<sp.channels.length; j++) {
                 const st_channel = sp.channels[j]
-                m3u += `#EXTINF:-1 tvg-id="${stream.stream_id}-${st_channel.id}",${st_channel.name}\n${req.schema}://${req.headers.host}/play/${stream.stream_id}/${st_channel.id}/index.m3u8\n`
+                m3u += `#EXTINF:-1 tvg-id="${stream.stream_id}-${st_channel.id}",${st_channel.name}\n${req.schema}://${req.headers["x-forwarded-prefix"] ? req.headers["x-forwarded-prefix"] : (req.headers.host+'/play')}/${stream.stream_id}/${st_channel.id}/index.m3u8\n`
             }
         } else {
-            m3u += `#EXTINF:-1 tvg-id="${stream.stream_id}",${stream.name}\n${req.schema}://${req.headers.host}/play/${stream.stream_id}/index.m3u8\n`
+            m3u += `#EXTINF:-1 tvg-id="${stream.stream_id}",${stream.name}\n${req.schema}://${req.headers["x-forwarded-prefix"] ? req.headers["x-forwarded-prefix"] : (req.headers.host+'/play')}/${stream.stream_id}/index.m3u8\n`
         }
     }
     return res.status(200).header("Content-Type", "application/x-mpegurl").end(m3u)
