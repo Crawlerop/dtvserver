@@ -75,7 +75,7 @@ RunSignal.once("run", (params) => {
         //console.log(program_streams)
         //console.log(is_hd)
 
-        const current_rendition = is_hd ? (params.multiple_renditions ? params.renditions : [params.renditions[0]]) : [params.renditions[1]]
+        const current_rendition = is_hd ? (params.multiple_renditions ? params.renditions_hd : [params.renditions_hd[0]]) : (params.multiple_renditions ? params.renditions_sd : [params.renditions_sd[0]])
         //console.log(current_rendition)
 
         if (USE_TSDUCK) {

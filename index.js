@@ -51,7 +51,7 @@ const config_defaults_nvenc = {
     },
     "multiple_renditions": false,
     "dtv_use_fork": true,
-    "renditions": [
+    "renditions_hd": [
         {
             "hwaccel": "nvenc",
             "width": 1280,
@@ -76,9 +76,55 @@ const config_defaults_nvenc = {
             "bufsize": 1100000,
             "bf": 2,
             "interp_algo": 1,
+            "audio_bitrate": 96000,
+            "audio_profile": "low",
+            "audio_codec": "aac"
+        },
+        {
+            "hwaccel": "nvenc",
+            "width": 320,
+            "height": 180,
+            "speed": 1,
+            "profile": "baseline",
+            "video_bitrate": 300000,
+            "bufsize": 800000,
+            "bf": 2,
+            "interp_algo": 1,
             "audio_bitrate": 64000,
             "audio_profile": "low",
             "audio_codec": "aac"
+        }
+    ],
+    "renditions_sd": [
+        {
+            "hwaccel": "nvenc",
+            "width": 640,
+            "height": 360,
+            "speed": 1,
+            "profile": "main",
+            "video_bitrate": 600000,
+            "bufsize": 1100000,
+            "bf": 2,
+            "interp_algo": 1,
+            "audio_bitrate": 64000,
+            "audio_profile": "low",
+            "audio_codec": "aac",
+            "bandwidth": "Math.floor((ar)/4)"
+        },
+        {
+            "hwaccel": "nvenc",
+            "width": 320,
+            "height": 180,
+            "speed": 1,
+            "profile": "baseline",
+            "video_bitrate": 300000,
+            "bufsize": 800000,
+            "bf": 2,
+            "interp_algo": 1,
+            "audio_bitrate": 48000,
+            "audio_profile": "low",
+            "audio_codec": "aac",
+            "bandwidth": "Math.floor((ar)/4)"
         }
     ],
     "rtmp_settings": {
@@ -106,7 +152,7 @@ const config_defaults = {
     },
     "multiple_renditions": false,
     "dtv_use_fork": true,
-    "renditions": [
+    "renditions_hd": [
         {
             "hwaccel": "nvenc",
             "width": 1280,
@@ -122,6 +168,36 @@ const config_defaults = {
             "audio_codec": "aac"
         },
         {
+            "hwaccel": "nvenc",
+            "width": 640,
+            "height": 360,
+            "speed": 1,
+            "profile": "main",
+            "video_bitrate": 600000,
+            "bufsize": 1100000,
+            "bf": 2,
+            "interp_algo": 1,
+            "audio_bitrate": 96000,
+            "audio_profile": "low",
+            "audio_codec": "aac"
+        },
+        {
+            "hwaccel": "nvenc",
+            "width": 320,
+            "height": 180,
+            "speed": 1,
+            "profile": "baseline",
+            "video_bitrate": 300000,
+            "bufsize": 800000,
+            "bf": 2,
+            "interp_algo": 1,
+            "audio_bitrate": 64000,
+            "audio_profile": "low",
+            "audio_codec": "aac"
+        }
+    ],
+    "renditions_sd": [
+        {
             "hwaccel": "vaapi",
             "width": 640,
             "height": 360,
@@ -133,7 +209,23 @@ const config_defaults = {
             "interp_algo": 1,
             "audio_bitrate": 64000,
             "audio_profile": "low",
-            "audio_codec": "aac"
+            "audio_codec": "aac",
+            "bandwidth": "Math.floor((ar)/4)",
+        },
+        {
+            "hwaccel": "vaapi",
+            "width": 320,
+            "height": 180,
+            "speed": 2,
+            "profile": "578",
+            "video_bitrate": 300000,
+            "bufsize": 800000,
+            "bf": 2,
+            "interp_algo": 1,
+            "audio_bitrate": 48000,
+            "audio_profile": "low",
+            "audio_codec": "aac",
+            "bandwidth": "Math.floor((ar)/4)"
         }
     ],
     "rtmp_settings": {
@@ -411,7 +503,8 @@ rtmp_server.on('prePublish', async (id, StreamPath, args) => {
         rtmp_token_id: RTMPStreamID[found_id],
         type: "rtmp",
         output_path: out_path, 
-        renditions: config.renditions, 
+        renditions_hd: config.renditions_hd, 
+        renditions_sd: config.renditions_sd, 
         multiple_renditions: config.multiple_renditions, 
         hls_settings: config.hls_settings
     })
@@ -455,7 +548,8 @@ const addDTVJobs = (stream_id, type, params) => {
                 stream_id: stream_id,
                 type: type,
                 output_path: out_path, 
-                renditions: config.renditions, 
+                renditions_hd: config.renditions_hd, 
+                renditions_sd: config.renditions_sd, 
                 multiple_renditions: config.multiple_renditions, 
                 hls_settings: config.hls_settings,
                 additional_params: params.additional_params
@@ -469,7 +563,8 @@ const addDTVJobs = (stream_id, type, params) => {
                 stream_id: stream_id,
                 type: type,
                 output_path: out_path, 
-                renditions: config.renditions, 
+                renditions_hd: config.renditions_hd, 
+                renditions_sd: config.renditions_sd,  
                 multiple_renditions: config.multiple_renditions, 
                 hls_settings: config.hls_settings,
                 dtv_use_fork: config.dtv_use_fork,

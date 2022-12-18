@@ -138,7 +138,7 @@ RunSignal.once("run", async (params) => {
 
     for (let i = 0; i<params.channels.length; i++) {
         const channel = params.channels[i]
-        const current_rendition = channel.is_hd ? (params.multiple_renditions ? params.renditions : [params.renditions[0]]) : [params.renditions[1]]
+        const current_rendition = channel.is_hd ? (params.multiple_renditions ? params.renditions_hd : [params.renditions_hd[0]]) : (params.multiple_renditions ? params.renditions_sd : [params.renditions_sd[0]])
         const out_folder = `${params.output_path}/${channel.id}/`
         await fs_p.mkdir(out_folder, {recursive: true})
         
