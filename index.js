@@ -577,7 +577,7 @@ const addDTVJobs = (stream_id, type, params) => {
                 addDTVJobs(d.stream_id, d.type, d.params)
             } else {            
                 delete StreamDTVJobs[d.stream_id]     
-                delete StreamDTVOutput[found_id]                           
+                delete StreamDTVOutput[d.stream_id]                           
             }
         })
         StreamDTVJobs[stream_id] = cur_proc

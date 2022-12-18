@@ -4,6 +4,12 @@
         <title>DTV Uplink Control Panel</title>
         <script type="module" src="https://cdn.jsdelivr.net/npm/@microsoft/fast-components/dist/fast-components.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.2/shaka-player.compiled.js" integrity="sha512-/yQyu2QCIHThBekpwc49CUf01hj4DTI+usHK5jZgpBkAxCWowJ112YWHqw7L9vS1/VyrOCma1Y0MVf1gc0XKYw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.2/shaka-player.ui.min.js" integrity="sha512-My7HWrSUstOQITHXr1qanNoXCEb8aJweepK7Hj+mQegYmzGNKjNa37t6ldDbAXHT4FmLdGV2sq/rgFXuaIdwyQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.2/controls.min.css" integrity="sha512-6CAOpe+kF1fCTzRcZlS1iak5PY3M5lT+Ato5R3GJ0GXtoRTY6UOyGUNNG1va+mws+XDs1w3a6+iXQtw6n/Ef+w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <script src="https://github.com/videojs/mux.js/releases/latest/download/mux.js"></script>
+
         <style>
             html {
                 font-family: sans-serif;
@@ -71,6 +77,7 @@
                     <fast-button id="edit" disabled>Edit</fast-button>
                     <fast-button id="delete" disabled>Delete</fast-button>
                     <fast-button id="activate" disabled>Activate</fast-button>
+                    <fast-button id="play" disabled>Play</fast-button>
                     <fast-button id="publish-url" disabled>Copy publish url to clipboard</fast-button>
                     <fast-button id="tuner-status">Tuner status</fast-button>
                     <fast-button id="settings">Settings</fast-button>
@@ -284,6 +291,12 @@
                 <h2>Server is shutting down</h2>
                 <p>This server is shutting down...</p>
             </center>
+        </fast-dialog>
+        <fast-dialog modal="true" id="video-player" style="--dialog-width: 640px; --dialog-height: 480px" hidden>
+            <fast-button appearance="accent" id="close" style="float: right"><b>X</b></fast-button>     
+            <div data-shaka-player-container id="player-box" style="position: relative; top: 25px; max-width: 40em; width: 640px; height: 360px;">
+                <video style="width: 100%; height: 100%" data-shaka-player autoplay id="player"></video>    
+            </div>
         </fast-dialog>
         <script>
             $(() => {                
@@ -555,6 +568,7 @@
                     $("#toolbar > #delete").prop("disabled", true)
                     $("#toolbar > #edit").prop("disabled", true)
                     $("#toolbar > #activate").prop("disabled", true)
+                    $("#toolbar > #play").prop("disabled", true)
                     $("#toolbar > #publish-url").prop("disabled", true)
 
                     $.get("/api/streams").done((d) => {
@@ -985,6 +999,7 @@
                     const streamVal = $("#streams > fast-option")[$("#streams").prop("selectedIndex")].value
                     $("#toolbar > #delete").prop("disabled", false)
                     $("#toolbar > #edit").prop("disabled", false)
+                    $("#toolbar > #play").prop("disabled", false)
 
                     if (StreamsList[streamVal].type !== 'rtmp' && StreamsList[streamVal].active === true) {
                         $("#toolbar > #activate").text("Deactivate")
@@ -1145,9 +1160,40 @@
                         $("#shutdown-ok").prop("hidden", false)
                     })
                 })
+                
+                const playVideo = async (url) => {                   
+                    try {
+                        $("#video-player").prop("hidden", false)
+                        await window.player.load(url);
+                    } catch (e) {
+                        alert(e)
+                    }
+                }
+
+                $("#video-player > #close").click(() => {
+                    $("#player")[0].pause()
+                    $("#video-player").prop("hidden", true)
+                })
+                
+                $("#toolbar > #play").click(() => {
+                    if (!window.player || !window.ui) return
+                    const streamVal = $("#streams > fast-option")[$("#streams").prop("selectedIndex")].value
+                    playVideo(StreamsList[streamVal].channels[0].playback_url)
+                })
 
                 updateStreamsList()
             })
+
+            $(document).bind("shaka-ui-loaded", () => {
+                const video = $("#player")[0];
+                const ui = video['ui'];
+                const controls = ui.getControls();
+                const player = controls.getPlayer();
+              
+                // Attach player and ui to the window to make it easy to access in the JS console.
+                window.player = player;
+                window.ui = ui;
+            });
         </script>
     </body>
 </html>
