@@ -248,6 +248,7 @@ if (!cluster.isPrimary) {
     const fastify = require("fastify")
     const fastify_cors = require("@fastify/cors")
     const fastify_static = require("@fastify/static")
+    // const fastify_plugin = require("fastify-plugin")
 
     const app_play = fastify.fastify()
 
@@ -261,6 +262,8 @@ if (!cluster.isPrimary) {
 
     app_play.get("/play/:stream/:file/:file2?", async (req, res) => {
         const file_path = req.params.file+(req.params.file2 ? ("/"+req.params.file2) : "")
+
+        res.header("x-playback-worker", process.pid)
 
         if (file_path.endsWith(".ts")) {
             const have_stream = await streams.query().where("stream_id", "=", req.params.stream)
@@ -299,6 +302,68 @@ if (!cluster.isPrimary) {
             return res.status(403).send({error: "Not OTT content"})
         }
     })
+
+    app_play.get("/api/streams", async (req, res) => {
+        const streams_ = await streams.query()
+
+        res.header("x-playback-worker", process.pid)
+
+        var streams_out = []
+        for (let i = 0; i<streams_.length; i++) {
+            const stream = streams_[i]
+            if (stream.type === "dtv") {
+                const sp = JSON.parse(stream.params)
+                var ch_mux = []
+                for (let j = 0; j<sp.channels.length; j++) {
+                    const st_channel = sp.channels[j]
+                    ch_mux.push(
+                        {
+                            name: st_channel.name,
+                            is_hd: st_channel.is_hd,
+                            playback_url: `/play/${stream.stream_id}/${st_channel.id}/index.m3u8`
+                        }
+                    )
+                }
+                streams_out.push({
+                    name: stream.name,
+                    id: stream.stream_id,
+                    type: stream.type,
+                    active: Boolean(stream.active),
+                    channels: ch_mux
+                })
+            } else {
+                streams_out.push({
+                    name: stream.name,
+                    id: stream.stream_id,
+                    type: stream.type,
+                    active: Boolean(stream.active),
+                    channels: [
+                        {
+                            name: stream.name,
+                            is_hd: false,
+                            playback_url: `/play/${stream.stream_id}/index.m3u8`
+                        }
+                    ]
+                })
+            }
+        }
+        return res.status(200).send(streams_out)
+    });
+
+    /*
+    app_play.get("/manifest.json", cors(), async (req, res) => {
+        return res.status(200).json({
+            name: config.name,
+            hostname: os.hostname(),
+            server_uptime: os.uptime(),
+            os_name: `${os.type()} ${os.release()}`,
+            num_streams: (await streams.query()).length,
+            country: geo_params.country,
+            region_id: geo_params.region_id,
+            dtv_area: geo_params.dtv_area
+        })
+    })
+    */
 
     app_play.listen({port: config.play_port})
 } else {
