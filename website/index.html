@@ -1013,6 +1013,7 @@
                 })
 
                 $("#streams").click(() => {
+                    if ($("#streams").prop("selectedIndex") === -1) return
                     const streamVal = $("#streams > fast-option")[$("#streams").prop("selectedIndex")].value
                     $("#toolbar > #delete").prop("disabled", false)
                     $("#toolbar > #edit").prop("disabled", false)
