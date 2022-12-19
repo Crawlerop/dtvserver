@@ -1178,7 +1178,11 @@
                 $("#toolbar > #play").click(() => {
                     if (!window.player || !window.ui) return
                     const streamVal = $("#streams > fast-option")[$("#streams").prop("selectedIndex")].value
-                    playVideo(StreamsList[streamVal].channels[0].playback_url)
+                    if (StreamsList[streamVal].channels.length <= 1) {
+                        playVideo(StreamsList[streamVal].channels[0].playback_url)
+                    } else {
+                        
+                    }
                 })
 
                 updateStreamsList()

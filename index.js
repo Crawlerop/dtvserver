@@ -1043,14 +1043,10 @@ app.get("/manifest.json", cors(), async (req, res) => {
 
 app.post("/api/get_channel_info", async (req, res) => {
     if (!req.body.id) return res.status(400).json({error: "A channel id must be specified."})
-    const stream = await streams.query().where("stream_id", '=', req.body.id)
+    const stream = await streams.query().select(["name", "type", "params"]).where("stream_id", '=', req.body.id)
     if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
-    return res.status(200).json({
-        name: stream[0].name,
-        type: stream[0].type,
-        params: JSON.parse(stream[0].params)
-    })
+    return res.status(200).json(stream[0])
 })
 
 const getDistance = (lat1, lon1, lat2, lon2, unit) => {
