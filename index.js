@@ -667,7 +667,7 @@ app.get("/api/status", async (req,res) => {
     return res.status(200).json(tuners_stat)
 })
 
-app.get("/playlist.m3u", async (req, res) => {
+app.get("/playlist.m3u", cors(), async (req, res) => {
     const streams_ = await streams.query()
     var streams_out = []
     var m3u = "#EXTM3U\n"
@@ -707,7 +707,7 @@ app.post("/api/config", async (req,res) => {
     }, 3000)
 })
 
-app.get("/api/streams", async (req, res) => {
+app.get("/api/streams", cors(), async (req, res) => {
     const streams_ = await streams.query()
     var streams_out = []
     for (let i = 0; i<streams_.length; i++) {
