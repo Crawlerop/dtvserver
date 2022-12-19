@@ -302,7 +302,7 @@ var frp_cp = null
 
 if (config.dtv_forward_key) {
     if (config.dtv_protocol == "frp") {
-        frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error"])
+        frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "-ue"])
         
         frp_cp.stderr.pipe(proc.stderr)
         frp_cp.stdout.pipe(proc.stdout)
