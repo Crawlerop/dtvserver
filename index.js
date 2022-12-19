@@ -1165,7 +1165,7 @@ if (!cluster.isPrimary) {
     }
 
     const PORT = proc.env["PORT"] ? proc.env["PORT"] : config.port
-    const workersCount = require('os').cpus().length*4
+    const workersCount = require('os').cpus().length
 
     check_output("tsp", ["--version"]).then(()=>{
         check_output(config.ffmpeg, ["-version"]).then(()=>{
