@@ -1046,6 +1046,8 @@ app.post("/api/get_channel_info", async (req, res) => {
     const stream = await streams.query().select(["name", "type", "params"]).where("stream_id", '=', req.body.id)
     if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
+    stream[0].params = JSON.parse(stream[0].params)
+
     return res.status(200).json(stream[0])
 })
 
