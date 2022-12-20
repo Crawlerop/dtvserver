@@ -190,6 +190,12 @@ module.exports = {
                 }
                 args.push(`-preset:v:${i}`)
                 args.push(`p${rendition.speed}`)
+
+                args.push(`-rc:v:${i}`)
+                args.push("cbr")
+
+                args.push(`-tune:v:${i}`)
+                args.push("ll")
             } else {
                 throw new Error("hwaccel not implemented yet")
             }
