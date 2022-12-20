@@ -27,7 +27,7 @@ const QuitCheck = () => {
     }
 }
 
-const USE_TSDUCK = true
+const USE_TSDUCK = false
 
 setInterval(QuitCheck, 2000);
 
@@ -172,7 +172,7 @@ RunSignal.once("run", (params) => {
         } else (
             ffmp_args.genSingle(src_url, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, params.additional_params).then((e) => {
                 // "-loglevel", "quiet", 
-                const args = ["-loglevel", "quiet", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-re", "-y"].concat(e)
+                const args = ["-loglevel", "quiet", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-y"].concat(e)
                 
                 //throw new Error("e")
                 //console.log(args)
