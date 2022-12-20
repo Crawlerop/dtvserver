@@ -116,7 +116,8 @@ RunSignal.once("run", async (params) => {
     passed_params = params    
     //var tsp_args = `--buffer-size-mb 32 --realtime -I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     //var tsp_args = `--buffer-size-mb 512 --max-flushed-packets 7 --max-output-packets 7 --max-input-packets 7 --realtime -I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
-    var tsp_args = `--buffer-size-mb ${params.buffer_size} --receive-timeout 10000 --realtime -I dvb --signal-timeout 10 --guard-interval auto --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
+    //var tsp_args = `--buffer-size-mb ${params.buffer_size} --receive-timeout 10000 --realtime -I dvb --signal-timeout 10 --guard-interval auto --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
+    var tsp_args = `--buffer-size-mb ${params.buffer_size} --max-flushed-packets 7 --max-output-packets 7 --max-input-packets 7 --receive-timeout 10000 --realtime -I dvb --signal-timeout 10 --guard-interval auto --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     //var tsp_args = `--buffer-size-mb 8 --realtime -I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     //var tsp_args = `--buffer-size-mb 2 --max-flushed-packets 128 --max-output-packets 64 --max-input-packets 256 --realtime -I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
     //var tsp_args = `--realtime -I dvb --signal-timeout 10 --guard-interval auto --receive-timeout 10000 --adapter ${params.tuner} --delivery-system DVB-T2 --frequency ${params.frequency}000000 --transmission-mode auto --spectral-inversion off`.split(" ")
@@ -160,7 +161,7 @@ RunSignal.once("run", async (params) => {
         // console.log(audio_filters)
 
         // const tsp_fork_prm = ["-re", "-y", "-loglevel", "quiet"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, -1, -1, audio_filters, passed_params.dtv_use_fork ? true : false))
-        const tsp_fork_prm = ["-re", "-y", "-loglevel", "quiet"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : -1, audio_filters, passed_params.dtv_use_fork ? true : false))
+        const tsp_fork_prm = ["-y", "-loglevel", "quiet"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : -1, audio_filters, passed_params.dtv_use_fork ? true : false))
         
         if (passed_params.dtv_use_fork) {
             tsp_args.push("-P")
