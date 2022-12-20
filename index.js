@@ -135,7 +135,8 @@ const config_defaults_nvenc = {
         "ping_timeout": 60
     },
     "port": 6520,
-    "play_port": 6521
+    "play_port": 6521,
+    "dtv_buffer_size": 64
 }
 
 const config_defaults = {
@@ -237,7 +238,8 @@ const config_defaults = {
         "ping_timeout": 60
     },
     "port": 6520,
-    "play_port": 6521
+    "play_port": 6521,
+    "dtv_buffer_size": 64
 }
 
 if (!fs_sync.existsSync(path.join(__dirname, "/config.json"))) fs_sync.writeFileSync(path.join(__dirname, "/config.json"), JSON.stringify(config_defaults, null, 4))
@@ -706,7 +708,8 @@ if (!cluster.isPrimary) {
                     multiple_renditions: config.multiple_renditions, 
                     hls_settings: config.hls_settings,
                     dtv_use_fork: config.dtv_use_fork,
-                    additional_params: params.additional_params
+                    additional_params: params.additional_params,
+                    buffer_size: config.dtv_buffer_size
                 })
             }
             cur_proc.on("message", (d) => {
