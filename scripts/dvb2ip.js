@@ -215,7 +215,7 @@ RunSignal.once("run", (params) => {
                 QuitSignal.once("quit", () => {
                     process.nextTick(() => {
                         try {
-                            ffmp.stdin.destroy()
+                            ffmp.kill("SIGTERM")
                         } catch {}
                     })
                 })                
