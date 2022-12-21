@@ -252,7 +252,7 @@ if (!cluster.isPrimary) {
     const fastify_static = require("@fastify/static")
     // const fastify_plugin = require("fastify-plugin")
 
-    const app_play = fastify.fastify()
+    const app_play = fastify.fastify({trustProxy: ['loopback', 'linklocal', 'uniquelocal']})
 
     app_play.register(fastify_static, {
         root: config.streams_path.replace(/\(pathname\)/g, __dirname)
@@ -303,6 +303,46 @@ if (!cluster.isPrimary) {
         } else {
             return res.status(403).send({error: "Not OTT content"})
         }
+    })
+
+    const geo_params = JSON.parse(process.env.geo_params)
+
+    app_play.get("/manifest.json", async (req, res) => {
+        res.header("x-playback-worker", process.pid)
+
+        return res.status(200).send({
+            name: config.name,
+            hostname: os.hostname(),
+            server_uptime: os.uptime(),
+            os_name: `${os.type()} ${os.release()}`,
+            num_streams: (await streams.query()).length,
+            country: geo_params.country,
+            region_id: geo_params.region_id,
+            dtv_area: geo_params.dtv_area
+        })
+    })
+
+    app_play.get("/playlist.m3u", async (req, res) => {
+        const streams_ = await streams.query()
+        var streams_out = []
+        var m3u = "#EXTM3U\n"
+
+        res.header("x-playback-worker", process.pid)
+
+        for (let i = 0; i<streams_.length; i++) {
+            const stream = streams_[i]
+            if (stream.type === "dtv") {
+                const sp = JSON.parse(stream.params)
+                var ch_mux = []
+                for (let j = 0; j<sp.channels.length; j++) {
+                    const st_channel = sp.channels[j]
+                    m3u += `#EXTINF:-1 tvg-id=${stream.stream_id}-${st_channel.id}",${st_channel.name}\n${req.protocol}://${req.headers["x-forwarded-prefix"] ? req.headers["x-forwarded-prefix"] : (req.headers.host+'/play')}/${stream.stream_id}/${st_channel.id}/index.m3u8\n`
+                }
+            } else {
+                m3u += `#EXTINF:-1 tvg-id="${stream.stream_id}",${stream.name}\n${req.protocol}://${req.headers["x-forwarded-prefix"] ? req.headers["x-forwarded-prefix"] : (req.headers.host+'/play')}/${stream.stream_id}/index.m3u8\n`
+            }
+        }
+        return res.status(200).header("Content-Type", "application/x-mpegurl").send(m3u)
     })
 
     app_play.get("/api/streams", async (req, res) => {
@@ -437,7 +477,7 @@ if (!cluster.isPrimary) {
                 
                 frp_cp.stderr.pipe(proc.stderr)
                 frp_cp.stdout.pipe(proc.stdout)
-            }, 1500)
+            }, 4000)
         } else if (config.dtv_protocol == "frps") {
             setTimeout(() => {
                 // frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "--ue"])
@@ -445,7 +485,7 @@ if (!cluster.isPrimary) {
                 
                 frp_cp.stderr.pipe(proc.stderr)
                 frp_cp.stdout.pipe(proc.stdout)
-            }, 1500)
+            }, 4000)
         } else {
             ws_p = new ws(`${config.dtv_protocol}://${config.dtv_forward_host}/ws/dtv?token=${config.dtv_forward_key}`, {
                 createWebSocket: url => new ws_a(url),
@@ -1259,11 +1299,7 @@ if (!cluster.isPrimary) {
                     region_id: null
                 }
                 */
-
-                for (let i = 0; i < workersCount; i++) {
-                    cluster.fork({cluster_id: i+1});
-                }    
-
+    
                 const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
 
                 if (!n_res.error) {
@@ -1284,6 +1320,11 @@ if (!cluster.isPrimary) {
                             break
                     }
                 }
+
+                for (let i = 0; i < workersCount; i++) {
+                    cluster.fork({cluster_id: i+1, geo_params: JSON.stringify(geo_params)});
+                }
+
                 console.log(`Live on port ${PORT}`)
             })
         }).catch(()=>{
@@ -1310,11 +1351,7 @@ if (!cluster.isPrimary) {
                         region_id: null
                     }
                     */
-
-                    for (let i = 0; i < workersCount; i++) {
-                        cluster.fork({cluster_id: i+1});
-                    }        
-
+   
                     const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
 
                     if (!n_res.error) {
@@ -1335,6 +1372,11 @@ if (!cluster.isPrimary) {
                                 break
                         }
                     }
+
+                    for (let i = 0; i < workersCount; i++) {
+                        cluster.fork({cluster_id: i+1, geo_params: JSON.stringify(geo_params)});
+                    }     
+
                     console.log(`Live on port ${PORT}`)
                 })
             }).catch(()=>{
