@@ -44,6 +44,7 @@ const config_defaults_nvenc = {
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
     "watermark": "",
+    "watermark_ignore_streams": [],
     "hls_settings": {
         "duration": 2,
         "list_size": 15,
@@ -147,6 +148,7 @@ const config_defaults = {
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
     "watermark": "",
+    "watermark_ignore_streams": [],
     "hls_settings": {
         "duration": 2,
         "list_size": 15,
