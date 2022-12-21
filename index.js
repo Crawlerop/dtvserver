@@ -109,7 +109,7 @@ const config_defaults_nvenc = {
             "audio_bitrate": 64000,
             "audio_profile": "low",
             "audio_codec": "aac",
-            "bandwidth": "Math.floor((ar)/4)"
+            "bandwidth": ""
         },
         {
             "hwaccel": "nvenc",
@@ -124,7 +124,7 @@ const config_defaults_nvenc = {
             "audio_bitrate": 48000,
             "audio_profile": "low",
             "audio_codec": "aac",
-            "bandwidth": "Math.floor((ar)/4)"
+            "bandwidth": ""
         }
     ],
     "rtmp_settings": {
@@ -212,7 +212,7 @@ const config_defaults = {
             "audio_bitrate": 64000,
             "audio_profile": "low",
             "audio_codec": "aac",
-            "bandwidth": "Math.floor((ar)/4)",
+            "bandwidth": "",
         },
         {
             "hwaccel": "vaapi",
@@ -227,7 +227,7 @@ const config_defaults = {
             "audio_bitrate": 48000,
             "audio_profile": "low",
             "audio_codec": "aac",
-            "bandwidth": "Math.floor((ar)/4)"
+            "bandwidth": ""
         }
     ],
     "rtmp_settings": {
