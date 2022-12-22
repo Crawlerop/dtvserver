@@ -110,7 +110,7 @@ module.exports = {
                         }  
 
                         if (supports_watermark) {
-                            filter_complex += "format=yuv420p|vaapi,hwupload,deinterlace_vaapi[a];[1:v:0]format=yuva420p|vaapi,hwupload [b]; [a][b]overlay_vaapi=x=8:y=H-h-8,"
+                            filter_complex += "format=yuv420p|vaapi,hwupload,deinterlace_vaapi[a];[1:v:0]format=yuva420p|vaapi,hwupload[b];[a][b]overlay_vaapi=x=8:y=H-h-8,"
                         } else {
                             filter_complex += "format=yuv420p,yadif[a];[1:v:0]format=yuva420p[b];[a][b]overlay=x=8:y=H-h-8,format=nv12|vaapi,hwupload,"
                         }
@@ -122,7 +122,7 @@ module.exports = {
                         filter_complex += ";"
 
                         for (let p = 0; p<renditions.length; p++) {
-                            filter_complex += `[temp${p}]scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]}[out${p}],setsar=1;` 
+                            filter_complex += `[temp${p}]scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1[out${p}];` 
                         }
 
                         if (audio) {
@@ -226,7 +226,7 @@ module.exports = {
                         filter_complex += ";"
 
                         for (let p = 0; p<renditions.length; p++) {
-                            filter_complex += `[temp${p}]scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo}[out${p}],setsar=1;`  
+                            filter_complex += `[temp${p}]scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1[out${p}];`  
                         }
 
                         if (audio) {
