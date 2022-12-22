@@ -120,7 +120,7 @@ module.exports = {
                         if (supports_watermark) {
                             filter_complex += `format=yuv420p|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${video.height*WIDESCREEN}:${video.height}:mode=256[a];[1:v:0]format=yuva420p|vaapi,hwupload[b];[a][b]overlay_vaapi=x=16:y=H-h-16,`
                         } else {
-                            filter_complex += `format=yuv420p,yadif,scale=${video.height*WIDESCREEN}:${video.height}:flags=neighbor[a];[1:v:0]format=yuva420p[b];[a][b]overlay=shortest=1=x=16:y=H-h-16,format=nv12|vaapi,hwupload,`
+                            filter_complex += `format=yuv420p,yadif,scale=${video.height*WIDESCREEN}:${video.height}:flags=neighbor[a];[1:v:0]format=yuva420p[b];[a][b]overlay=shortest=1:x=16:y=H-h-16,format=nv12|vaapi,hwupload,`
                         }
 
                         filter_complex += `split=${renditions.length}`
@@ -231,7 +231,7 @@ module.exports = {
                             filter_complex += `[0:v:0]`
                         }  
 
-                        filter_complex += `format=yuv420p,hwupload_cuda,yadif_cuda,scale_cuda=${video.height*WIDESCREEN}:${video.height}:interp_algo=1[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=shortest=1=x=16:y=H-h-16,`
+                        filter_complex += `format=yuv420p,hwupload_cuda,yadif_cuda,scale_cuda=${video.height*WIDESCREEN}:${video.height}:interp_algo=1[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=shortest=1:x=16:y=H-h-16,`
 
                         filter_complex += `split=${renditions.length}`
                         for (let p = 0; p<renditions.length; p++) {
