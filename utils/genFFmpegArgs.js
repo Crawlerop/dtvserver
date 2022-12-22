@@ -11,8 +11,11 @@ const _globAsync = (pattern) => {
     })
 }
 
+const NV_HW_DECODER = config.nvenc_use_nvdec // Saves GPU memory if disabled!
+
 module.exports = {
     genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="") => {
+        const WIDESCREEN = (640/360)
         var args = [];
 
         var video = null;
@@ -110,9 +113,9 @@ module.exports = {
                         }  
 
                         if (supports_watermark) {
-                            filter_complex += "format=yuv420p|vaapi,hwupload,deinterlace_vaapi[a];[1:v:0]format=yuva420p|vaapi,hwupload[b];[a][b]overlay_vaapi=x=16:y=H-h-16,"
+                            filter_complex += `format=yuv420p|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${video.height*WIDESCREEN}:${video.height}:mode=256[a];[1:v:0]format=yuva420p|vaapi,hwupload[b];[a][b]overlay_vaapi=x=16:y=H-h-16,`
                         } else {
-                            filter_complex += "format=yuv420p,yadif[a];[1:v:0]format=yuva420p[b];[a][b]overlay=x=16:y=H-h-16,format=nv12|vaapi,hwupload,"
+                            filter_complex += `format=yuv420p,yadif,scale=${video.height*WIDESCREEN}:${video.height}:flags=neighbor[a];[1:v:0]format=yuva420p[b];[a][b]overlay=x=16:y=H-h-16,format=nv12|vaapi,hwupload,`
                         }
 
                         filter_complex += `split=${renditions.length}`
@@ -178,23 +181,26 @@ module.exports = {
                 } else if (rendition.hwaccel == "nvenc") {
                     if (!is_start) {
                         is_start = true
-                        args.push("-hwaccel")
-                        args.push("cuda")
-                        args.push("-hwaccel_output_format")
-                        args.push("nv12")
 
-                        if (video.codec === "h264") {
-                            args.push(`-c:v:${i}`)
-                            args.push("h264_cuvid")
-                        } else if (video.codec === "mpeg4") {
-                            args.push(`-c:v:${i}`)
-                            args.push("mpeg4_cuvid")
-                        } else if (video.codec === "mpeg2video") {
-                            args.push(`-c:v:${i}`)
-                            args.push("mpeg2_cuvid")
-                        } else if (video.codec === "mpeg1video") {
-                            args.push(`-c:v:${i}`)
-                            args.push("mpeg1_cuvid")
+                        if (NV_HW_DECODER) {
+                            args.push("-hwaccel")
+                            args.push("cuda")
+                            args.push("-hwaccel_output_format")
+                            args.push("nv12")
+
+                            if (video.codec === "h264") {
+                                args.push(`-c:v:${i}`)
+                                args.push("h264_cuvid")
+                            } else if (video.codec === "mpeg4") {
+                                args.push(`-c:v:${i}`)
+                                args.push("mpeg4_cuvid")
+                            } else if (video.codec === "mpeg2video") {
+                                args.push(`-c:v:${i}`)
+                                args.push("mpeg2_cuvid")
+                            } else if (video.codec === "mpeg1video") {
+                                args.push(`-c:v:${i}`)
+                                args.push("mpeg1_cuvid")
+                            }
                         }
 
                         args.push("-async")
@@ -217,7 +223,7 @@ module.exports = {
                             filter_complex += `[0:v:0]`
                         }  
 
-                        filter_complex += "format=yuv420p,hwupload_cuda,yadif_cuda[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=x=16:y=H-h-16,"
+                        filter_complex += `format=yuv420p,hwupload_cuda,yadif_cuda,scale_cuda=${video.height*WIDESCREEN}:${video.height}:interp_algo=1[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=x=16:y=H-h-16,`
 
                         filter_complex += `split=${renditions.length}`
                         for (let p = 0; p<renditions.length; p++) {
@@ -441,23 +447,26 @@ module.exports = {
                 } else if (rendition.hwaccel == "nvenc") {
                     if (!is_start) {
                         is_start = true
-                        args.push("-hwaccel")
-                        args.push("cuda")
-                        args.push("-hwaccel_output_format")
-                        args.push("nv12")
-    
-                        if (video.codec === "h264") {
-                            args.push(`-c:v:${i}`)
-                            args.push("h264_cuvid")
-                        } else if (video.codec === "mpeg4") {
-                            args.push(`-c:v:${i}`)
-                            args.push("mpeg4_cuvid")
-                        } else if (video.codec === "mpeg2video") {
-                            args.push(`-c:v:${i}`)
-                            args.push("mpeg2_cuvid")
-                        } else if (video.codec === "mpeg1video") {
-                            args.push(`-c:v:${i}`)
-                            args.push("mpeg1_cuvid")
+
+                        if (NV_HW_DECODER) {
+                            args.push("-hwaccel")
+                            args.push("cuda")
+                            args.push("-hwaccel_output_format")
+                            args.push("nv12")
+        
+                            if (video.codec === "h264") {
+                                args.push(`-c:v:${i}`)
+                                args.push("h264_cuvid")
+                            } else if (video.codec === "mpeg4") {
+                                args.push(`-c:v:${i}`)
+                                args.push("mpeg4_cuvid")
+                            } else if (video.codec === "mpeg2video") {
+                                args.push(`-c:v:${i}`)
+                                args.push("mpeg2_cuvid")
+                            } else if (video.codec === "mpeg1video") {
+                                args.push(`-c:v:${i}`)
+                                args.push("mpeg1_cuvid")
+                            }
                         }
     
                         args.push("-async")

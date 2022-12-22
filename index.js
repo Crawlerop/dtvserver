@@ -51,6 +51,7 @@ const config_defaults_nvenc = {
         "unreferenced_segments": 10
     },
     "multiple_renditions": false,
+    "nvenc_use_nvdec": true,
     "dtv_use_fork": true,
     "renditions_hd": [
         {
@@ -155,6 +156,7 @@ const config_defaults = {
         "unreferenced_segments": 10
     },
     "multiple_renditions": false,
+    "nvenc_use_nvdec": true,
     "dtv_use_fork": true,
     "renditions_hd": [
         {
