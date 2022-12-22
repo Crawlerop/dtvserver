@@ -1,5 +1,6 @@
 const check_output = require("./check_output")
 const glob = require("glob")
+const config = require("../config.json")
 
 const _globAsync = (pattern) => {
     return new Promise((res, rej) => {
@@ -11,7 +12,7 @@ const _globAsync = (pattern) => {
 }
 
 module.exports = {
-    genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false) => {
+    genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="") => {
         var args = [];
 
         var video = null;
@@ -35,218 +36,532 @@ module.exports = {
 
         args.push("-nostdin")
 
-        for (var i =0; i<renditions.length; i++) {
-            const rendition = renditions[i]
-                
-            if (rendition.hwaccel == "vaapi") {
-                if (!is_start) {
-                    is_start = true            
-                    const render_devices = await _globAsync("/dev/dri/render*")
-                                
-                    for (var j =0; j<render_devices.length; j++) {
-                        try {
-                            const va_check = await check_output('vainfo', ['-a', '--display', 'drm', '--device', render_devices[j]])
+        if (watermark) {
+            var filter_complex = ""
+            var temp_args = []
+            for (var i =0; i<renditions.length; i++) {
+                const rendition = renditions[i]
+                var supports_watermark = false    
 
-                            if (va_check.includes('VAEntrypointEncSlice')) {
-                                dri_to_use = render_devices[j]
-                                break
+                if (rendition.hwaccel == "vaapi") {
+                    const INTERP_ALGO_TO_VAAPI = {
+                        0: 0,
+                        1: 256,
+                        2: 512,
+                        3: 768
+                    }
+
+                    if (!is_start) {
+                        is_start = true            
+                        const render_devices = await _globAsync("/dev/dri/render*")
+                                    
+                        for (var j =0; j<render_devices.length; j++) {
+                            try {
+                                const va_check = await check_output('vainfo', ['-a', '--display', 'drm', '--device', render_devices[j]])
+
+                                if (va_check.includes('VAEntrypointEncSlice')) {
+                                    dri_to_use = render_devices[j]
+                                    try {
+                                        await check_output(config.ffmpeg, ['-loglevel', 'error', '-hwaccel', 'vaapi', '-vaapi_device', `${render_devices[j]}`, '-f', 'lavfi', '-i', 'testsrc', '-f', 'lavfi', '-i', 'testsrc', '-filter_complex', '[0:v]format=nv12,hwupload[a];[1:v]format=nv12,hwupload[b];[a][b]overlay_vaapi', '-vcodec', 'h264_vaapi', '-f', 'null', '-frames', '1', '-'])
+                                        supports_overlay = true
+                                    } catch (e) {}
+                                    break
+                                }
+                            } catch {
+
                             }
-                        } catch {
+                        }
 
+                        if (!dri_to_use) throw new Error("vaapi is not available");                                        
+
+                        args.push("-hwaccel")
+                        args.push("vaapi")
+                        args.push("-hwaccel_device")
+                        args.push(dri_to_use)
+                        args.push("-hwaccel_output_format")
+                        args.push("nv12")
+                        /*
+                        if (video.codec === "h264") {
+                            args.push(`-c:v:${i}`)
+                            args.push("h264_vaapi")
+                        } else if (video.codec === "mpeg2video") {
+                            args.push(`-c:v:${i}`)
+                            args.push("h264_vaapi")
+                        }
+                        */
+                        args.push("-async")
+                        args.push("1")
+
+                        /*
+                        args.push("-vsync")
+                        args.push("1")
+                        */
+
+                        args.push("-i")
+                        args.push(source)
+
+                        args.push("-i")
+                        args.push(watermark)
+
+                        if (video_id != -1) {
+                            filter_complex += `[0:v:#${video_id}]`
+                        } else {
+                            filter_complex += `[0:v:0]`
+                        }  
+
+                        if (supports_watermark) {
+                            filter_complex += "format=yuv420p|vaapi,hwupload,deinterlace_vaapi[a];[1:v:0]format=yuva420p|vaapi,hwupload [b]; [a][b]overlay_vaapi=x=8:y=H-h-8,setsar=1,"
+                        } else {
+                            filter_complex += "format=yuv420p,yadif[a];[1:v:0]format=yuva420p[b];[a][b]overlay=x=8:y=H-h-8,setsar=1,format=nv12|vaapi,hwupload,"
+                        }
+
+                        filter_complex += `split=${renditions.length}`
+                        for (let p = 0; p<renditions.length; p++) {
+                            filter_complex += `[temp${p}]` 
+                        }
+                        filter_complex += ";"
+
+                        for (let p = 0; p<renditions.length; p++) {
+                            filter_complex += `[temp${p}]scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]}[out${p}];` 
+                        }
+
+                        if (audio) {
+                            if (audio_id != -1) {
+                                filter_complex += `[0:a:#${audio_id}]`
+                            } else {
+                                filter_complex += "[0:a:0]"
+                            }
+
+                            if (audio_filters) {
+                                filter_complex += audio_filters
+                            } else {
+                                filter_complex += 'anull'
+                            }
+    
+                            filter_complex += "[audio]"
+                        } else {
+                            filter_complex = filter_complex.slice(0,-1)
                         }
                     }
-
-                    if (!dri_to_use) throw new Error("vaapi is not available");                                        
-
-                    args.push("-hwaccel")
-                    args.push("vaapi")
-                    args.push("-hwaccel_device")
-                    args.push(dri_to_use)
-                    args.push("-hwaccel_output_format")
-                    args.push("vaapi")
-                    /*
-                    if (video.codec === "h264") {
-                        args.push(`-c:v:${i}`)
-                        args.push("h264_vaapi")
-                    } else if (video.codec === "mpeg2video") {
-                        args.push(`-c:v:${i}`)
-                        args.push("h264_vaapi")
+                    // console.log(filter_complex)
+                
+                    temp_args.push("-map")
+                    temp_args.push(`[out${i}]`)
+                    
+                    if (audio) {
+                        temp_args.push("-map")
+                        temp_args.push("[audio]")
                     }
-                    */
-                    args.push("-async")
-                    args.push("1")
 
-                    /*
-                    args.push("-vsync")
-                    args.push("1")
-                    */
-
-                    args.push("-i")
-                    args.push(source)
-                }
-
-                const INTERP_ALGO_TO_VAAPI = {
-                    0: 0,
-                    1: 256,
-                    2: 512,
-                    3: 768
-                }
-            
-                args.push("-map")
-                if (video_id != -1) {
-                    args.push(`0:v:#${video_id}`)
-                } else {
-                    args.push("0:v:0")
-                }                
-                if (audio) {
-                    args.push("-map")
-                    if (audio_id != -1) {
-                        args.push(`0:a:#${audio_id}`)
+                    if (audio) {
+                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
                     } else {
-                        args.push("0:a:0")
-                    }
-                }
-                if (audio) {
-                    stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
-                } else {
-                    stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
-                } 
+                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
+                    } 
 
-                args.push(`-map_metadata`)
-                args.push("-1")
-                args.push(`-c:v:${i}`)
-                args.push("h264_vaapi")
-                args.push(`-filter:v:${i}`)
-                if (escape_filters) {
-                    args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1"`)
-                } else {
-                    args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1`)
-                }
-                args.push(`-compression_level:v:${i}`)
-                args.push(rendition.speed)
-            } else if (rendition.hwaccel == "nvenc") {
-                if (!is_start) {
-                    is_start = true
-                    args.push("-hwaccel")
-                    args.push("cuda")
-                    args.push("-hwaccel_output_format")
-                    args.push("nv12")
-
-                    if (video.codec === "h264") {
-                        args.push(`-c:v:${i}`)
-                        args.push("h264_cuvid")
-                    } else if (video.codec === "mpeg4") {
-                        args.push(`-c:v:${i}`)
-                        args.push("mpeg4_cuvid")
-                    } else if (video.codec === "mpeg2video") {
-                        args.push(`-c:v:${i}`)
-                        args.push("mpeg2_cuvid")
-                    } else if (video.codec === "mpeg1video") {
-                        args.push(`-c:v:${i}`)
-                        args.push("mpeg1_cuvid")
-                    }
-
-                    args.push("-async")
-                    args.push("1")
+                    temp_args.push(`-map_metadata`)
+                    temp_args.push("-1")
+                    temp_args.push(`-c:v:${i}`)
+                    temp_args.push("h264_vaapi")
 
                     /*
-                    args.push("-vsync")
-                    args.push("1")
-                    */
-
-                    args.push("-i")
-                    args.push(source)
-                }
-
-                args.push("-map")
-                if (video_id != -1) {
-                    args.push(`0:v:#${video_id}`)
-                } else {
-                    args.push("0:v:0")
-                }                
-                if (audio) {
-                    args.push("-map")
-                    if (audio_id != -1) {
-                        args.push(`0:a:#${audio_id}`)
-                    } else {
-                        args.push("0:a:0")
-                    }
-                }
-                if (audio) {
-                    stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
-                } else {
-                    stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
-                }            
-
-                args.push(`-map_metadata`)
-                args.push("-1")
-                args.push(`-c:v:${i}`)
-                args.push("h264_nvenc")
-                args.push(`-filter:v:${i}`)
-                if (escape_filters) {
-                    args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1"`)
-                } else {
-                    args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1`)
-                }
-                args.push(`-preset:v:${i}`)
-                args.push(`p${rendition.speed}`)
-
-                args.push(`-rc:v:${i}`)
-                args.push("cbr")
-
-                args.push(`-tune:v:${i}`)
-                args.push("ll")
-            } else {
-                throw new Error("hwaccel not implemented yet")
-            }
-            
-            args.push(`-profile:v:${i}`)
-            args.push(rendition.profile)
-            args.push(`-b:v:${i}`)
-            args.push(rendition.video_bitrate)
-            args.push(`-maxrate:v:${i}`)
-            args.push(rendition.video_bitrate)
-            args.push(`-bufsize:v:${i}`)
-            args.push(rendition.bufsize)
-            args.push(`-bf:v:${i}`)
-            args.push(rendition.bf)
-            args.push(`-flags:v:${i}`)
-
-            let fps = video.fps
-            if (fps >= 30) fps /= 2
-
-            if (fps != video.fps) {
-                args.push("-r")
-                args.push(fps)
-            }
-
-            args.push("+cgop")
-            args.push(`-g:v:${i}`)
-            args.push(Math.round(fps*2))
-            args.push(`-keyint_min:v:${i}`)
-            args.push(Math.round(fps*2))
-            if (audio) {
-                args.push(`-c:a:${i}`)
-                args.push(rendition.audio_codec)
-                if (rendition.audio_codec === "aac") {
-                    args.push(`-aac_coder:a:${i}`)
-                    args.push("twoloop")
-                }
-                args.push(`-b:a:${i}`)
-                args.push(rendition.audio_bitrate)
-                args.push(`-profile:a:${i}`)
-                args.push("aac_"+rendition.audio_profile)
-                if (rendition.bandwidth) {
-                    args.push(`-cutoff:a:${i}`)
-                    args.push(eval(rendition.bandwidth.replace(/\(ar\)/g, audio.sample_rate)))
-                }
-                if (audio_filters) {
-                    // console.log(audio_filters)
-                    args.push(`-filter:a:${i}`)
+                    args.push(`-filter:v:${i}`)
                     if (escape_filters) {
-                        args.push(`"${audio_filters}"`)
+                        args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1"`)
                     } else {
-                        args.push(audio_filters)
+                        args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1`)
+                    }
+                    */
+
+                    temp_args.push(`-compression_level:v:${i}`)
+                    temp_args.push(rendition.speed)
+                } else if (rendition.hwaccel == "nvenc") {
+                    if (!is_start) {
+                        is_start = true
+                        args.push("-hwaccel")
+                        args.push("cuda")
+                        args.push("-hwaccel_output_format")
+                        args.push("nv12")
+
+                        if (video.codec === "h264") {
+                            args.push(`-c:v:${i}`)
+                            args.push("h264_cuvid")
+                        } else if (video.codec === "mpeg4") {
+                            args.push(`-c:v:${i}`)
+                            args.push("mpeg4_cuvid")
+                        } else if (video.codec === "mpeg2video") {
+                            args.push(`-c:v:${i}`)
+                            args.push("mpeg2_cuvid")
+                        } else if (video.codec === "mpeg1video") {
+                            args.push(`-c:v:${i}`)
+                            args.push("mpeg1_cuvid")
+                        }
+
+                        args.push("-async")
+                        args.push("1")
+
+                        /*
+                        args.push("-vsync")
+                        args.push("1")
+                        */
+
+                        args.push("-i")
+                        args.push(source)
+
+                        args.push("-i")
+                        args.push(watermark)
+
+                        if (video_id != -1) {
+                            filter_complex += `[0:v:#${video_id}]`
+                        } else {
+                            filter_complex += `[0:v:0]`
+                        }  
+
+                        filter_complex += "format=yuv420p,hwupload_cuda,yadif_cuda[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=x=8:y=(H-h-8),setsar=1,"
+
+                        filter_complex += `split=${renditions.length}`
+                        for (let p = 0; p<renditions.length; p++) {
+                            filter_complex += `[temp${p}]` 
+                        }
+                        filter_complex += ";"
+
+                        for (let p = 0; p<renditions.length; p++) {
+                            filter_complex += `[temp${p}]scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo}[out${p}];`  
+                        }
+
+                        if (audio) {
+                            if (audio_id != -1) {
+                                filter_complex += `[0:a:#${audio_id}]`
+                            } else {
+                                filter_complex += "[0:a:0]"
+                            }
+
+                            if (audio_filters) {
+                                filter_complex += audio_filters
+                            } else {
+                                filter_complex += 'anull'
+                            }
+    
+                            filter_complex += "[audio]"
+                        } else {
+                            filter_complex = filter_complex.slice(0,-1)
+                        }
+                    }
+                    // console.log(filter_complex)
+
+                    temp_args.push("-map")
+                    temp_args.push(`[out${i}]`)
+                    
+                    if (audio) {
+                        temp_args.push("-map")
+                        temp_args.push("[audio]")
+                    }
+                    
+                    if (audio) {
+                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
+                    } else {
+                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
+                    }            
+
+                    temp_args.push(`-map_metadata`)
+                    temp_args.push("-1")
+                    temp_args.push(`-c:v:${i}`)
+                    temp_args.push("h264_nvenc")
+                    /*
+                    args.push(`-filter:v:${i}`)
+                    if (escape_filters) {
+                        args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1"`)
+                    } else {
+                        args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1`)
+                    }
+                    */
+                    temp_args.push(`-preset:v:${i}`)
+                    temp_args.push(`p${rendition.speed}`)
+
+                    temp_args.push(`-rc:v:${i}`)
+                    temp_args.push("cbr")
+
+                    temp_args.push(`-tune:v:${i}`)
+                    temp_args.push("ll")
+                } else {
+                    throw new Error("hwaccel not implemented yet")
+                }
+                
+                args.push("-filter_complex")
+                if (escape_filters) {
+                    args.push(`"${filter_complex}"`)
+                } else {
+                    args.push(filter_complex)
+                }
+                args = args.concat(temp_args)
+                args.push(`-profile:v:${i}`)
+                args.push(rendition.profile)
+                args.push(`-b:v:${i}`)
+                args.push(rendition.video_bitrate)
+                args.push(`-maxrate:v:${i}`)
+                args.push(rendition.video_bitrate)
+                args.push(`-bufsize:v:${i}`)
+                args.push(rendition.bufsize)
+                args.push(`-bf:v:${i}`)
+                args.push(rendition.bf)
+                args.push(`-flags:v:${i}`)
+
+                let fps = video.fps
+                if (fps >= 30) fps /= 2
+
+                if (fps != video.fps) {
+                    args.push("-r")
+                    args.push(fps)
+                }
+
+                args.push("+cgop")
+                args.push(`-g:v:${i}`)
+                args.push(Math.round(fps*2))
+                args.push(`-keyint_min:v:${i}`)
+                args.push(Math.round(fps*2))
+                if (audio) {
+                    args.push(`-c:a:${i}`)
+                    args.push(rendition.audio_codec)
+                    if (rendition.audio_codec === "aac") {
+                        args.push(`-aac_coder:a:${i}`)
+                        args.push("twoloop")
+                    }
+                    args.push(`-b:a:${i}`)
+                    args.push(rendition.audio_bitrate)
+                    args.push(`-profile:a:${i}`)
+                    args.push("aac_"+rendition.audio_profile)
+                    if (rendition.bandwidth) {
+                        args.push(`-cutoff:a:${i}`)
+                        args.push(eval(rendition.bandwidth.replace(/\(ar\)/g, audio.sample_rate)))
+                    }
+
+                    /*
+                    if (audio_filters) {
+                        // console.log(audio_filters)
+                        args.push(`-filter:a:${i}`)
+                        if (escape_filters) {
+                            args.push(`"${audio_filters}"`)
+                        } else {
+                            args.push(audio_filters)
+                        }
+                    }
+                    */
+                }
+            }
+        } else {
+            for (var i =0; i<renditions.length; i++) {
+                const rendition = renditions[i]
+                    
+                if (rendition.hwaccel == "vaapi") {
+                    if (!is_start) {
+                        is_start = true            
+                        const render_devices = await _globAsync("/dev/dri/render*")
+                                    
+                        for (var j =0; j<render_devices.length; j++) {
+                            try {
+                                const va_check = await check_output('vainfo', ['-a', '--display', 'drm', '--device', render_devices[j]])
+    
+                                if (va_check.includes('VAEntrypointEncSlice')) {
+                                    dri_to_use = render_devices[j]
+                                    break
+                                }
+                            } catch {
+    
+                            }
+                        }
+    
+                        if (!dri_to_use) throw new Error("vaapi is not available");                                        
+    
+                        args.push("-hwaccel")
+                        args.push("vaapi")
+                        args.push("-hwaccel_device")
+                        args.push(dri_to_use)
+                        args.push("-hwaccel_output_format")
+                        args.push("vaapi")
+                        /*
+                        if (video.codec === "h264") {
+                            args.push(`-c:v:${i}`)
+                            args.push("h264_vaapi")
+                        } else if (video.codec === "mpeg2video") {
+                            args.push(`-c:v:${i}`)
+                            args.push("h264_vaapi")
+                        }
+                        */
+                        args.push("-async")
+                        args.push("1")
+    
+                        /*
+                        args.push("-vsync")
+                        args.push("1")
+                        */
+    
+                        args.push("-i")
+                        args.push(source)
+                    }
+    
+                    const INTERP_ALGO_TO_VAAPI = {
+                        0: 0,
+                        1: 256,
+                        2: 512,
+                        3: 768
+                    }
+                
+                    args.push("-map")
+                    if (video_id != -1) {
+                        args.push(`0:v:#${video_id}`)
+                    } else {
+                        args.push("0:v:0")
+                    }                
+                    if (audio) {
+                        args.push("-map")
+                        if (audio_id != -1) {
+                            args.push(`0:a:#${audio_id}`)
+                        } else {
+                            args.push("0:a:0")
+                        }
+                    }
+                    if (audio) {
+                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
+                    } else {
+                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
+                    } 
+    
+                    args.push(`-map_metadata`)
+                    args.push("-1")
+                    args.push(`-c:v:${i}`)
+                    args.push("h264_vaapi")
+                    args.push(`-filter:v:${i}`)
+                    if (escape_filters) {
+                        args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1"`)
+                    } else {
+                        args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1`)
+                    }
+                    args.push(`-compression_level:v:${i}`)
+                    args.push(rendition.speed)
+                } else if (rendition.hwaccel == "nvenc") {
+                    if (!is_start) {
+                        is_start = true
+                        args.push("-hwaccel")
+                        args.push("cuda")
+                        args.push("-hwaccel_output_format")
+                        args.push("nv12")
+    
+                        if (video.codec === "h264") {
+                            args.push(`-c:v:${i}`)
+                            args.push("h264_cuvid")
+                        } else if (video.codec === "mpeg4") {
+                            args.push(`-c:v:${i}`)
+                            args.push("mpeg4_cuvid")
+                        } else if (video.codec === "mpeg2video") {
+                            args.push(`-c:v:${i}`)
+                            args.push("mpeg2_cuvid")
+                        } else if (video.codec === "mpeg1video") {
+                            args.push(`-c:v:${i}`)
+                            args.push("mpeg1_cuvid")
+                        }
+    
+                        args.push("-async")
+                        args.push("1")
+    
+                        /*
+                        args.push("-vsync")
+                        args.push("1")
+                        */
+    
+                        args.push("-i")
+                        args.push(source)
+                    }
+    
+                    args.push("-map")
+                    if (video_id != -1) {
+                        args.push(`0:v:#${video_id}`)
+                    } else {
+                        args.push("0:v:0")
+                    }                
+                    if (audio) {
+                        args.push("-map")
+                        if (audio_id != -1) {
+                            args.push(`0:a:#${audio_id}`)
+                        } else {
+                            args.push("0:a:0")
+                        }
+                    }
+                    if (audio) {
+                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
+                    } else {
+                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
+                    }            
+    
+                    args.push(`-map_metadata`)
+                    args.push("-1")
+                    args.push(`-c:v:${i}`)
+                    args.push("h264_nvenc")
+                    args.push(`-filter:v:${i}`)
+                    if (escape_filters) {
+                        args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1"`)
+                    } else {
+                        args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1`)
+                    }
+                    args.push(`-preset:v:${i}`)
+                    args.push(`p${rendition.speed}`)
+    
+                    args.push(`-rc:v:${i}`)
+                    args.push("cbr")
+    
+                    args.push(`-tune:v:${i}`)
+                    args.push("ll")
+                } else {
+                    throw new Error("hwaccel not implemented yet")
+                }
+                
+                args.push(`-profile:v:${i}`)
+                args.push(rendition.profile)
+                args.push(`-b:v:${i}`)
+                args.push(rendition.video_bitrate)
+                args.push(`-maxrate:v:${i}`)
+                args.push(rendition.video_bitrate)
+                args.push(`-bufsize:v:${i}`)
+                args.push(rendition.bufsize)
+                args.push(`-bf:v:${i}`)
+                args.push(rendition.bf)
+                args.push(`-flags:v:${i}`)
+    
+                let fps = video.fps
+                if (fps >= 30) fps /= 2
+    
+                if (fps != video.fps) {
+                    args.push("-r")
+                    args.push(fps)
+                }
+    
+                args.push("+cgop")
+                args.push(`-g:v:${i}`)
+                args.push(Math.round(fps*2))
+                args.push(`-keyint_min:v:${i}`)
+                args.push(Math.round(fps*2))
+                if (audio) {
+                    args.push(`-c:a:${i}`)
+                    args.push(rendition.audio_codec)
+                    if (rendition.audio_codec === "aac") {
+                        args.push(`-aac_coder:a:${i}`)
+                        args.push("twoloop")
+                    }
+                    args.push(`-b:a:${i}`)
+                    args.push(rendition.audio_bitrate)
+                    args.push(`-profile:a:${i}`)
+                    args.push("aac_"+rendition.audio_profile)
+                    if (rendition.bandwidth) {
+                        args.push(`-cutoff:a:${i}`)
+                        args.push(eval(rendition.bandwidth.replace(/\(ar\)/g, audio.sample_rate)))
+                    }
+                    if (audio_filters) {
+                        // console.log(audio_filters)
+                        args.push(`-filter:a:${i}`)
+                        if (escape_filters) {
+                            args.push(`"${audio_filters}"`)
+                        } else {
+                            args.push(audio_filters)
+                        }
                     }
                 }
             }

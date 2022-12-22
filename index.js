@@ -43,7 +43,7 @@ const config_defaults_nvenc = {
     "dtv_protocol": "frps",
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
-    "watermark": "",
+    "watermark": "(pathname)/watermarks/lv-high-50-256.png",
     "watermark_ignore_streams": [],
     "hls_settings": {
         "duration": 2,
@@ -147,7 +147,7 @@ const config_defaults = {
     "dtv_protocol": "frps",
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
-    "watermark": "",
+    "watermark": "(pathname)/watermarks/lv-high-50-256.png",
     "watermark_ignore_streams": [],
     "hls_settings": {
         "duration": 2,
@@ -734,7 +734,9 @@ if (!cluster.isPrimary) {
                     renditions_sd: config.renditions_sd, 
                     multiple_renditions: config.multiple_renditions, 
                     hls_settings: config.hls_settings,
-                    additional_params: params.additional_params
+                    additional_params: params.additional_params,
+                    watermark: config.watermark_ignore_streams.indexOf(stream_id) ? "" : config.watermark,
+                    pathname: __dirname
                 })
             } else if (type == "dtv") {
                 cur_proc.send({
@@ -751,7 +753,10 @@ if (!cluster.isPrimary) {
                     hls_settings: config.hls_settings,
                     dtv_use_fork: config.dtv_use_fork,
                     additional_params: params.additional_params,
-                    buffer_size: config.dtv_buffer_size
+                    buffer_size: config.dtv_buffer_size,
+                    watermark: config.watermark,
+                    watermark_ignore_streams: config.watermark_ignore_streams,
+                    pathname: __dirname
                 })
             }
             cur_proc.on("message", (d) => {

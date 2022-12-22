@@ -33,6 +33,11 @@ setInterval(QuitCheck, 2000);
 
 RunSignal.once("run", (params) => {    
     const src_url = `http://${params.src}:8999/stream=${params.src_id}.ts`
+    var ad_param = {};
+
+    if (params.additional_params) {
+        ad_param = JSON.parse(params.additional_params)
+    }   
 
     check_output(params.ffmpeg.replace(/mpeg/g, "probe"), [..."-probesize 8M -loglevel quiet -print_format json -show_error -show_format -show_streams".split(" "), src_url]).then((o) => {
         const probe_streams = JSON.parse(o).streams
@@ -79,7 +84,7 @@ RunSignal.once("run", (params) => {
         //console.log(current_rendition)
 
         if (USE_TSDUCK) {
-            ffmp_args.genSingle("-", current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, params.additional_params).then((e) => {
+            ffmp_args.genSingle("-", current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, ad_param.audio_params, false, params.watermark).then((e) => {
                 // "-loglevel", "quiet", 
                 const args = ["-loglevel", "quiet", "-y"].concat(e)
                 
@@ -170,7 +175,7 @@ RunSignal.once("run", (params) => {
                 process.exit(1)
             })
         } else (
-            ffmp_args.genSingle(src_url, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, params.additional_params).then((e) => {
+            ffmp_args.genSingle(src_url, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, ad_param.audio_params, false, params.watermark).then((e) => {
                 // "-loglevel", "quiet", 
                 const args = ["-loglevel", "quiet", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-y"].concat(e)
                 
