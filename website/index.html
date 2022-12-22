@@ -695,6 +695,7 @@
                         $('#dvb-setting > #dvb-msg').text("No channels found!")
                         return
                     }
+                    
                     $("#dvb-setting > #recent-scan").prop("disabled", false)
                     $('#dvb-results').prop("hidden", false)
                     $('#dvb-results > #cancel').prop("hidden", false)
@@ -721,6 +722,7 @@
                     activeCheckbox = 0
 
                     $('#channels-listbox').empty()
+
                     listBoxCH = []
                     for (let i = 0; i<autoScanSaved[freq].length; i++) {
                         const chn = autoScanSaved[freq][i]
@@ -823,7 +825,9 @@
                     const next_scan = pending_list.slice(1)
                     $('#dvb-setting > #dvb-msg').text("")
                     $("#add-channels > #create").prop("disabled", true)
-                    $("#dvb-setting > #recent-scan").prop("disabled", true)                        
+                    $("#dvb-setting > #recent-scan").prop("disabled", true)  
+                    $("#dvb-results > #channels > center > #additional-params").val('')
+                    
                     DVBAppliedStreams = undefined
                     $('#auto-scan-progress > #scan-progress').val(progress)
                     $('#auto-scan-progress > #status').text(`${pending_list[0]}mhz / ${bandwidth}M / ${Object.keys(autoScanSaved).length} channels found`)
@@ -987,6 +991,8 @@
                         }
                         $("#dvb2ip-channels > #channels-list > fieldset > #channel").empty()
                         $("#dvb2ip-channels > #channels-list > fieldset > #channel").val(0)
+                        $("#dvb2ip-results > #dvb2ip-channels > center > #additional-params").val('')
+
                         $("#dvb2ip-results").prop("hidden", false)
                         for (let i = 0; i<d.channels.length; i++) {
                             const channel = d.channels[i]
