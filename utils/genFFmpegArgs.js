@@ -183,6 +183,9 @@ module.exports = {
 
                     temp_args.push(`-compression_level:v:${i}`)
                     temp_args.push(rendition.speed)
+
+                    temp_args.push(`-rc_mode:v:${i}`)
+                    temp_args.push('2')
                 } else if (rendition.hwaccel == "nvenc") {
                     if (!is_start) {
                         is_start = true
