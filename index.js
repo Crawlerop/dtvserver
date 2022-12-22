@@ -254,6 +254,7 @@ if (!cluster.isPrimary) {
     const fastify = require("fastify")
     const fastify_cors = require("@fastify/cors")
     const fastify_static = require("@fastify/static")
+
     // const fastify_plugin = require("fastify-plugin")
 
     const app_play = fastify.fastify({trustProxy: ['loopback', 'linklocal', 'uniquelocal']})
@@ -366,7 +367,7 @@ if (!cluster.isPrimary) {
                         {
                             name: st_channel.name,
                             is_hd: st_channel.is_hd,
-                            playback_url: `/play/${stream.stream_id}/${st_channel.id}/index.m3u8`
+                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/${st_channel.id}/index.m3u8`
                         }
                     )
                 }
@@ -387,7 +388,7 @@ if (!cluster.isPrimary) {
                         {
                             name: stream.name,
                             is_hd: false,
-                            playback_url: `/play/${stream.stream_id}/index.m3u8`
+                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/index.m3u8`
                         }
                     ]
                 })
@@ -411,7 +412,26 @@ if (!cluster.isPrimary) {
     })
     */
 
-    app_play.listen({port: config.play_port})
+    app_play.listen({port: config.play_port}, (e) => {
+        console.log(`worker ${process.env.cluster_id}-${process.pid} has been started`)
+        if (config.dtv_protocol == "frp" && process.env.cluster_id == 1) {
+            setTimeout(() => {
+                // frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "--ue"])
+                frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error"])
+                
+                frp_cp.stderr.pipe(proc.stderr)
+                frp_cp.stdout.pipe(proc.stdout)
+            }, 2000)
+        } else if (config.dtv_protocol == "frps" && process.env.cluster_id == 1) {
+            setTimeout(() => {
+                // frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "--ue"])
+                frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "--tls_enable", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error"])
+                
+                frp_cp.stderr.pipe(proc.stderr)
+                frp_cp.stdout.pipe(proc.stdout)
+            }, 2000)
+        }
+    })
 } else {
     const app = express();
 
@@ -475,21 +495,9 @@ if (!cluster.isPrimary) {
 
     if (config.dtv_forward_key) {
         if (config.dtv_protocol == "frp") {
-            setTimeout(() => {
-                // frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "--ue"])
-                frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error"])
-                
-                frp_cp.stderr.pipe(proc.stderr)
-                frp_cp.stdout.pipe(proc.stdout)
-            }, 4000)
+            
         } else if (config.dtv_protocol == "frps") {
-            setTimeout(() => {
-                // frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "--ue"])
-                frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "--tls_enable", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error"])
-                
-                frp_cp.stderr.pipe(proc.stderr)
-                frp_cp.stdout.pipe(proc.stdout)
-            }, 4000)
+            
         } else {
             ws_p = new ws(`${config.dtv_protocol}://${config.dtv_forward_host}/ws/dtv?token=${config.dtv_forward_key}`, {
                 createWebSocket: url => new ws_a(url),
@@ -911,7 +919,7 @@ if (!cluster.isPrimary) {
                         {
                             name: st_channel.name,
                             is_hd: st_channel.is_hd,
-                            playback_url: `/play/${stream.stream_id}/${st_channel.id}/index.m3u8`
+                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/${st_channel.id}/index.m3u8`
                         }
                     )
                 }
@@ -932,7 +940,7 @@ if (!cluster.isPrimary) {
                         {
                             name: stream.name,
                             is_hd: false,
-                            playback_url: `/play/${stream.stream_id}/index.m3u8`
+                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/index.m3u8`
                         }
                     ]
                 })
