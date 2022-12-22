@@ -667,6 +667,8 @@
                             DVBAppliedStreams = d.params.channels
                             $("#dvb-setting > #adapter").val(d.params.tuner)                                                                            
                             $('#dvb-setting > #dvb-msg').text(`${d.params.frequency}mhz / ${d.params.channels.length} channels selected`)
+                            $('#dvb-results > #multiplexes > #frequency').empty()
+                            $('#dvb-results > #multiplexes > #frequency').append(`<fast-option value="${d.params.frequency}">${d.params.frequency}mhz`)
                             $('#dvb-results > #multiplexes > #frequency').val(d.params.frequency)
                             $("#dvb-results > #channels > center > #additional-params").val(d.params.additional_params)
                         } else if (d.type == "dvb2ip") {
@@ -687,10 +689,7 @@
                 var DTV_SYSTEM = "DVB-T2"
                 var DVBAppliedStreams;
 
-                const showMultiplexersList = () => {                    
-                    $('#dvb-results > #multiplexes > #frequency').empty()
-                    $('#dvb-results > #multiplexes > #frequency').val(0)
-                    
+                const showMultiplexersList = () => {                                        
                     if (Object.keys(autoScanSaved).length <= 0) {
                         $('#dvb-setting > #dvb-msg').text("No channels found!")
                         return
@@ -850,6 +849,9 @@
                             autoScan(adapter, next_scan, ++progress, bandwidth)
                         } else {
                             $('#auto-scan-progress').prop("hidden", true)
+                            $('#dvb-results > #multiplexes > #frequency').empty()
+                            $('#dvb-results > #multiplexes > #frequency').val(0)
+
                             showMultiplexersList()
                         }
                     })
