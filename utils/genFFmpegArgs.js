@@ -110,9 +110,9 @@ module.exports = {
                         }  
 
                         if (supports_watermark) {
-                            filter_complex += "format=yuv420p|vaapi,hwupload,deinterlace_vaapi[a];[1:v:0]format=yuva420p|vaapi,hwupload[b];[a][b]overlay_vaapi=x=8:y=H-h-8,"
+                            filter_complex += "format=yuv420p|vaapi,hwupload,deinterlace_vaapi[a];[1:v:0]format=yuva420p|vaapi,hwupload[b];[a][b]overlay_vaapi=x=16:y=H-h-16,"
                         } else {
-                            filter_complex += "format=yuv420p,yadif[a];[1:v:0]format=yuva420p[b];[a][b]overlay=x=8:y=H-h-8,format=nv12|vaapi,hwupload,"
+                            filter_complex += "format=yuv420p,yadif[a];[1:v:0]format=yuva420p[b];[a][b]overlay=x=16:y=H-h-16,format=nv12|vaapi,hwupload,"
                         }
 
                         filter_complex += `split=${renditions.length}`
@@ -217,7 +217,7 @@ module.exports = {
                             filter_complex += `[0:v:0]`
                         }  
 
-                        filter_complex += "format=yuv420p,hwupload_cuda,yadif_cuda[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=x=8:y=(H-h-8),"
+                        filter_complex += "format=yuv420p,hwupload_cuda,yadif_cuda[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=x=16:y=H-h-16,"
 
                         filter_complex += `split=${renditions.length}`
                         for (let p = 0; p<renditions.length; p++) {
