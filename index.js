@@ -40,6 +40,7 @@ const config_defaults_nvenc = {
     "name": "DTV Uplink Server",
     "dtv_forward_host": "dvb.ucomsite.my.id:31460",
     "dtv_forward_key": "",
+    "dtv_geoblock": false,
     "dtv_protocol": "frps",
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
@@ -145,6 +146,7 @@ const config_defaults = {
     "name": "DTV Uplink Server",
     "dtv_forward_host": "dvb.ucomsite.my.id:31460",
     "dtv_forward_key": "",
+    "dtv_geoblock": false,
     "dtv_protocol": "frps",
     "streams_path": "(pathname)/streams/",
     "ffmpeg": "ffmpeg",
@@ -323,7 +325,8 @@ if (!cluster.isPrimary) {
             num_streams: (await streams.query()).length,
             country: geo_params.country,
             region_id: geo_params.region_id,
-            dtv_area: geo_params.dtv_area
+            dtv_area: geo_params.dtv_area,
+            is_geoblock: config.dtv_geoblock
         })
     })
 
@@ -1235,7 +1238,8 @@ if (!cluster.isPrimary) {
             num_streams: (await streams.query()).length,
             country: geo_params.country,
             region_id: geo_params.region_id,
-            dtv_area: geo_params.dtv_area
+            dtv_area: geo_params.dtv_area,
+            is_geoblock: config.dtv_geoblock
         })
     })
 
