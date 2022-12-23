@@ -21,6 +21,7 @@ const Knex = require("knex")
 const knex = Knex(require("./knexFile"))
 const objection = require("objection");
 const dtv_postcode = require("./dtv_postcodes.json")
+const m3u8 = require("m3u8")
 
 objection.Model.knex(knex)
 

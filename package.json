@@ -25,6 +25,7 @@
     "glob": "^8.0.3",
     "knex": "^2.3.0",
     "luxon": "^3.1.0",
+    "m3u8": "^0.0.10",
     "node-media-server": "^2.4.9",
     "node-upnp-control-point": "^0.0.3",
     "nominatim-client": "^3.2.1",
