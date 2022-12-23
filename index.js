@@ -331,7 +331,7 @@ if (!cluster.isPrimary) {
     })
 
     app_play.get("/playlist.m3u", async (req, res) => {
-        const streams_ = await streams.query()
+        const streams_ = await streams.query().where("active", "=", true)
         var streams_out = []
         var m3u = "#EXTM3U\n"
 
@@ -354,7 +354,7 @@ if (!cluster.isPrimary) {
     })
 
     app_play.get("/api/streams", async (req, res) => {
-        const streams_ = await streams.query()
+        const streams_ = await streams.query().where("active", "=", true)
 
         res.header("x-playback-worker", process.pid)
 
