@@ -84,6 +84,7 @@
                     <fast-button id="delete" disabled>Delete</fast-button>
                     <fast-button id="activate" disabled>Activate</fast-button>
                     <fast-button id="play" disabled>Play</fast-button>
+                    <fast-button id="dvr" disabled>DVR</fast-button>
                     <fast-button id="publish-url" disabled>Copy publish url to clipboard</fast-button>
                     <fast-button id="tuner-status">Tuner status</fast-button>
                     <fast-button id="settings">Settings</fast-button>
@@ -594,6 +595,7 @@
                     $("#toolbar > #edit").prop("disabled", true)
                     $("#toolbar > #activate").prop("disabled", true)
                     $("#toolbar > #play").prop("disabled", true)
+                    $("#toolbar > #dvr").prop("disabled", true)
                     $("#toolbar > #publish-url").prop("disabled", true)
 
                     $.get("/api/streams").done((d) => {
@@ -1090,6 +1092,7 @@
                     $("#toolbar > #delete").prop("disabled", false)
                     $("#toolbar > #edit").prop("disabled", false)
                     $("#toolbar > #play").prop("disabled", false)
+                    $("#toolbar > #dvr").prop("disabled", false)
 
                     if (StreamsList[streamVal].type !== 'rtmp' && StreamsList[streamVal].active === true) {
                         $("#toolbar > #activate").text("Deactivate")
