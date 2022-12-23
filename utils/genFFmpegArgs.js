@@ -97,8 +97,10 @@ module.exports = {
                             args.push("h264_vaapi")
                         }
                         */
-                        args.push("-async")
-                        args.push("1")
+                        if (video.fps == fps) {
+                            args.push("-async")
+                            args.push("1")
+                        }
 
                         /*
                         args.push("-vsync")
@@ -226,8 +228,10 @@ module.exports = {
                             }
                         }
 
-                        args.push("-async")
-                        args.push("1")
+                        if (video.fps == fps) {
+                            args.push("-async")
+                            args.push("1")
+                        }
 
                         /*
                         args.push("-vsync")
