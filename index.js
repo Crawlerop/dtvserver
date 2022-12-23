@@ -767,6 +767,7 @@ if (!cluster.isPrimary) {
                     dtv_use_fork: config.dtv_use_fork,
                     additional_params: params.additional_params,
                     buffer_size: config.dtv_buffer_size,
+                    system: params.system ? params.system : "DVB-T2",
                     watermark: config.watermark,
                     watermark_ignore_streams: config.watermark_ignore_streams,
                     pathname: __dirname
@@ -1062,6 +1063,7 @@ if (!cluster.isPrimary) {
                         tuner: req.body.tuner,
                         frequency: req.body.frequency,
                         channels: req.body.channels,
+                        system: req.body.system ? req.body.system : "DVB-T2",
                         additional_params: req.body.additional_params
                     }
                 })
@@ -1142,6 +1144,7 @@ if (!cluster.isPrimary) {
                         tuner: req.body.tuner,
                         frequency: req.body.frequency,
                         channels: req.body.channels,
+                        system: req.body.system ? req.body.system : "DVB-T2",
                         additional_params: req.body.additional_params
                     })
                 }).where("stream_id", '=', req.body.id)
@@ -1150,6 +1153,7 @@ if (!cluster.isPrimary) {
                     tuner: req.body.tuner,
                     frequency: req.body.frequency,
                     channels: req.body.channels,
+                    system: req.body.system ? req.body.system : "DVB-T2",
                     additional_params: req.body.additional_params
                 })
                 return res.status(200).json({status: "ok"})                                    

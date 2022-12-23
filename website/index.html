@@ -132,7 +132,7 @@
                         <fast-radio-group id="dtv-system" value="dvbt2">
                             <fast-radio value="dvbt2">DVB-T2</fast-radio>         
                             <fast-radio value="dvbt">DVB-T</fast-radio>         
-                            <fast-radio value="atsc" disabled>ATSC</fast-radio>         
+                            <fast-radio value="atsc">ATSC</fast-radio>         
                             <fast-radio value="isdb" disabled>ISDB</fast-radio>        
                             <fast-radio value="dtmb" disabled>DTMB</fast-radio>            
                         </fast-radio-group>
@@ -239,7 +239,7 @@
                         -->
                     </fast-select><br/><br/>
                     Frequency (Mhz):
-                    <fast-number-field min="48.0" max="870.0" maxLength="8" value="177.5" id="frequency"></fast-number-field><br/><br/>
+                    <fast-number-field min="48.0" max="870.0" maxLength="8" value="48.0" id="frequency"></fast-number-field><br/><br/>
                     Bandwidth
                     <fast-select id="bandwidth" value="8">
                         <!--
@@ -562,12 +562,20 @@
                     803.142857 // 69
                 ]
 
-                for (let i = 0; i<VHF_FREQUENCIES.length; i++) {
-                    $("#manual-scan-box > #channel").append(`<fast-option value="vhf_${i}">CH${(i+VHF_START_NUM).toString().padStart(2,"0")}</fast-option>`)   
-                }
+                const setupManualScan = (vhf, uhf, vhf_start_num, uhf_start_num) => {
+                    $("#manual-scan-box > #channel").empty()
 
-                for (let i = 0; i<UHF_FREQUENCIES.length; i++) {
-                    $("#manual-scan-box > #channel").append(`<fast-option value="uhf_${i}">CH${(i+UHF_START_NUM).toString().padStart(2,"0")}</fast-option>`)   
+                    for (let i = 0; i<vhf.length; i++) {
+                        $("#manual-scan-box > #channel").append(`<fast-option value="vhf_${i}">CH${(i+vhf_start_num).toString().padStart(2,"0")}</fast-option>`)   
+                    }
+
+                    for (let i = 0; i<uhf.length; i++) {
+                        $("#manual-scan-box > #channel").append(`<fast-option value="uhf_${i}">CH${(i+uhf_start_num).toString().padStart(2,"0")}</fast-option>`)   
+                    }
+
+                    $("#manual-scan-box > #frequency").val(vhf[0])
+
+                    $("#manual-scan-box > #channel").val("vhf_0")
                 }
 
                 $.get("/api/tuners").done((d) => {
@@ -597,15 +605,24 @@
                     })
                 }
 
-                $("#manual-scan-box > #channel").val("vhf_0")
-
                 $("#manual-scan-box > #channel").change(() => {
                     const val = $("#manual-scan-box > #channel").val()
                     const channel_id = parseInt(val.split("_")[1])
-                    if (val.startsWith("vhf_")) {
-                        $("#manual-scan-box > #frequency").val(VHF_FREQUENCIES[channel_id])
-                    } else {
-                        $("#manual-scan-box > #frequency").val(UHF_FREQUENCIES[channel_id])
+                    switch (DTV_SYSTEM) {
+                        case "ATSC":
+                            if (val.startsWith("vhf_")) {
+                                $("#manual-scan-box > #frequency").val(VHF_FREQUENCIES_ATSC[channel_id])
+                            } else {
+                                $("#manual-scan-box > #frequency").val(UHF_FREQUENCIES_ATSC[channel_id])
+                            }
+                            break
+                        default:
+                            if (val.startsWith("vhf_")) {
+                                $("#manual-scan-box > #frequency").val(VHF_FREQUENCIES[channel_id])
+                            } else {
+                                $("#manual-scan-box > #frequency").val(UHF_FREQUENCIES[channel_id])
+                            }
+                            break
                     }
                 })
 
@@ -665,12 +682,30 @@
                         
                         if (d.type == "dtv") {
                             DVBAppliedStreams = d.params.channels
+                            DTV_SYSTEM = d.params.system
+                            switch (DTV_SYSTEM) {
+                                case "DVB-T2":
+                                    $("#dtv-system").val('dvbt2')
+                                    break
+                                case "DVB-T":
+                                    $("#dtv-system").val('dvbt')
+                                    break
+                                case "ATSC":
+                                    $("#dtv-system").val('atsc')
+                                    break
+                                case "ISDB-T":
+                                    $("#dtv-system").val('isdb')
+                                    $("#isdb-system-type").prop('hidden', false)
+                                    $("#isdb-system-type > #isdb-type").val(d.params.isdb_type)
+                                    break
+                            }
                             $("#dvb-setting > #adapter").val(d.params.tuner)                                                                            
                             $('#dvb-setting > #dvb-msg').text(`${d.params.frequency}mhz / ${d.params.channels.length} channels selected`)
                             $('#dvb-results > #multiplexes > #frequency').empty()
                             $('#dvb-results > #multiplexes > #frequency').append(`<fast-option value="${d.params.frequency}">${d.params.frequency}mhz`)
                             $('#dvb-results > #multiplexes > #frequency').val(d.params.frequency)
                             $("#dvb-results > #channels > center > #additional-params").val(d.params.additional_params)
+                            
                         } else if (d.type == "dvb2ip") {
                             $("#dvb2ip-setting > #source").val(d.params.src)
                             DVB2IPSelectedStream = d.params.src_id
@@ -858,6 +893,17 @@
                 }
 
                 $("#dvb-setting > #manual-scan").click(() => {
+                    switch (DTV_SYSTEM) {
+                        case "ATSC":
+                            $("#manual-scan-box > #bandwidth").val(6)
+                            setupManualScan(VHF_FREQUENCIES_ATSC, UHF_FREQUENCIES_ATSC, VHF_START_NUM_ATSC, UHF_START_NUM_ATSC)
+                            break
+                        default:
+                            $("#manual-scan-box > #bandwidth").val(8)
+                            setupManualScan(VHF_FREQUENCIES, UHF_FREQUENCIES, VHF_START_NUM, UHF_START_NUM)
+                            break
+                    }
+
                     $("#manual-scan-menu").prop("hidden", false)
                 })
 
@@ -882,6 +928,23 @@
                             FREQUENCIES = UHF_FREQUENCIES
                             break
                     }
+
+                    switch (DTV_SYSTEM) {
+                        case "ATSC":
+                            FREQUENCIES = VHF_FREQUENCIES_ATSC.concat(UHF_FREQUENCIES_ATSC)
+                            switch ($("#scan-frequencies").val()) {
+                                case "vhf":
+                                    FREQUENCIES = VHF_FREQUENCIES_ATSC
+                                    break
+                                case "uhf":
+                                    FREQUENCIES = UHF_FREQUENCIES_ATSC
+                                    break
+                            }
+                            break
+                        case "ISDB-T":
+                            break
+                    }
+
                     $('#auto-scan-progress').prop("hidden", false)
                     $('#auto-scan-progress > #scan-progress').attr("max", FREQUENCIES.length-1)
                     autoScanSaved = {}
@@ -904,7 +967,7 @@
                             break
                         case "isdb":
                             $("#isdb-type").prop("hidden", false)
-                            DTV_SYSTEM = "ISDB"                            
+                            DTV_SYSTEM = "ISDB-T"                            
                             break
                     }                    
                 })
@@ -921,6 +984,7 @@
                                     type: "dtv",
                                     tuner: parseInt($("#dvb-setting > #adapter").val()),
                                     frequency: parseInt($('#dvb-results > #multiplexes > #frequency').val()),
+                                    system: DTV_SYSTEM,
                                     channels: DVBAppliedStreams,
                                     additional_params: $("#dvb-results > #channels > center > #additional-params").val()
                                 }),
