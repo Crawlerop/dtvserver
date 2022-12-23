@@ -1171,7 +1171,7 @@ if (!cluster.isPrimary) {
 
             for (let b = 0; b<5; b++) {
                 try {
-                    dtv_chunk = await check_output('tsp', `-I dvb --signal-timeout 2 --guard-interval auto --receive-timeout 10 --adapter ${req.body.tuner} --delivery-system ${req.body.system_type} --frequency ${req.body.frequency*1e6} --bandwidth ${req.body.bandwidth*1e6} --transmission-mode auto --spectral-inversion off`.split(" "), 128)
+                    dtv_chunk = await check_output('tsp', `-I dvb --signal-timeout 2 --guard-interval auto --receive-timeout 10 --adapter ${req.body.tuner} --delivery-system ${req.body.system_type} --frequency ${req.body.frequency*1e6} ${req.body.system_type !== "ATSC" ? `--bandwidth ${req.body.bandwidth*1e6} ` : ''}--transmission-mode auto --spectral-inversion off`.split(" "), 128)
                     found = true
                     break;
                 } catch (e) {}
