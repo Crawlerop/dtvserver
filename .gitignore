@@ -1,5 +1,5 @@
 upstream.db
 node_modules/
-streams/
+# streams/
 config.json
 package-lock.json
