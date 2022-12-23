@@ -54,7 +54,7 @@ ExecSignal.once("exec", (args, folders) => {
                 tuner: passed_params.tuner,
                 frequency: passed_params.frequency,
                 channels: passed_params.channels,
-                system: params.system,
+                system: passed_params.system,
                 additional_params: passed_params.additional_params
             }})
             process.exit(1)
