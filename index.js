@@ -441,6 +441,18 @@ if (!cluster.isPrimary) {
 } else {
     const app = express();
 
+    const read_m3u8 = (file) => {
+        return new Promise((res, rej) => {
+            const m3u8_parse = m3u8.createStream()
+            const read_stream = fs_sync.createReadStream(file)
+
+            read_stream.pipe(m3u8_parse)
+            m3u8_parse.on("m3u", res)
+
+            read_stream.on("error", rej)
+        })
+    }
+
     app.enable("trust proxy")
     app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']) 
     app.use(express.json())
