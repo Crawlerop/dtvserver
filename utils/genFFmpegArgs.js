@@ -39,10 +39,15 @@ module.exports = {
 
         args.push("-nostdin")
 
+        let fps = video.fps
+        if (fps >= 30) fps /= 2
+
         if (watermark) {
             var filter_complex = ""
             var temp_args = []
             for (var i =0; i<renditions.length; i++) {
+                temp_args = []
+
                 const rendition = renditions[i]
                 var supports_watermark = false    
 
@@ -123,14 +128,14 @@ module.exports = {
                             filter_complex += `format=yuv420p,yadif,scale=${video.height*WIDESCREEN}:${video.height}:flags=neighbor[a];[1:v:0]format=yuva420p[b];[a][b]overlay=shortest=1:x=16:y=H-h-16,format=nv12|vaapi,hwupload,`
                         }
 
-                        filter_complex += `split=${renditions.length}`
+                        filter_complex += `fps=${fps},split=${renditions.length}`
                         for (let p = 0; p<renditions.length; p++) {
                             filter_complex += `[temp${p}]` 
                         }
                         filter_complex += ";"
 
                         for (let p = 0; p<renditions.length; p++) {
-                            filter_complex += `[temp${p}]scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1[out${p}];` 
+                            filter_complex += `[temp${p}]scale_vaapi=${renditions[p].width}:${renditions[p].height}:mode=${INTERP_ALGO_TO_VAAPI[renditions[p].interp_algo]},setsar=1[out${p}];` 
                         }
 
                         if (audio) {
@@ -146,9 +151,19 @@ module.exports = {
                                 filter_complex += 'anull'
                             }
     
-                            filter_complex += "[audio]"
+                            filter_complex += `,asplit=${renditions.length}`
+                            for (let p = 0; p<renditions.length; p++) {
+                                filter_complex += `[audio${p}]`
+                            }
                         } else {
                             filter_complex = filter_complex.slice(0,-1)
+                        }
+
+                        args.push("-filter_complex")
+                        if (escape_filters) {
+                            args.push(`"${filter_complex}"`)
+                        } else {
+                            args.push(filter_complex)
                         }
                     }
                     // console.log(filter_complex)
@@ -158,13 +173,13 @@ module.exports = {
                     
                     if (audio) {
                         temp_args.push("-map")
-                        temp_args.push("[audio]")
+                        temp_args.push(`[audio${i}]`)
                     }
 
                     if (audio) {
-                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
+                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")} `
                     } else {
-                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
+                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")} `
                     } 
 
                     temp_args.push(`-map_metadata`)
@@ -236,14 +251,14 @@ module.exports = {
 
                         filter_complex += `format=yuv420p,hwupload_cuda,yadif_cuda,scale_cuda=${video.height*WIDESCREEN}:${video.height}:interp_algo=1[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=shortest=1:x=16:y=H-h-16,`
 
-                        filter_complex += `split=${renditions.length}`
+                        filter_complex += `fps=${fps},split=${renditions.length}`
                         for (let p = 0; p<renditions.length; p++) {
                             filter_complex += `[temp${p}]` 
                         }
                         filter_complex += ";"
 
                         for (let p = 0; p<renditions.length; p++) {
-                            filter_complex += `[temp${p}]scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1[out${p}];`  
+                            filter_complex += `[temp${p}]scale_cuda=${renditions[p].width}:${renditions[p].height}:interp_algo=${renditions[p].interp_algo},setsar=1[out${p}];`  
                         }
 
                         if (audio) {
@@ -259,9 +274,19 @@ module.exports = {
                                 filter_complex += 'anull'
                             }
     
-                            filter_complex += "[audio]"
+                            filter_complex += `,asplit=${renditions.length}`
+                            for (let p = 0; p<renditions.length; p++) {
+                                filter_complex += `[audio${p}]`
+                            }
                         } else {
                             filter_complex = filter_complex.slice(0,-1)
+                        }
+
+                        args.push("-filter_complex")
+                        if (escape_filters) {
+                            args.push(`"${filter_complex}"`)
+                        } else {
+                            args.push(filter_complex)
                         }
                     }
                     // console.log(filter_complex)
@@ -271,13 +296,13 @@ module.exports = {
                     
                     if (audio) {
                         temp_args.push("-map")
-                        temp_args.push("[audio]")
+                        temp_args.push(`[audio${i}]`)
                     }
                     
                     if (audio) {
-                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
+                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")} `
                     } else {
-                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
+                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")} `
                     }            
 
                     temp_args.push(`-map_metadata`)
@@ -304,12 +329,6 @@ module.exports = {
                     throw new Error("hwaccel not implemented yet")
                 }
                 
-                args.push("-filter_complex")
-                if (escape_filters) {
-                    args.push(`"${filter_complex}"`)
-                } else {
-                    args.push(filter_complex)
-                }
                 args = args.concat(temp_args)
                 args.push(`-profile:v:${i}`)
                 args.push(rendition.profile)
@@ -322,16 +341,15 @@ module.exports = {
                 args.push(`-bf:v:${i}`)
                 args.push(rendition.bf)
                 args.push(`-flags:v:${i}`)
-
-                let fps = video.fps
-                if (fps >= 30) fps /= 2
-
-                if (fps != video.fps) {
-                    args.push("-r")
-                    args.push(fps)
-                }
-
                 args.push("+cgop")
+
+                /*
+                if (fps != video.fps) {
+                    args.push(`-r:v:${i}`)
+                    args.push(`${fps}`)
+                }
+                */
+
                 args.push(`-g:v:${i}`)
                 args.push(Math.round(fps*2))
                 args.push(`-keyint_min:v:${i}`)
@@ -438,9 +456,9 @@ module.exports = {
                         }
                     }
                     if (audio) {
-                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
+                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")} `
                     } else {
-                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
+                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")} `
                     } 
     
                     args.push(`-map_metadata`)
@@ -449,9 +467,9 @@ module.exports = {
                     args.push("h264_vaapi")
                     args.push(`-filter:v:${i}`)
                     if (escape_filters) {
-                        args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1"`)
+                        args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}"`)
                     } else {
-                        args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1`)
+                        args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}`)
                     }
                     args.push(`-compression_level:v:${i}`)
                     args.push(rendition.speed)
@@ -507,9 +525,9 @@ module.exports = {
                         }
                     }
                     if (audio) {
-                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")}`
+                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")} `
                     } else {
-                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")}`
+                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")} `
                     }            
     
                     args.push(`-map_metadata`)
@@ -518,9 +536,9 @@ module.exports = {
                     args.push("h264_nvenc")
                     args.push(`-filter:v:${i}`)
                     if (escape_filters) {
-                        args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1"`)
+                        args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}"`)
                     } else {
-                        args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1`)
+                        args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}`)
                     }
                     args.push(`-preset:v:${i}`)
                     args.push(`p${rendition.speed}`)
@@ -545,16 +563,15 @@ module.exports = {
                 args.push(`-bf:v:${i}`)
                 args.push(rendition.bf)
                 args.push(`-flags:v:${i}`)
-    
-                let fps = video.fps
-                if (fps >= 30) fps /= 2
-    
-                if (fps != video.fps) {
-                    args.push("-r")
-                    args.push(fps)
-                }
-    
                 args.push("+cgop")
+    
+                /*
+                if (fps != video.fps) {
+                    args.push(`-r:v:${i}`)
+                    args.push(`${fps}`)
+                }
+                */
+    
                 args.push(`-g:v:${i}`)
                 args.push(Math.round(fps*2))
                 args.push(`-keyint_min:v:${i}`)
@@ -588,7 +605,12 @@ module.exports = {
         }
 
         args.push("-var_stream_map")
-        args.push(stream_map)
+
+        if (escape_filters) {
+            args.push(`"${stream_map}"`)
+        } else {
+            args.push(stream_map)
+        }
 
         args.push("-hls_time")
         args.push(hls_settings.duration)

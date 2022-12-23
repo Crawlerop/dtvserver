@@ -684,7 +684,7 @@
                         
                         if (d.type == "dtv") {
                             DVBAppliedStreams = d.params.channels
-                            DTV_SYSTEM = d.params.system
+                            DTV_SYSTEM = d.params.system ? d.params.system : "DVB-T2"
                             switch (DTV_SYSTEM) {
                                 case "DVB-T2":
                                     $("#dtv-system").val('dvbt2')
