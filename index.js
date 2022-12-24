@@ -968,6 +968,46 @@ if (!cluster.isPrimary) {
         return res.status(200).json(streams_out)
     });
 
+    const m3u8 = require("m3u8")
+    var DVR_STREAMS = []
+
+    app.get("/api/dvr/status", async (req, res) => {
+        if (!req.body.id) return res.status(400).json({error: "A stream id must be specified."})
+
+        const stream = await streams.query().where("stream_id", "=", req.body.id)
+        if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
+
+        return res.status(200).json({is_recording: DVR_STREAMS.indexOf(req.body.id) !== -1})
+    })
+
+    app.post("/api/dvr/start", async (req, res) => {
+        if (!req.body.id) return res.status(400).json({error: "A stream id must be specified."})
+
+        const stream = await streams.query().where("stream_id", "=", req.body.id)
+        if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
+
+        if (DVR_STREAMS.indexOf(req.body.id) !== -1) {
+            DVR_STREAMS.push(req.body.id)
+            return res.status(200).json({status: "OK"})
+        } else {
+            return res.status(400).json({error: "Stream is already recording"})
+        }
+    })
+
+    app.post("/api/dvr/stop", async (req, res) => {
+        if (!req.body.id) return res.status(400).json({error: "A stream id must be specified."})
+
+        const stream = await streams.query().where("stream_id", "=", req.body.id)
+        if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
+
+        if (DVR_STREAMS.indexOf(req.body.id) === -1) {
+            return res.status(400).json({error: "Stream is not recording"})
+        } else {
+            DVR_STREAMS = DVR_STREAMS.filter((x) => {return x != req.body.id})
+            return res.status(200).json({status: "OK"})
+        }
+    })
+
     app.post("/api/shutdown", (req, res) => {
         res.status(200).json({status: "OK"})
         setTimeout(async () => {
