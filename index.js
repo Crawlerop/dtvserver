@@ -36,6 +36,7 @@ const {CancelablePromise} = require("cancelable-promise");
 */
 
 const streams = require("./db/streams");
+const dvr = require("./db/dvr")
 
 const config_defaults_nvenc = {
     "name": "DTV Uplink Server",
@@ -969,7 +970,7 @@ if (!cluster.isPrimary) {
     });
 
     const m3u8 = require("m3u8")
-    var DVR_STREAMS = []
+    var DVR_STREAMS = {}
 
     app.get("/api/dvr/status", async (req, res) => {
         if (!req.body.id) return res.status(400).json({error: "A stream id must be specified."})
@@ -977,7 +978,7 @@ if (!cluster.isPrimary) {
         const stream = await streams.query().where("stream_id", "=", req.body.id)
         if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
-        return res.status(200).json({is_recording: DVR_STREAMS.indexOf(req.body.id) !== -1})
+        return res.status(200).json({is_recording: DVR_STREAMS[req.body.id] !== undefined})
     })
 
     app.post("/api/dvr/start", async (req, res) => {
@@ -986,11 +987,22 @@ if (!cluster.isPrimary) {
         const stream = await streams.query().where("stream_id", "=", req.body.id)
         if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
-        if (DVR_STREAMS.indexOf(req.body.id) !== -1) {
-            DVR_STREAMS.push(req.body.id)
-            return res.status(200).json({status: "OK"})
+        if (stream[0].type == "dtv") {
+            if (!req.body.program) return res.status(400).json({error: "A channel must be specified."})
+
+            if (DVR_STREAMS[`${req.body.id}/${req.body.program}`] === undefined) {
+                DVR_STREAMS[`${req.body.id}/${req.body.program}`] = crypto.randomBytes(64).toString("hex")
+                return res.status(200).json({status: "OK"})
+            } else {
+                return res.status(400).json({error: "Stream is already recording"})
+            }
         } else {
-            return res.status(400).json({error: "Stream is already recording"})
+            if (DVR_STREAMS[req.body.id] === undefined) {
+                DVR_STREAMS[req.body.id] = crypto.randomBytes(64).toString("hex")
+                return res.status(200).json({status: "OK"})
+            } else {
+                return res.status(400).json({error: "Stream is already recording"})
+            }
         }
     })
 
@@ -1000,11 +1012,33 @@ if (!cluster.isPrimary) {
         const stream = await streams.query().where("stream_id", "=", req.body.id)
         if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
-        if (DVR_STREAMS.indexOf(req.body.id) === -1) {
-            return res.status(400).json({error: "Stream is not recording"})
+        if (stream[0].type == "dtv") {
+            if (!req.body.program) return res.status(400).json({error: "A channel must be specified."})
+
+            if (DVR_STREAMS[`${req.body.id}/${req.body.program}`] !== undefined) {
+                await dvr.query().insert({
+                    stream_id: req.body.id,
+                    channel: req.body.program,
+                    dvr_id: DVR_STREAMS[`${req.body.id}/${req.body.program}`],
+                    created_on: Date.now()
+                })
+                delete DVR_STREAMS[`${req.body.id}/${req.body.program}`]
+                return res.status(200).json({status: "OK"})
+            } else {
+                return res.status(400).json({error: "Stream is not recording"})
+            }
         } else {
-            DVR_STREAMS = DVR_STREAMS.filter((x) => {return x != req.body.id})
-            return res.status(200).json({status: "OK"})
+            if (DVR_STREAMS[req.body.id] !== undefined) {
+                await dvr.query().insert({
+                    stream_id: req.body.id,
+                    dvr_id: DVR_STREAMS[req.body.id],
+                    created_on: Date.now()
+                })
+                delete DVR_STREAMS[req.body.id]
+                return res.status(200).json({status: "OK"})
+            } else {
+                return res.status(400).json({error: "Stream is not recording"})
+            }
         }
     })
 

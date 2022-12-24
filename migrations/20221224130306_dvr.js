@@ -8,9 +8,11 @@ exports.up = function(knex) {
       table.increments('id').primary()
 
       table.string("stream_id").notNullable()
+      table.string("channel").defaultTo(0)
       table.string("dvr_id").notNullable()
-      table.string("dvr_path").notNullable()
-      table.jsonb("params").notNullable()
+      //table.string("dvr_path").notNullable()
+      table.date("created_on").notNullable()
+      //table.jsonb("params").notNullable()
     })
 };
 
