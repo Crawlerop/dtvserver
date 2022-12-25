@@ -1135,8 +1135,10 @@
                     }).done((d) => {
                         if (StreamsList[streamVal].active) {
                             $("#toolbar > #activate").text("Activate")
+                            $("#toolbar > #dvr").prop("disabled", true)
                         } else {
                             $("#toolbar > #activate").text("Deactivate")
+                            $("#toolbar > #dvr").prop("disabled", false)
                         }
 
                         StreamsList[streamVal].active = !StreamsList[streamVal].active
