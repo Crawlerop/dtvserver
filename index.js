@@ -47,7 +47,7 @@ const config_defaults_nvenc = {
     "streams_path": "(pathname)/streams/",
     "dvr_path": "(pathname)/dvr/",
     "ffmpeg": "ffmpeg",
-    "watermark": "(pathname)/watermarks/lv-high-50-256.png",
+    "watermark": "(pathname)/watermarks/lv-high-50-256-dark3.png",
     "watermark_ignore_streams": [],
     "hls_settings": {
         "duration": 2,
@@ -64,8 +64,8 @@ const config_defaults_nvenc = {
             "height": 720,
             "speed": 1,
             "profile": "high",
-            "video_bitrate": 2000000,
-            "bufsize": 2500000,
+            "video_bitrate": 1500000,
+            "bufsize": 2000000,
             "bf": 2,
             "interp_algo": 1,
             "audio_bitrate": 128000,
@@ -78,8 +78,8 @@ const config_defaults_nvenc = {
             "height": 360,
             "speed": 1,
             "profile": "main",
-            "video_bitrate": 800000,
-            "bufsize": 1300000,
+            "video_bitrate": 500000,
+            "bufsize": 1000000,
             "bf": 2,
             "interp_algo": 1,
             "audio_bitrate": 96000,
@@ -92,8 +92,8 @@ const config_defaults_nvenc = {
             "height": 180,
             "speed": 1,
             "profile": "baseline",
-            "video_bitrate": 400000,
-            "bufsize": 900000,
+            "video_bitrate": 375000,
+            "bufsize": 875000,
             "bf": 2,
             "interp_algo": 1,
             "audio_bitrate": 64000,
@@ -108,8 +108,8 @@ const config_defaults_nvenc = {
             "height": 360,
             "speed": 1,
             "profile": "main",
-            "video_bitrate": 800000,
-            "bufsize": 1300000,
+            "video_bitrate": 500000,
+            "bufsize": 1000000,
             "bf": 2,
             "interp_algo": 1,
             "audio_bitrate": 64000,
@@ -123,8 +123,8 @@ const config_defaults_nvenc = {
             "height": 180,
             "speed": 1,
             "profile": "baseline",
-            "video_bitrate": 400000,
-            "bufsize": 900000,
+            "video_bitrate": 375000,
+            "bufsize": 875000,
             "bf": 2,
             "interp_algo": 1,
             "audio_bitrate": 48000,
@@ -154,7 +154,7 @@ const config_defaults = {
     "streams_path": "(pathname)/streams/",
     "dvr_path": "(pathname)/dvr/",
     "ffmpeg": "ffmpeg",
-    "watermark": "(pathname)/watermarks/lv-high-50-256.png",
+    "watermark": "(pathname)/watermarks/lv-high-50-256-dark3.png",
     "watermark_ignore_streams": [],
     "hls_settings": {
         "duration": 2,
@@ -373,6 +373,7 @@ if (!cluster.isPrimary) {
                     ch_mux.push(
                         {
                             name: st_channel.name,
+                            id: st_channel.id,
                             is_hd: st_channel.is_hd,
                             playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/${st_channel.id}/index.m3u8`
                         }
@@ -394,6 +395,7 @@ if (!cluster.isPrimary) {
                     channels: [
                         {
                             name: stream.name,
+                            id: 0,
                             is_hd: false,
                             playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/index.m3u8`
                         }
@@ -938,6 +940,7 @@ if (!cluster.isPrimary) {
                     ch_mux.push(
                         {
                             name: st_channel.name,
+                            id: st_channel.id,
                             is_hd: st_channel.is_hd,
                             playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/${st_channel.id}/index.m3u8`
                         }
@@ -959,6 +962,7 @@ if (!cluster.isPrimary) {
                     channels: [
                         {
                             name: stream.name,
+                            id: 0,
                             is_hd: false,
                             playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/index.m3u8`
                         }
@@ -972,13 +976,29 @@ if (!cluster.isPrimary) {
     const m3u8 = require("m3u8")
     var DVR_STREAMS = {}
 
-    app.get("/api/dvr/status", async (req, res) => {
+    app.post("/api/dvr/status", async (req, res) => {
         if (!req.body.id) return res.status(400).json({error: "A stream id must be specified."})
 
         const stream = await streams.query().where("stream_id", "=", req.body.id)
         if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
-        return res.status(200).json({is_recording: DVR_STREAMS[req.body.id] !== undefined})
+        if (stream[0].type == "dtv") {
+            if (!req.body.program) return res.status(400).json({error: "A program must be specified."})
+            return res.status(200).json({is_recording: DVR_STREAMS[`${req.body.id}/${req.body.program}`] !== undefined, recordings: await dvr.query().where("stream_id", "=", req.body.id).where("channel", "=", req.body.program)})
+        } else {
+            return res.status(200).json({is_recording: DVR_STREAMS[req.body.id] !== undefined, recordings: await dvr.query().where("stream_id", "=", req.body.id)})
+        }
+    })
+
+    app.post("/api/dvr/delete", async (req, res) => {
+        if (!req.body.id) return res.status(400).json({error: "A stream id must be specified."})
+
+        const dvri = await dvr.query().where("dvr_id", "=", req.body.id)
+        if (dvri.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
+
+        await dvr.query().delete().where("dvr_id", "=", req.body.id)
+
+        return res.status(200).json({status: "OK"})
     })
 
     app.post("/api/dvr/start", async (req, res) => {
@@ -987,8 +1007,10 @@ if (!cluster.isPrimary) {
         const stream = await streams.query().where("stream_id", "=", req.body.id)
         if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
+        if (!stream[0].active) res.status(200).json({error: "Stream is not active"})
+
         if (stream[0].type == "dtv") {
-            if (!req.body.program) return res.status(400).json({error: "A channel must be specified."})
+            if (!req.body.program) return res.status(400).json({error: "A program id must be specified."})
 
             if (DVR_STREAMS[`${req.body.id}/${req.body.program}`] === undefined) {
                 DVR_STREAMS[`${req.body.id}/${req.body.program}`] = crypto.randomBytes(64).toString("hex")
@@ -1012,16 +1034,20 @@ if (!cluster.isPrimary) {
         const stream = await streams.query().where("stream_id", "=", req.body.id)
         if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
+        if (!stream[0].active) res.status(200).json({error: "Stream is not active"})
+
         if (stream[0].type == "dtv") {
-            if (!req.body.program) return res.status(400).json({error: "A channel must be specified."})
+            if (!req.body.program) return res.status(400).json({error: "A program id must be specified."})
 
             if (DVR_STREAMS[`${req.body.id}/${req.body.program}`] !== undefined) {
+                
                 await dvr.query().insert({
                     stream_id: req.body.id,
                     channel: req.body.program,
                     dvr_id: DVR_STREAMS[`${req.body.id}/${req.body.program}`],
                     created_on: Date.now()
                 })
+                
                 delete DVR_STREAMS[`${req.body.id}/${req.body.program}`]
                 return res.status(200).json({status: "OK"})
             } else {

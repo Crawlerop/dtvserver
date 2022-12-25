@@ -316,6 +316,18 @@
             <fast-button appearance="accent" id="back" style="float: left">Back</fast-button>   
             <fast-button appearance="accent" id="watch" style="float: right">Watch</fast-button>                             
         </fast-dialog>
+        <fast-dialog modal="true" id="dvr-menu" style="--dialog-width: 640px; --dialog-height: 480px" hidden>
+            <fast-button appearance="accent" id="close" style="float: right"><b>X</b></fast-button>    
+            <h2>DVR</h2>
+            <div id="dvr-list" style="width: 640px; height: 360px; overflow: auto">
+                <fast-listbox id="list"></fast-listbox>
+            </div>
+            Channel: <fast-select id="channel"></fast-select>&nbsp;
+            <fast-button appearance="accent" id="start" disabled>Start</fast-button>&nbsp;
+            <fast-button appearance="accent" id="stop" disabled>Stop</fast-button>&nbsp;
+            <fast-button appearance="accent" id="play" disabled>Play</fast-button>&nbsp;
+            <fast-button appearance="accent" id="delete" disabled>Delete</fast-button>                                
+        </fast-dialog>
         <script>
             $(() => {                
                 /* Those frequencies only applies to DVB-T standard */
@@ -1092,7 +1104,7 @@
                     $("#toolbar > #delete").prop("disabled", false)
                     $("#toolbar > #edit").prop("disabled", false)
                     $("#toolbar > #play").prop("disabled", false)
-                    $("#toolbar > #dvr").prop("disabled", false)
+                    $("#toolbar > #dvr").prop("disabled", !StreamsList[streamVal].active)
 
                     if (StreamsList[streamVal].type !== 'rtmp' && StreamsList[streamVal].active === true) {
                         $("#toolbar > #activate").text("Deactivate")
@@ -1291,6 +1303,126 @@
                 $("#video-player-list > #watch").click(() => {
                     $("#video-player-list").prop("hidden", true)
                     playVideo($("#video-player-list > #list-content > #program").val())
+                })
+
+                const updateDVRStatus = (base=true, id=-1) => {
+                    const streamVal = $("#streams > fast-option")[$("#streams").prop("selectedIndex")].value
+                    $.ajax("/api/dvr/status", {
+                        data: JSON.stringify({
+                            id: StreamsList[streamVal].id,
+                            program: id !== -1 ? id : StreamsList[streamVal].channels[0].id       
+                        }),
+                        contentType: "application/JSON",
+                        type: "POST"
+                    }).done((d) => {
+                        if (d.is_recording) {
+                            $("#dvr-menu > #start").prop("disabled", true)
+                            $("#dvr-menu > #stop").prop("disabled", false)
+                        } else {
+                            $("#dvr-menu > #start").prop("disabled", false)
+                            $("#dvr-menu > #stop").prop("disabled", true)
+                        }
+
+                        $("#dvr-menu > #play").prop("disabled", true)
+                        $("#dvr-menu > #delete").prop("disabled", true)
+
+                        $("#dvr-menu > #dvr-list > #list").empty()
+                        $("#dvr-menu > #dvr-list > #list").attr("selectedIndex", 0)
+
+                        for (let i = 0; i<d.recordings.length; i++) {
+                            const recording = d.recordings[i]
+                            console.log(d.recordings)
+                            $("#dvr-menu > #dvr-list > #list").append(`<fast-option value="${recording.dvr_id}">${recording.created_on}</fast-option>`)
+                        }
+
+                        if (base) {
+                            $("#dvr-menu > #channel").empty()
+                            $("#dvr-menu > #channel").val("")
+
+                            for (let i = 0; i<StreamsList[streamVal].channels.length; i++) {
+                                const channel = StreamsList[streamVal].channels[i]
+                                $("#dvr-menu > #channel").append(`<fast-option value="${channel.id}">${channel.name}</fast-option>`)
+                            }
+                        }
+
+                        $("#dvr-menu").prop("hidden", false)
+                    })
+                }
+
+                var c;
+
+                $("#dvr-menu > #channel").change((e) => {
+                    if (!c) {
+                        c = () => {
+                            console.log(e)
+                            c = null
+
+                            updateDVRStatus(false, $("#dvr-menu > #channel").val())
+                        }
+
+                        console.log("c")
+                        setTimeout(c, 100)
+                    }
+                })
+
+                $("#dvr-menu > #start").click(() => {
+                    const streamVal = $("#streams > fast-option")[$("#streams").prop("selectedIndex")].value
+                    $("#dvr-menu > #start").prop("disabled", true)
+                    $("#dvr-menu > #stop").prop("disabled", true)
+
+                    $("#dvr-menu > #play").prop("disabled", true)
+                    $("#dvr-menu > #delete").prop("disabled", true)
+
+                    $.ajax("/api/dvr/start", {
+                        data: JSON.stringify({
+                            id: StreamsList[streamVal].id,
+                            program: $("#dvr-menu > #channel").val()                            
+                        }),
+                        contentType: "application/JSON",
+                        type: "POST"
+                    }).done(() => updateDVRStatus(false, $("#dvr-menu > #channel").val())).fail(() => updateDVRStatus(false, $("#dvr-menu > #channel").val()))
+                })
+
+                $("#dvr-menu > #stop").click(() => {
+                    const streamVal = $("#streams > fast-option")[$("#streams").prop("selectedIndex")].value
+                    $("#dvr-menu > #start").prop("disabled", true)
+                    $("#dvr-menu > #stop").prop("disabled", true)
+
+                    $("#dvr-menu > #play").prop("disabled", true)
+                    $("#dvr-menu > #delete").prop("disabled", true)
+
+                    $.ajax("/api/dvr/stop", {
+                        data: JSON.stringify({
+                            id: StreamsList[streamVal].id,
+                            program: $("#dvr-menu > #channel").val()                          
+                        }),
+                        contentType: "application/JSON",
+                        type: "POST"
+                    }).done(() => updateDVRStatus(false, $("#dvr-menu > #channel").val())).fail(() => updateDVRStatus(false, $("#dvr-menu > #channel").val()))
+                })
+
+                $("#dvr-menu > #dvr-list > #list").click(() => {
+                    if ($("#dvr-menu > #dvr-list > #list").prop("selectedIndex") === -1) return
+                    $("#dvr-menu > #play").prop("disabled", false)
+                    $("#dvr-menu > #delete").prop("disabled", false)
+                })
+
+                $("#dvr-menu > #delete").click(() => {
+                    $.ajax("/api/dvr/delete", {
+                        data: JSON.stringify({
+                            id: $("#dvr-menu > #dvr-list > #list > fast-option")[$("#dvr-menu > #dvr-list > #list").prop("selectedIndex")].value                      
+                        }),
+                        contentType: "application/JSON",
+                        type: "POST"
+                    }).done(() => updateDVRStatus(false, $("#dvr-menu > #channel").val())).fail(() => updateDVRStatus(false, $("#dvr-menu > #channel").val()))
+                })
+
+                $("#dvr-menu > #close").click(() => {
+                    $("#dvr-menu").prop("hidden", true)
+                })
+
+                $("#toolbar > #dvr").click(() => {
+                    updateDVRStatus()
                 })
 
                 updateStreamsList()
