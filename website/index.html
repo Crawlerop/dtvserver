@@ -1423,6 +1423,11 @@
                     $("#dvr-menu").prop("hidden", true)
                 })
 
+                $("#dvr-menu > #play").click(() => {
+                    $("#dvr-menu").prop("hidden", true)
+                    playVideo(`/dvr/${$("#dvr-menu > #dvr-list > #list > fast-option")[$("#dvr-menu > #dvr-list > #list").prop("selectedIndex")].value}/index.m3u8`)
+                })
+
                 $("#toolbar > #dvr").click(() => {
                     updateDVRStatus()
                 })

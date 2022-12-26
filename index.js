@@ -263,15 +263,77 @@ if (!cluster.isPrimary) {
 
     // const fastify_plugin = require("fastify-plugin")
 
-    const app_play = fastify.fastify({trustProxy: ['loopback', 'linklocal', 'uniquelocal']})
+    const app_play = fastify.fastify({maxParamLength: 256, trustProxy: ['loopback', 'linklocal', 'uniquelocal']})
 
     app_play.register(fastify_static, {
-        root: config.streams_path.replace(/\(pathname\)/g, __dirname)
+        root: config.streams_path.replace(/\(pathname\)/g, __dirname),
+        serve: false
+    })
+
+    app_play.register(fastify_static, {
+        root: config.dvr_path.replace(/\(pathname\)/g, __dirname),
+        prefix: "/dvr/",
+        decorateReply: false,
+        index: false
     })
 
     app_play.register(fastify_cors, {
-
+        
     })
+
+    app_play.addHook('onSend', function (req, res, payload, next) {
+        if (req.url.startsWith("/dvr/")) {
+            if (res.getHeader('content-type') === 'application/vnd.apple.mpegurl') {
+                res.header('Content-Type', 'application/x-mpegurl')
+            }
+        }
+        next()
+    })
+
+    /*
+    app_play.get("/dvr/:stream/:file", async (req, res) => {
+        const file_path = req.params.file
+
+        res.header("x-playback-worker", process.pid)
+
+        if (file_path.endsWith(".ts")) {
+            const have_stream = await dvr.query().where("dvr_id", "=", req.params.stream)
+            if (have_stream.length <= 0) {
+                return res.status(404).send({error: "This stream is non-existent."})
+            }
+
+            const streams_path = `${config.dvr_path.replace(/\(pathname\)/g, __dirname)}/${req.params.stream}/`
+            if (!fs_sync.existsSync(`${streams_path}/`)) return res.status(404).send({error: "This stream is not available."})
+            if (!fs_sync.existsSync(`${streams_path}/${file_path}`)) return res.status(404).send({error: "Not found"})
+
+            return res.status(200).sendFile(`${req.params.stream}/${file_path}`)                          
+        } else if (file_path.endsWith(".m3u8")) {
+            const have_stream = await dvr.query().where("dvr_id", "=", req.params.stream)
+            if (have_stream.length <= 0) {
+                return res.status(404).send({error: "This stream is non-existent."})
+            }
+
+            const streams_path = `${config.dvr_path.replace(/\(pathname\)/g, __dirname)}/${req.params.stream}/`
+            if (!fs_sync.existsSync(`${streams_path}/`)) return res.status(404).send({error: "This stream is not available."})
+
+            try {
+                const hls_ts_file = await fs.readFile(`${streams_path}/${file_path}`, {encoding: "utf-8"})
+
+                return res.status(200).header("Content-Type", "application/x-mpegurl").send(hls_ts_file.replace(/\r/g, ""))
+            } catch (e) {            
+                if (e.code == "ENOENT") {
+                    res.status(404).send({error: "Not found"})
+                } else {
+                    console.trace(e)
+                    res.status(500).send({error: e})
+                }         
+            }
+
+        } else {
+            return res.status(403).send({error: "Not OTT content"})
+        }
+    })
+    */
 
     app_play.get("/play/:stream/:file/:file2?", async (req, res) => {
         const file_path = req.params.file+(req.params.file2 ? ("/"+req.params.file2) : "")
@@ -422,6 +484,10 @@ if (!cluster.isPrimary) {
     */
 
     app_play.listen({port: config.play_port}, (e) => {
+        if (e) {
+            console.trace(e); 
+            return
+        }
         console.log(`worker ${process.env.cluster_id}-${process.pid} has been started`)
         if (config.dtv_protocol == "frp" && process.env.cluster_id == 1) {
             setTimeout(() => {
@@ -812,6 +878,12 @@ if (!cluster.isPrimary) {
     app.get("/index.html", (req,res)=>{res.sendFile(path.join(__dirname,"website/index.html"))})
     app.use("/static/", express.static(path.join(__dirname, "/website_res/")))
 
+    app.use("/dvr/", express.static(config.dvr_path.replace(/\(pathname\)/g, __dirname), {index: false, setHeaders: (res, path) => {
+        if (path.endsWith(".m3u8")) {
+            res.header('Content-Type', 'application/x-mpegurl')
+        }
+    }}))
+
     app.get("/play/:stream/:file/:file2?", cors(), async (req, res) => {
         const file_path = req.params.file+(req.params.file2 ? ("/"+req.params.file2) : "")
 
@@ -973,8 +1045,9 @@ if (!cluster.isPrimary) {
         return res.status(200).json(streams_out)
     });
 
-    const m3u8 = require("m3u8")
+    //const m3u8 = require("m3u8")
     var DVR_STREAMS = {}
+    var DVR_PROC = {}
 
     app.post("/api/dvr/status", async (req, res) => {
         if (!req.body.id) return res.status(400).json({error: "A stream id must be specified."})
@@ -997,6 +1070,9 @@ if (!cluster.isPrimary) {
         if (dvri.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
         await dvr.query().delete().where("dvr_id", "=", req.body.id)
+        try {
+            await fs.rm(`${config.dvr_path.replace(/\(pathname\)/g, __dirname)}/${req.body.id}`, {force: true, recursive: true})
+        } catch (e) {}
 
         return res.status(200).json({status: "OK"})
     })
@@ -1014,6 +1090,14 @@ if (!cluster.isPrimary) {
 
             if (DVR_STREAMS[`${req.body.id}/${req.body.program}`] === undefined) {
                 DVR_STREAMS[`${req.body.id}/${req.body.program}`] = crypto.randomBytes(64).toString("hex")
+                DVR_PROC[DVR_STREAMS[`${req.body.id}/${req.body.program}`]] = cp.fork(path.join(__dirname, "/scripts/dvr.js"))
+                DVR_PROC[DVR_STREAMS[`${req.body.id}/${req.body.program}`]].send({
+                    stream_id: req.body.id,
+                    channel: req.body.program,
+                    target: DVR_STREAMS[`${req.body.id}/${req.body.program}`]
+                })
+
+                await fs.mkdir(`${config.dvr_path.replace(/\(pathname\)/g, __dirname)}/${DVR_STREAMS[`${req.body.id}/${req.body.program}`]}`)
                 return res.status(200).json({status: "OK"})
             } else {
                 return res.status(400).json({error: "Stream is already recording"})
@@ -1021,6 +1105,14 @@ if (!cluster.isPrimary) {
         } else {
             if (DVR_STREAMS[req.body.id] === undefined) {
                 DVR_STREAMS[req.body.id] = crypto.randomBytes(64).toString("hex")
+                DVR_PROC[DVR_STREAMS[req.body.id]] = cp.fork(path.join(__dirname, "/scripts/dvr.js"))
+                DVR_PROC[DVR_STREAMS[req.body.id]].send({
+                    stream_id: req.body.id,
+                    channel: -1,
+                    target: DVR_STREAMS[req.body.id]
+                })
+
+                await fs.mkdir(`${config.dvr_path.replace(/\(pathname\)/g, __dirname)}/${DVR_STREAMS[req.body.id]}`)
                 return res.status(200).json({status: "OK"})
             } else {
                 return res.status(400).json({error: "Stream is already recording"})
@@ -1048,6 +1140,8 @@ if (!cluster.isPrimary) {
                     created_on: Date.now()
                 })
                 
+                DVR_PROC[DVR_STREAMS[`${req.body.id}/${req.body.program}`]].send({quit: true, abort: false})
+                delete DVR_PROC[DVR_STREAMS[`${req.body.id}/${req.body.program}`]]
                 delete DVR_STREAMS[`${req.body.id}/${req.body.program}`]
                 return res.status(200).json({status: "OK"})
             } else {
@@ -1060,6 +1154,9 @@ if (!cluster.isPrimary) {
                     dvr_id: DVR_STREAMS[req.body.id],
                     created_on: Date.now()
                 })
+
+                DVR_PROC[DVR_STREAMS[req.body.id]].send({quit: true, abort: false})
+                delete DVR_PROC[DVR_STREAMS[req.body.id]]
                 delete DVR_STREAMS[req.body.id]
                 return res.status(200).json({status: "OK"})
             } else {
@@ -1124,6 +1221,23 @@ if (!cluster.isPrimary) {
             addDTVJobs(req.body.id, stream[0].type, JSON.parse(stream[0].params))
         } else {
             if (StreamDTVJobs[req.body.id]) StreamDTVJobs[req.body.id].send({quit: true, stream_id: req.body.id})
+            
+            if (stream[0].type === "dtv") {
+                const TMP_DVR = DVR_STREAMS
+                for (k in TMP_DVR) {
+                    if (k.startsWith(`${req.body.id}/`)) {
+                        DVR_PROC[DVR_STREAMS[k]].send({quit: true, abort: true})
+
+                        delete DVR_PROC[DVR_STREAMS[k]]
+                        delete DVR_STREAMS[k]
+                    }
+                }
+            } else if (DVR_PROC[DVR_STREAMS[`${req.body.id}`]]) {
+                DVR_PROC[DVR_STREAMS[`${req.body.id}`]].send({quit: true, abort: true})
+
+                delete DVR_PROC[DVR_STREAMS[`${req.body.id}`]]
+                delete DVR_STREAMS[`${req.body.id}`]
+            }
         }
         return res.status(200).json({status: "ok"})
     });
@@ -1134,7 +1248,26 @@ if (!cluster.isPrimary) {
         if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})    
         if (StreamDTVJobs[req.body.id]) StreamDTVJobs[req.body.id].send({quit: true, stream_id: req.body.id})
         
+        if (stream[0].type === "dtv") {
+            const TMP_DVR = DVR_STREAMS
+            for (k in TMP_DVR) {
+                if (k.startsWith(`${req.body.id}/`)) {
+                    DVR_PROC[DVR_STREAMS[k]].send({quit: true, abort: true})
+
+                    delete DVR_PROC[DVR_STREAMS[k]]
+                    delete DVR_STREAMS[k]
+                }
+            }
+        } else if (DVR_PROC[DVR_STREAMS[`${req.body.id}`]]) {
+            DVR_PROC[DVR_STREAMS[`${req.body.id}`]].send({quit: true, abort: true})
+
+            delete DVR_PROC[DVR_STREAMS[`${req.body.id}`]]
+            delete DVR_STREAMS[`${req.body.id}`]
+        }
+
         await streams.query().delete().where("stream_id", '=', req.body.id)
+        await dvr.query().delete().where("stream_id", '=', req.body.id)
+
         return res.status(200).json({status: "ok"})
     });
 
@@ -1223,6 +1356,23 @@ if (!cluster.isPrimary) {
         if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
 
         if (StreamDTVJobs[req.body.id]) StreamDTVJobs[req.body.id].send({quit: true, stream_id: req.body.id})
+        
+        if (stream[0].type === "dtv") {
+            const TMP_DVR = DVR_STREAMS
+            for (k in TMP_DVR) {
+                if (k.startsWith(`${req.body.id}/`)) {
+                    DVR_PROC[DVR_STREAMS[k]].send({quit: true, abort: true})
+
+                    delete DVR_PROC[DVR_STREAMS[k]]
+                    delete DVR_STREAMS[k]
+                }
+            }
+        } else if (DVR_PROC[DVR_STREAMS[`${req.body.id}`]]) {
+            DVR_PROC[DVR_STREAMS[`${req.body.id}`]].send({quit: true, abort: true})
+
+            delete DVR_PROC[DVR_STREAMS[`${req.body.id}`]]
+            delete DVR_STREAMS[`${req.body.id}`]
+        }
 
         switch (req.body.type) {
             case "rtmp":
