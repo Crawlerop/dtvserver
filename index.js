@@ -1606,7 +1606,7 @@ if (!cluster.isPrimary) {
                             break
                         default:
                             geo_params.region_id = `${n_res.address["ISO3166-2-lvl4"]}/${n_res.address.city.toUpperCase()}`
-                            geo_params.dtv_area = `${n_res.address["ISO3166-2-lvl4"]}/n.n_res.city`.dtv_area = n_res.city
+                            geo_params.dtv_area = n_res.address.city
                             break
                     }
                 }
@@ -1658,7 +1658,7 @@ if (!cluster.isPrimary) {
                                 break
                             default:
                                 geo_params.region_id = `${n_res.address["ISO3166-2-lvl4"]}/${n_res.address.city.toUpperCase()}`
-                                geo_params.dtv_area = `${n_res.address["ISO3166-2-lvl4"]}/n.n_res.city`
+                                geo_params.dtv_area = n_res.address.city
                                 break
                         }
                     }
