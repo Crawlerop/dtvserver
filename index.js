@@ -1057,9 +1057,9 @@ if (!cluster.isPrimary) {
 
         if (stream[0].type == "dtv") {
             if (!req.body.program) return res.status(400).json({error: "A program must be specified."})
-            return res.status(200).json({is_recording: DVR_STREAMS[`${req.body.id}/${req.body.program}`] !== undefined, recordings: await dvr.query().where("stream_id", "=", req.body.id).where("channel", "=", req.body.program)})
+            return res.status(200).json({is_recording: DVR_STREAMS[`${req.body.id}/${req.body.program}`] !== undefined, recordings: await dvr.query().where("stream_id", "=", req.body.id).where("channel", "=", req.body.program).orderBy("created_on", "desc")})
         } else {
-            return res.status(200).json({is_recording: DVR_STREAMS[req.body.id] !== undefined, recordings: await dvr.query().where("stream_id", "=", req.body.id)})
+            return res.status(200).json({is_recording: DVR_STREAMS[req.body.id] !== undefined, recordings: await dvr.query().where("stream_id", "=", req.body.id).orderBy("created_on", "desc")})
         }
     })
 
