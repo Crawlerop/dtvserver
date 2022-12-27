@@ -408,7 +408,7 @@ module.exports = {
                         args.push("-hwaccel_device")
                         args.push(dri_to_use)
                         args.push("-hwaccel_output_format")
-                        args.push("vaapi")
+                        args.push("nv12")
                         /*
                         if (video.codec === "h264") {
                             args.push(`-c:v:${i}`)
