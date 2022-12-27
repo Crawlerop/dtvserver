@@ -20,11 +20,11 @@ const startProcess = () => {
     process.stderr.write(`Restart transcode stream for channel ${args[2]}\n`)
     
     
-    //process.stdin.read()
+    process.stdin.read()
 
     
     setTimeout(() => {
-        //process.stdin.read()
+        process.stdin.read()
         startProcess()
     }, 250)
     
