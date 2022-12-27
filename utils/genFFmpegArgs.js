@@ -100,10 +100,8 @@ module.exports = {
                         args.push("-async")
                         args.push("1")
 
-                        /*
                         args.push("-vsync")
                         args.push("1")
-                        */
 
                         args.push("-i")
                         args.push(source)
@@ -229,10 +227,8 @@ module.exports = {
                         args.push("-async")
                         args.push("1")
 
-                        /*
                         args.push("-vsync")
                         args.push("1")
-                        */
 
                         args.push("-i")
                         args.push(source)
@@ -425,10 +421,8 @@ module.exports = {
                         args.push("-async")
                         args.push("1")
     
-                        /*
                         args.push("-vsync")
-                        args.push("1")
-                        */
+                        args.push("1")                        
     
                         args.push("-i")
                         args.push(source)
@@ -501,10 +495,8 @@ module.exports = {
                         args.push("-async")
                         args.push("1")
     
-                        /*
                         args.push("-vsync")
                         args.push("1")
-                        */
     
                         args.push("-i")
                         args.push(source)
