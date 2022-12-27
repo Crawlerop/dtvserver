@@ -319,8 +319,10 @@ module.exports = {
                     temp_args.push(`-rc:v:${i}`)
                     temp_args.push("cbr")
 
+                    /*
                     temp_args.push(`-tune:v:${i}`)
                     temp_args.push("ll")
+                    */
                 } else {
                     throw new Error("hwaccel not implemented yet")
                 }
@@ -538,8 +540,10 @@ module.exports = {
                     args.push(`-rc:v:${i}`)
                     args.push("cbr")
     
+                    /*
                     args.push(`-tune:v:${i}`)
                     args.push("ll")
+                    */
                 } else {
                     throw new Error("hwaccel not implemented yet")
                 }
