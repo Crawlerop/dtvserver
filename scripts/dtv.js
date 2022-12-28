@@ -6,6 +6,7 @@ const ffmp_args = require("../utils/genFFmpegArgs")
 const fs = require("fs")
 const fs_p = require("fs/promises")
 const path = require("path")
+const os = require("os")
 
 //var passed_params = {}
 //var is_ready = false
@@ -103,12 +104,11 @@ ExecSignal.once("exec", (args, folders) => {
     }  
     
 
-    /*
     tsduck.stdout.on("data", (d) => {
-        process.send(d.to)
+        console.log(`${params.frequency}-${params.tuner}:${os.EOL}${d}`)
     })
-    */
 
+    //tsduck.stdout.pipe(process.stdout)
     tsduck.stderr.pipe(process.stderr)
 })
 
@@ -183,7 +183,7 @@ RunSignal.once("run", async (params) => {
                 //tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
                 //tsp_args.push(`tsp -P zap ${channel.id} | node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
                 //console.log(`${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
-                tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
+                tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} -stats_period 5 -progress - ${tsp_fork_prm.join(" ")}'`)
                 //tsp_args.push(`python ${path.join(__dirname, "/cmds")}/repeat.py "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
             } else {
                 //tsp_args.push(`${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
