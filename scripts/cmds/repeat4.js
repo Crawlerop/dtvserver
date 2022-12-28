@@ -21,7 +21,7 @@ setInterval(() => {
 
 const startProcess = () => {
     //process.stderr.write(args.slice(3).join(" ")+"\n")
-    app = cp.spawn(args[3], args[4])
+    app = cp.spawn(args[3], args.slice(4))
 
     app.on("exit", () => {
         process.stderr.write(`Restart transcode stream for channel ${args[2]}\n`)
