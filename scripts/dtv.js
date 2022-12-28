@@ -105,7 +105,7 @@ ExecSignal.once("exec", (args, folders) => {
     
 
     tsduck.stdout.on("data", (d) => {
-        console.log(`${params.frequency}-${params.tuner}:${os.EOL}${d}`)
+        console.log(`${passed_params.frequency}-${passed_params.tuner}:${os.EOL}${d}`)
     })
 
     //tsduck.stdout.pipe(process.stdout)
