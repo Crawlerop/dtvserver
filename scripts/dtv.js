@@ -164,7 +164,7 @@ RunSignal.once("run", async (params) => {
         // const tsp_fork_prm = ["-re", "-y", "-loglevel", "quiet"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, -1, -1, audio_filters, passed_params.dtv_use_fork ? true : false))
         let used_watermark = ""
 
-        if (params.watermark_ignore_streams.indexOf(`${params.stream_id}-${channel.id}`) === -1) {
+        if (params.watermark && params.watermark_ignore_streams.indexOf(`${params.stream_id}-${channel.id}`) === -1) {
             used_watermark = params.watermark.replace(/\(pathname\)/g, params.pathname)
         }
 
@@ -220,6 +220,7 @@ RunSignal.once("run", async (params) => {
 
     ExecSignal.emit("exec", tsp_args, folders)
    } catch (e) {
+    //console.trace(e)
     process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
         tuner: params.tuner,
         frequency: params.frequency,
