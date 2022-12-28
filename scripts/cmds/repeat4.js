@@ -1,6 +1,7 @@
 const cp = require("child_process")
 const { start } = require("repl")
 const args = require("process").argv
+const os = require("os")
 
 process.stdin.on("close", () => {
     process.exit(0)
@@ -36,7 +37,12 @@ const startProcess = () => {
     app.stdout.on("error", ()=>{})
 
     process.stdin.pipe(app.stdin)
-    app.stderr.pipe(process.stderr)
+    app.stderr.on("data", (d) => {
+        const lines = d.toString().split(os.EOL)
+        for (let ln = 0; ln<lines.length; ln++) {
+            if (lines[ln].length > 0) process.stderr.write(`${args[2]}: ${lines[ln]}${os.EOL}`)
+        }
+    })
 
     app.stdout.on("data", (d) => {
         const chunks = d.toString().replace(/\r/g, "").split("\n")
