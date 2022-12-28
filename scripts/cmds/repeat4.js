@@ -21,7 +21,7 @@ setInterval(() => {
 
 const startProcess = () => {
     //process.stderr.write(args.slice(3).join(" ")+"\n")
-    app = cp.spawn(args[3], args.slice(4))
+    app = cp.spawn(args[4], args.slice(5))
 
     app.on("exit", () => {
         process.stderr.write(`Restart transcode stream for channel ${args[2]}\n`)
@@ -52,7 +52,10 @@ const startProcess = () => {
                         //process.stderr.write(`Track stalled status\n`)
                     }
                 } else if (key === "fps") {
-                    console.log(`${args[2]} FPS: ${parseFloat(val)}`)
+                    if (parseFloat(val) < parseFloat(args[3])) {
+                        console.log(`${args[2]} FPS: ${parseFloat(val)} < ${parseFloat(args[3])}`)
+                    }
+                    //
                 }
             }
         }
