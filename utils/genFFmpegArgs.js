@@ -12,6 +12,7 @@ const _globAsync = (pattern) => {
 }
 
 const NV_HW_DECODER = config.nvenc_use_nvdec // Saves GPU memory if disabled!
+const VSYNC_MODE = "0"
 
 module.exports = {
     genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="") => {
@@ -101,7 +102,7 @@ module.exports = {
                         args.push("1")
 
                         args.push("-vsync")
-                        args.push("1")
+                        args.push(VSYNC_MODE)
 
                         args.push("-i")
                         args.push(source)
@@ -228,7 +229,7 @@ module.exports = {
                         args.push("1")
 
                         args.push("-vsync")
-                        args.push("1")
+                        args.push(VSYNC_MODE)
 
                         args.push("-i")
                         args.push(source)
@@ -424,7 +425,7 @@ module.exports = {
                         args.push("1")
     
                         args.push("-vsync")
-                        args.push("1")                        
+                        args.push(VSYNC_MODE)                        
     
                         args.push("-i")
                         args.push(source)
@@ -498,7 +499,7 @@ module.exports = {
                         args.push("1")
     
                         args.push("-vsync")
-                        args.push("1")
+                        args.push(VSYNC_MODE)
     
                         args.push("-i")
                         args.push(source)
