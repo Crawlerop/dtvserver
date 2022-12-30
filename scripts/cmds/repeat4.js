@@ -22,21 +22,22 @@ setInterval(() => {
 
 const startProcess = () => {
     //process.stderr.write(args.slice(3).join(" ")+"\n")
-    app = cp.spawn(args[4], args.slice(5))
+    app = cp.spawn(args[4], args.slice(5), {stdio: ["inherit", "pipe", "pipe"]})
 
     app.on("exit", () => {
         process.stderr.write(`Restart transcode stream for channel ${args[2]}\n`)
         LAST_FRAME = -1
         TIMEOUT_VAL = -1
 
-        setTimeout(startProcess, 2000)
+        process.stdin.read()
+        setTimeout(startProcess, 500)
         //startProcess()
     })
 
     app.stdin.on("error", ()=>{})
     app.stdout.on("error", ()=>{})
 
-    process.stdin.pipe(app.stdin)
+    //process.stdin.pipe(app.stdin)
     app.stderr.on("data", (d) => {
         const lines = d.toString().split(os.EOL)
         for (let ln = 0; ln<lines.length; ln++) {

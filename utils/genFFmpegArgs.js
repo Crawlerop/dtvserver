@@ -13,6 +13,7 @@ const _globAsync = (pattern) => {
 
 const NV_HW_DECODER = config.nvenc_use_nvdec // Saves GPU memory if disabled!
 const VSYNC_MODE = "0"
+const HW_FRAMES = "16"
 
 module.exports = {
     genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="") => {
@@ -54,7 +55,7 @@ module.exports = {
                 
                 if (!is_start && rendition.hwaccel) {
                     args.push("-extra_hw_frames")
-                    args.push("8")
+                    args.push(HW_FRAMES)
                 }
 
                 if (rendition.hwaccel == "vaapi") {
@@ -393,7 +394,7 @@ module.exports = {
                     
                 if (!is_start && rendition.hwaccel) {
                     args.push("-extra_hw_frames")
-                    args.push("8")
+                    args.push(HW_FRAMES)
                 }
 
                 if (rendition.hwaccel == "vaapi") {
