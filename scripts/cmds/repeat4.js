@@ -34,7 +34,7 @@ const startProcess = () => {
         //startProcess()
     })
 
-    app.stdin.on("error", ()=>{})
+    //app.stdin.on("error", ()=>{})
     app.stdout.on("error", ()=>{})
 
     //process.stdin.pipe(app.stdin)
