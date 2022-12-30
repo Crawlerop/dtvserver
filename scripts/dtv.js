@@ -37,6 +37,8 @@ const QuitCheck = () => {
 }
 
 const RESTART_EACH_STREAMS = true
+const REPEAT_DETECT_STALLS = false
+
 setInterval(QuitCheck, 2000);
 
 ExecSignal.once("exec", (args, folders) => {    
@@ -183,8 +185,11 @@ RunSignal.once("run", async (params) => {
                 //tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
                 //tsp_args.push(`tsp -P zap ${channel.id} | node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
                 //console.log(`${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
-                //tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} -stats_period 5 -progress - ${tsp_fork_prm.join(" ")}'`)
-                tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat4.js "${channel.name}" ${channel.video.fps >= 30 ? (channel.video.fps / 2) : channel.video.fps} ${params.ffmpeg} -stats_period 2 -progress - -nostats ${tsp_fork_prm.join(" ")}`)
+                if (!REPEAT_DETECT_STALLS) {
+                    tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
+                } else {
+                    tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat4.js "${channel.name}" ${channel.video.fps >= 30 ? (channel.video.fps / 2) : channel.video.fps} ${params.ffmpeg} -stats_period 2 -progress - -nostats ${tsp_fork_prm.join(" ")}`)
+                }
                 //tsp_args.push(`python ${path.join(__dirname, "/cmds")}/repeat.py "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
             } else {
                 //tsp_args.push(`${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)

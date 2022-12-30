@@ -50,7 +50,12 @@ module.exports = {
                 temp_args = []
 
                 const rendition = renditions[i]
-                var supports_watermark = false    
+                var supports_watermark = false  
+                
+                if (!is_start && rendition.hwaccel) {
+                    args.push("-extra_hw_frames")
+                    args.push("8")
+                }
 
                 if (rendition.hwaccel == "vaapi") {
                     const INTERP_ALGO_TO_VAAPI = {
@@ -386,6 +391,11 @@ module.exports = {
             for (var i =0; i<renditions.length; i++) {
                 const rendition = renditions[i]
                     
+                if (!is_start && rendition.hwaccel) {
+                    args.push("-extra_hw_frames")
+                    args.push("8")
+                }
+
                 if (rendition.hwaccel == "vaapi") {
                     if (!is_start) {
                         is_start = true            
