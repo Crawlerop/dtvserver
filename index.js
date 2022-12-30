@@ -483,7 +483,7 @@ if (!cluster.isPrimary) {
     })
     */
 
-    app_play.listen({port: config.play_port}, (e) => {
+    app_play.listen({port: config.play_port, address: "0.0.0.0"}, (e) => {
         if (e) {
             console.trace(e); 
             return
