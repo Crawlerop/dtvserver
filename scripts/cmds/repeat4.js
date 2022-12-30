@@ -15,17 +15,18 @@ var app;
 
 setInterval(() => {
     if (TIMEOUT_VAL !== -1 && (Date.now() > TIMEOUT_VAL)) {
-        process.stderr.write(`Transcode stream was stalled for ${args[2]}\n`)
+        process.stderr.write(`Transcode stream was stalled for ${args[2]}${os.EOL}`)
         app.kill("SIGKILL")
     }
 }, 2000)
 
 const startProcess = () => {
     //process.stderr.write(args.slice(3).join(" ")+"\n")
+    process.stdin.read()
     app = cp.spawn(args[4], args.slice(5), {stdio: ["inherit", "pipe", "pipe"]})
 
     app.on("exit", () => {
-        process.stderr.write(`Restart transcode stream for channel ${args[2]}\n`)
+        process.stderr.write(`Restart transcode stream for channel ${args[2]}${os.EOL}`)
         LAST_FRAME = -1
         TIMEOUT_VAL = -1
 
@@ -46,7 +47,7 @@ const startProcess = () => {
     })
 
     app.stdout.on("data", (d) => {
-        const chunks = d.toString().replace(/\r/g, "").split("\n")
+        const chunks = d.toString().split(os.EOL)
         for (let i = 0; i<chunks.length; i++) {
             if (chunks[i].length >= 0) {
                 const key = chunks[i].split("=")[0]

@@ -152,6 +152,9 @@
                     <fast-text-field type="text" id="source">Source address</fast-text-field>
                     <fast-button appearance="accent" id="scan">Scan</fast-button>                
                 </div>
+                <div id="rtmp-setting" hidden>
+                    <fast-checkbox id="passthrough">Stream passthrough</fast-checkbox>
+                </div>
             </div>
             <fast-button appearance="accent" id="cancel" style="float: left">Cancel</fast-button>                
             <fast-button appearance="accent" id="create" style="float: right" disabled>Create</fast-button>                
@@ -666,6 +669,7 @@
                     $("#isdb-system-type > #isdb-type").val('japan')
                     $("#dvb2ip-setting > #dvb2ip-msg").text('')
                     $("#dvb2ip-setting > #source").val('')
+                    $("#rtmp-setting > #passthrough").prop("checked", false)
                     DTV_SYSTEM = "DVB-T2"
                     DVBAppliedStreams = undefined
                 })
@@ -724,6 +728,8 @@
                             $("#dvb2ip-setting > #source").val(d.params.src)
                             DVB2IPSelectedStream = d.params.src_id
                             $("#dvb2ip-results > #dvb2ip-channels > center > #additional-params").val(d.params.additional_params)
+                        } else if (d.type == "rtmp") {
+                            $("#rtmp-setting > #passthrough").prop("checked", d.params.passthrough)
                         }
                     })
                 })
@@ -1031,7 +1037,8 @@
                                 data: JSON.stringify({
                                     id: EditMode ? StreamsList[streamVal].id : undefined,
                                     name: $("#add-channels-options > #name").val(),
-                                    type: "rtmp"
+                                    type: "rtmp",
+                                    passthrough: $("#rtmp-setting > #passthrough").prop("checked")
                                 }),
                                 contentType: "application/JSON",
                                 type: "POST"
@@ -1167,7 +1174,8 @@
 
                 $("#add-channels-options > #dtv-type").change(() => {
                     $("#dvb-setting").prop("hidden", true)
-                    $("#dvb2ip-setting").prop("hidden", true)                    
+                    $("#dvb2ip-setting").prop("hidden", true)
+                    $("#rtmp-setting").prop("hidden", true)                    
                     switch ($("#add-channels-options > #dtv-type").val()) {
                         case "dtv":
                             $("#dvb-setting").prop("hidden", false)                            
@@ -1178,6 +1186,7 @@
                             $("#add-channels > #create").prop("disabled", DVB2IPSelectedStream !== -1 ? $("#add-channels-options > #name").val() <= 0 : true)
                             break
                         case "rtmp":
+                            $("#rtmp-setting").prop("hidden", false)
                             $("#add-channels > #create").prop("disabled", $("#add-channels-options > #name").val().length <= 0)
                             break
                     }

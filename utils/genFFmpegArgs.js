@@ -645,6 +645,66 @@ module.exports = {
         // main -b:v 600k -maxrate:v 600k -bufsize:v 1M
     },
 
+    genSinglePass: async (source, output, hls_settings, escape_filters) => {
+        var args = [];
+
+        args.push("-threads")
+        args.push("1")
+
+        args.push("-nostdin")
+
+        args.push("-i")
+        args.push(source)
+
+        args.push(`-map_metadata`)
+        args.push("-1")
+
+        args.push(`-map`)
+        args.push("0:v?")
+
+        args.push(`-map`)
+        args.push("0:a?")
+
+        args.push(`-c:v`)
+        args.push("copy")
+
+        args.push(`-c:a`)
+        args.push("copy")
+
+        const stream_map = 'v:0,a:0,name:01'
+        args.push("-var_stream_map")
+
+        if (escape_filters) {
+            args.push(`"${stream_map}"`)
+        } else {
+            args.push(stream_map)
+        }
+
+        args.push("-hls_time")
+        args.push(hls_settings.duration)
+        args.push("-hls_list_size")
+        args.push(hls_settings.list_size)
+        args.push("-hls_delete_threshold")
+        args.push(hls_settings.unreferenced_segments)
+
+        args.push("-master_pl_name")
+        args.push("index.m3u8")
+        /*
+        args.push("-master_pl_publish_rate")
+        args.push(10)
+        */
+        args.push("-hls_flags")
+        args.push("+delete_segments+omit_endlist+append_list+discont_start+program_date_time+second_level_segment_index+temp_file")
+        args.push("-strftime")
+        args.push(1)
+        args.push("-hls_segment_filename")
+        args.push(output+"/%Y%m%dT%H%M%S-%v-%%01d.ts")
+        args.push(output+"%v.m3u8")
+
+        return args
+        // main -b:v 600k -maxrate:v 600k -bufsize:v 1M
+    },
+
     genMultiple: async (sources, renditions, streams, output, hls_settings) => {
         /*
         var args = [];

@@ -745,11 +745,14 @@ if (!cluster.isPrimary) {
         const rtmp_streams = await streams.query().where("type","=","rtmp")
         let found = false
         let found_id = ""    
+        let passthrough = false
+
         for (let i = 0; i<rtmp_streams.length; i++) {
             const rtmp_params = JSON.parse(rtmp_streams[i].params)                
             if (rtmp_params.rtmp_key == stream_id) {
                 found = true
                 found_id = rtmp_streams[i].stream_id
+                passthrough = rtmp_params.passthrough !== undefined ? rtmp_params.passthrough : false
                 break
             }
         }
@@ -785,7 +788,8 @@ if (!cluster.isPrimary) {
             renditions_hd: config.renditions_hd, 
             renditions_sd: config.renditions_sd, 
             multiple_renditions: config.multiple_renditions, 
-            hls_settings: config.hls_settings
+            hls_settings: config.hls_settings,
+            passthrough: passthrough
         })
     });
 
@@ -1284,7 +1288,8 @@ if (!cluster.isPrimary) {
                     type: req.body.type,
                     active: true,
                     params: {
-                        rtmp_key: crypto.randomBytes(32).toString("hex")
+                        rtmp_key: crypto.randomBytes(32).toString("hex"),
+                        passthrough: req.body.passthrough !== undefined ? req.body.passthrough : false
                     }
                 })
                 return res.status(200).json({status: "ok", id: random_id})            
@@ -1377,9 +1382,13 @@ if (!cluster.isPrimary) {
         switch (req.body.type) {
             case "rtmp":
                 if (!req.body.name) return res.status(400).json({error: "A stream name must be specified"}) 
+                let rtmp_params = JSON.parse(stream[0].params)
+                rtmp_params.passthrough = req.body.passthrough !== undefined ? req.body.passthrough : false
+
                 await streams.query().patch({                
                     name: req.body.name,
-                    type: req.body.type            
+                    type: req.body.type,
+                    params: JSON.stringify(rtmp_params)
                 }).where("stream_id", '=', req.body.id)
                 return res.status(200).json({status: "ok"})            
             case "dvb2ip":
@@ -1567,7 +1576,7 @@ if (!cluster.isPrimary) {
 
     check_output("tsp", ["--version"]).then(()=>{
         check_output(config.ffmpeg, ["-version"]).then(()=>{
-            app.listen(PORT, async () => {
+            app.listen(PORT, "127.0.0.1", async () => {
                 rtmp_server.run()
                 const geoip_res = await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")
                 const geoip_data = geoip_res.data
@@ -1619,7 +1628,7 @@ if (!cluster.isPrimary) {
             })
         }).catch(()=>{
             check_output(path.join(__dirname, "/bin/ffmpeg"), ["-version"]).then(()=>{
-                app.listen(PORT, async () => {
+                app.listen(PORT, "127.0.0.1", async () => {
                     rtmp_server.run()
                     const geoip_res = await axios.get("https://dtvtools.ucomsite.my.id/geoip/json")
                     const geoip_data = geoip_res.data
