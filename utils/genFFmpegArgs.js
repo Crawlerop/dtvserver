@@ -12,7 +12,7 @@ const _globAsync = (pattern) => {
 }
 
 const NV_HW_DECODER = config.nvenc_use_nvdec // Saves GPU memory if disabled!
-const VSYNC_MODE = "1"
+const VSYNC_MODE = "0"
 const HW_FRAMES = "16"
 
 module.exports = {
@@ -104,14 +104,19 @@ module.exports = {
                             args.push("h264_vaapi")
                         }
                         */
+
+                        /*
                         args.push("-async")
                         args.push("1")
+                        */
 
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
 
+                        /*
                         args.push("-r")
                         args.push(`${video.fps}`)
+                        */
 
                         args.push("-i")
                         args.push(source)
@@ -234,14 +239,18 @@ module.exports = {
                             }
                         }
 
+                        /*
                         args.push("-async")
                         args.push("1")
+                        */
 
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
 
+                        /*
                         args.push("-r")
                         args.push(`${video.fps}`)
+                        */
 
                         args.push("-i")
                         args.push(source)
@@ -438,14 +447,19 @@ module.exports = {
                             args.push("h264_vaapi")
                         }
                         */
+
+                        /*
                         args.push("-async")
                         args.push("1")
+                        */
     
                         args.push("-vsync")
                         args.push(VSYNC_MODE)                        
     
+                        /*
                         args.push("-r")
                         args.push(`${video.fps}`)
+                        */
 
                         args.push("-i")
                         args.push(source)
@@ -515,14 +529,18 @@ module.exports = {
                             }
                         }
     
+                        /*
                         args.push("-async")
                         args.push("1")
+                        */
     
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
     
+                        /*
                         args.push("-r")
                         args.push(`${video.fps}`)
+                        */
 
                         args.push("-i")
                         args.push(source)

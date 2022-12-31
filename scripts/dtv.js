@@ -218,7 +218,7 @@ RunSignal.once("run", async (params) => {
             } catch (e) {}
         }
 
-        tsp_args.push(`tsresync -c - | ncat --send-only -U -k -m 64 -l "${LS_SOCKET}"`)
+        tsp_args.push(`ncat --send-only -U -k -m 64 -l "${LS_SOCKET}"`)
     }
 
     // console.log(tsp_args)
