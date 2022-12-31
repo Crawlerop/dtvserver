@@ -13,7 +13,7 @@ const _globAsync = (pattern) => {
 
 const NV_HW_DECODER = config.nvenc_use_nvdec // Saves GPU memory if disabled!
 const VSYNC_MODE = "0"
-const HW_FRAMES = "16"
+const HW_FRAMES = "0"
 
 module.exports = {
     genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="") => {
@@ -51,9 +51,9 @@ module.exports = {
                 temp_args = []
 
                 const rendition = renditions[i]
-                var supports_watermark = false  
-                
-                if (!is_start && rendition.hwaccel) {
+                var supports_watermark = false
+
+                if (!is_start && rendition.hwaccel && HW_FRAMES > 0) {
                     args.push("-extra_hw_frames")
                     args.push(HW_FRAMES)
                 }
@@ -402,17 +402,18 @@ module.exports = {
         } else {
             for (var i =0; i<renditions.length; i++) {
                 const rendition = renditions[i]
-                    
-                if (!is_start && rendition.hwaccel) {
+
+                if (!is_start && rendition.hwaccel && HW_FRAMES > 0) {
                     args.push("-extra_hw_frames")
                     args.push(HW_FRAMES)
                 }
 
                 if (rendition.hwaccel == "vaapi") {
                     if (!is_start) {
-                        is_start = true            
+                        is_start = true
+
                         const render_devices = await _globAsync("/dev/dri/render*")
-                                    
+
                         for (var j =0; j<render_devices.length; j++) {
                             try {
                                 const va_check = await check_output('vainfo', ['-a', '--display', 'drm', '--device', render_devices[j]])
