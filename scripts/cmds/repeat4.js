@@ -60,9 +60,11 @@ const startProcess = () => {
                         //process.stderr.write(`Track stalled status\n`)
                     }
                 } else if (key === "fps") {
+                    /*
                     if (parseFloat(val) < parseFloat(args[3])) {
                         console.log(`${args[2]} FPS: ${parseFloat(val)} < ${parseFloat(args[3])}`)
                     }
+                    */
                     //
                 }
             }
