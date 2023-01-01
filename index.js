@@ -256,6 +256,9 @@ if (!fs_sync.existsSync(path.join(__dirname, "/config.json"))) fs_sync.writeFile
 const config = require("./config.json");
 const cluster = require("cluster")
 
+if (!fs_sync.existsSync(config.dvr_path)) fs_sync.mkdirSync(config.dvr_path, {recursive: true})
+if (!fs_sync.existsSync(config.streams_path)) fs_sync.mkdirSync(config.streams_path, {recursive: true})
+
 if (!cluster.isPrimary) {
     const fastify = require("fastify")
     const fastify_cors = require("@fastify/cors")
