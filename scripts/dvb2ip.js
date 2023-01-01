@@ -39,7 +39,7 @@ RunSignal.once("run", (params) => {
         ad_param = JSON.parse(params.additional_params)
     }   
 
-    check_output(params.ffmpeg.replace(/mpeg/g, "probe"), [..."-probesize 8M -loglevel quiet -print_format json -show_error -show_format -show_streams".split(" "), src_url]).then((o) => {
+    check_output(params.ffmpeg.replace(/mpeg/g, "probe"), [..."-probesize 12M -loglevel quiet -print_format json -show_error -show_format -show_streams".split(" "), src_url]).then((o) => {
         const probe_streams = JSON.parse(o).streams
         if (probe_streams.length <= 0) {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
