@@ -440,7 +440,8 @@ if (!cluster.isPrimary) {
                             name: st_channel.name,
                             id: st_channel.id,
                             is_hd: st_channel.is_hd,
-                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/${st_channel.id}/index.m3u8`
+                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/${st_channel.id}/index.m3u8`,
+                            stream_path: `${stream.stream_id}/${st_channel.id}`
                         }
                     )
                 }
@@ -462,7 +463,8 @@ if (!cluster.isPrimary) {
                             name: stream.name,
                             id: 0,
                             is_hd: false,
-                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/index.m3u8`
+                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/index.m3u8`,
+                            stream_path: `${stream.stream_id}`
                         }
                     ]
                 })
@@ -1021,7 +1023,8 @@ if (!cluster.isPrimary) {
                             name: st_channel.name,
                             id: st_channel.id,
                             is_hd: st_channel.is_hd,
-                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/${st_channel.id}/index.m3u8`
+                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/${st_channel.id}/index.m3u8`,
+                            stream_path: `${stream.stream_id}/${st_channel.id}`
                         }
                     )
                 }
@@ -1043,7 +1046,8 @@ if (!cluster.isPrimary) {
                             name: stream.name,
                             id: 0,
                             is_hd: false,
-                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/index.m3u8`
+                            playback_url: `${req.headers["x-forwarded-prefix"] ? req.protocol + "://" + req.headers["x-forwarded-prefix"] : "/play"}/${stream.stream_id}/index.m3u8`,
+                            stream_path: `${stream.stream_id}`
                         }
                     ]
                 })
