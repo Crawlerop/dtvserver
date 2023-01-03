@@ -112,7 +112,7 @@ const config_defaults_nvenc = {
             "bufsize": 1000000,
             "bf": 2,
             "interp_algo": 1,
-            "audio_bitrate": 64000,
+            "audio_bitrate": 96000,
             "audio_profile": "low",
             "audio_codec": "aac",
             "bandwidth": ""
@@ -127,7 +127,7 @@ const config_defaults_nvenc = {
             "bufsize": 875000,
             "bf": 2,
             "interp_algo": 1,
-            "audio_bitrate": 48000,
+            "audio_bitrate": 64000,
             "audio_profile": "low",
             "audio_codec": "aac",
             "bandwidth": ""
@@ -219,7 +219,7 @@ const config_defaults = {
             "bufsize": 1300000,
             "bf": 2,
             "interp_algo": 1,
-            "audio_bitrate": 64000,
+            "audio_bitrate": 96000,
             "audio_profile": "low",
             "audio_codec": "aac",
             "bandwidth": "",
@@ -234,7 +234,7 @@ const config_defaults = {
             "bufsize": 900000,
             "bf": 2,
             "interp_algo": 1,
-            "audio_bitrate": 48000,
+            "audio_bitrate": 64000,
             "audio_profile": "low",
             "audio_codec": "aac",
             "bandwidth": ""
