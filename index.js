@@ -413,7 +413,7 @@ if (!cluster.isPrimary) {
                 var ch_mux = []
                 for (let j = 0; j<sp.channels.length; j++) {
                     const st_channel = sp.channels[j]
-                    m3u += `#EXTINF:-1 tvg-id=${stream.stream_id}-${st_channel.id}",${st_channel.name}\n${req.protocol}://${req.headers["x-forwarded-prefix"] ? req.headers["x-forwarded-prefix"] : (req.headers.host+'/play')}/${stream.stream_id}/${st_channel.id}/index.m3u8\n`
+                    m3u += `#EXTINF:-1 tvg-id="${stream.stream_id}-${st_channel.id}",${st_channel.name}\n${req.protocol}://${req.headers["x-forwarded-prefix"] ? req.headers["x-forwarded-prefix"] : (req.headers.host+'/play')}/${stream.stream_id}/${st_channel.id}/index.m3u8\n`
                 }
             } else {
                 m3u += `#EXTINF:-1 tvg-id="${stream.stream_id}",${stream.name}\n${req.protocol}://${req.headers["x-forwarded-prefix"] ? req.headers["x-forwarded-prefix"] : (req.headers.host+'/play')}/${stream.stream_id}/index.m3u8\n`
