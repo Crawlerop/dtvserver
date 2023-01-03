@@ -563,12 +563,16 @@ module.exports = {
                     args.push("-1")
                     args.push(`-c:v:${i}`)
                     args.push("h264_nvenc")
-                    args.push(`-filter:v:${i}`)
-                    if (escape_filters) {
-                        args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}"`)
-                    } else {
-                        args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}`)
+
+                    if (rendition.height !== video.height || video.fps !== fps || video.interlace !== 'progressive') {
+                        args.push(`-filter:v:${i}`)
+                        if (escape_filters) {
+                            args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}"`)
+                        } else {
+                            args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}`)
+                        }
                     }
+
                     args.push(`-preset:v:${i}`)
                     args.push(`p${rendition.speed}`)
     
