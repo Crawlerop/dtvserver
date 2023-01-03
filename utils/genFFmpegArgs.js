@@ -106,14 +106,14 @@ module.exports = {
                         */
 
                         args.push("-async")
-                        args.push(`${video.fps}`)
+                        args.push('1')
 
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
 
                         /*
                         args.push("-r")
-                        args.push(`${video.fps}`)
+                        args.push('1')
                         */
 
                         args.push("-i")
@@ -238,14 +238,14 @@ module.exports = {
                         }
 
                         args.push("-async")
-                        args.push(`${video.fps}`)
+                        args.push('1')
 
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
 
                         /*
                         args.push("-r")
-                        args.push(`${video.fps}`)
+                        args.push('1')
                         */
 
                         args.push("-i")
@@ -446,14 +446,14 @@ module.exports = {
                         */
 
                         args.push("-async")
-                        args.push(`${video.fps}`)
+                        args.push('1')
     
                         args.push("-vsync")
                         args.push(VSYNC_MODE)                        
     
                         /*
                         args.push("-r")
-                        args.push(`${video.fps}`)
+                        args.push('1')
                         */
 
                         args.push("-i")
@@ -525,14 +525,14 @@ module.exports = {
                         }
     
                         args.push("-async")
-                        args.push(`${video.fps}`)
+                        args.push('1')
     
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
     
                         /*
                         args.push("-r")
-                        args.push(`${video.fps}`)
+                        args.push('1')
                         */
 
                         args.push("-i")
