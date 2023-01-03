@@ -106,7 +106,7 @@ module.exports = {
                         */
 
                         args.push("-async")
-                        args.push("1")
+                        args.push(`${video.fps}`)
 
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
@@ -238,7 +238,7 @@ module.exports = {
                         }
 
                         args.push("-async")
-                        args.push("1")
+                        args.push(`${video.fps}`)
 
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
@@ -446,7 +446,7 @@ module.exports = {
                         */
 
                         args.push("-async")
-                        args.push("1")
+                        args.push(`${video.fps}`)
     
                         args.push("-vsync")
                         args.push(VSYNC_MODE)                        
@@ -525,7 +525,7 @@ module.exports = {
                         }
     
                         args.push("-async")
-                        args.push("1")
+                        args.push(`${video.fps}`)
     
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
