@@ -12,7 +12,8 @@ const _globAsync = (pattern) => {
 }
 
 const NV_HW_DECODER = config.nvenc_use_nvdec // Saves GPU memory if disabled!
-const VSYNC_MODE = "0"
+const VSYNC_MODE = "1"
+const ASYNC_MODE = "(fps)"
 const HW_FRAMES = "0"
 
 module.exports = {
@@ -106,7 +107,7 @@ module.exports = {
                         */
 
                         args.push("-async")
-                        args.push('1')
+                        args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
 
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
@@ -238,7 +239,7 @@ module.exports = {
                         }
 
                         args.push("-async")
-                        args.push('1')
+                        args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
 
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
@@ -446,7 +447,7 @@ module.exports = {
                         */
 
                         args.push("-async")
-                        args.push('1')
+                        args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
     
                         args.push("-vsync")
                         args.push(VSYNC_MODE)                        
@@ -525,7 +526,7 @@ module.exports = {
                         }
     
                         args.push("-async")
-                        args.push('1')
+                        args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
     
                         args.push("-vsync")
                         args.push(VSYNC_MODE)
