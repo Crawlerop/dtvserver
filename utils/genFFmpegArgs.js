@@ -572,6 +572,13 @@ module.exports = {
                         } else {
                             args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}`)
                         }
+                    } else {
+                        args.push(`-filter:v:${i}`)
+                        if (escape_filters) {
+                            args.push(`"setsar=1,fps=${fps}"`)
+                        } else {
+                            args.push(`setsar=1,fps=${fps}`)
+                        }
                     }
 
                     args.push(`-preset:v:${i}`)
