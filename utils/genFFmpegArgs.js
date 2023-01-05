@@ -15,6 +15,7 @@ const NV_HW_DECODER = config.nvenc_use_nvdec // Saves GPU memory if disabled!
 const VSYNC_MODE = "1"
 const ASYNC_MODE = "(fps)"
 const HW_FRAMES = "0"
+const COPY_TS = true
 
 module.exports = {
     genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="") => {
@@ -106,11 +107,16 @@ module.exports = {
                         }
                         */
 
-                        args.push("-async")
-                        args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+                        if (COPY_TS) {
+                            args.push("-copyts")
+                            args.push("-start_at_zero")
+                        } else {
+                            args.push("-async")
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
 
-                        args.push("-vsync")
-                        args.push(VSYNC_MODE)
+                            args.push("-vsync")
+                            args.push(VSYNC_MODE)
+                        }
 
                         /*
                         args.push("-r")
@@ -238,11 +244,15 @@ module.exports = {
                             }
                         }
 
-                        args.push("-async")
-                        args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+                        if (COPY_TS) {
+                            args.push("-copyts")
+                        } else {
+                            args.push("-async")
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
 
-                        args.push("-vsync")
-                        args.push(VSYNC_MODE)
+                            args.push("-vsync")
+                            args.push(VSYNC_MODE)
+                        }
 
                         /*
                         args.push("-r")
@@ -446,11 +456,15 @@ module.exports = {
                         }
                         */
 
-                        args.push("-async")
-                        args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
-    
-                        args.push("-vsync")
-                        args.push(VSYNC_MODE)                        
+                        if (COPY_TS) {
+                            args.push("-copyts")
+                        } else {
+                            args.push("-async")
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+
+                            args.push("-vsync")
+                            args.push(VSYNC_MODE)
+                        }                      
     
                         /*
                         args.push("-r")
@@ -525,11 +539,15 @@ module.exports = {
                             }
                         }
     
-                        args.push("-async")
-                        args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
-    
-                        args.push("-vsync")
-                        args.push(VSYNC_MODE)
+                        if (COPY_TS) {
+                            args.push("-copyts")
+                        } else {
+                            args.push("-async")
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+
+                            args.push("-vsync")
+                            args.push(VSYNC_MODE)
+                        }
     
                         /*
                         args.push("-r")
@@ -655,6 +673,11 @@ module.exports = {
             args.push(stream_map)
         }
 
+        args.push("-muxdelay")
+        args.push("0")
+        args.push("-muxpreload")
+        args.push("0")
+
         args.push("-hls_time")
         args.push(hls_settings.duration)
         args.push("-hls_list_size")
@@ -686,6 +709,9 @@ module.exports = {
         args.push("-threads")
         args.push("1")
 
+        args.push("-copyts")
+        args.push("-start_at_zero")
+
         args.push("-nostdin")
 
         args.push("-i")
@@ -714,6 +740,11 @@ module.exports = {
         } else {
             args.push(stream_map)
         }
+
+        args.push("-muxdelay")
+        args.push("0")
+        args.push("-muxpreload")
+        args.push("0")
 
         args.push("-hls_time")
         args.push(hls_settings.duration)
