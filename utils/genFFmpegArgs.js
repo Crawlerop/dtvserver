@@ -109,7 +109,7 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
-                            args.push("-start_at_zero")
+                            //args.push("-start_at_zero")
                         } else {
                             args.push("-async")
                             args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
@@ -710,7 +710,7 @@ module.exports = {
         args.push("1")
 
         args.push("-copyts")
-        args.push("-start_at_zero")
+        //args.push("-start_at_zero")
 
         args.push("-nostdin")
 
