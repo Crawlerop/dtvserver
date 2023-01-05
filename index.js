@@ -308,11 +308,11 @@ if (!cluster.isPrimary) {
         root: path.join(__dirname, '/tests/'),
         prefix: "/test/",
         decorateReply: false,
-        index: false
+        index: false    
     })
 
     app_play.register(fastify_cors, {
-        
+        exposedHeaders: ["X-Cluster-ID"]
     })
 
     app_play.addHook('onSend', function (req, res, payload, next) {
