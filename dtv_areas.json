@@ -1,812 +1,2540 @@
 [
-    {
-        "lat": "-7.9016500000",
-        "lng": "112.5266490000",
-        "area": "Jawa Timur - 2",
-        "area_id": "140"
-    },
-    {
-        "lat": "2.3053330000",
-        "lng": "97.4088670000",
-        "area": "Aceh - 13",
-        "area_id": "240"
-    },
-    {
-        "lat": "5.5087970000",
-        "lng": "95.3024810000",
-        "area": "Aceh - 1",
-        "area_id": "2"
-    },
-    {
-        "lat": "-0.9635250000",
-        "lng": "100.6456080000",
-        "area": "Sumatera Barat - 1",
-        "area_id": "39"
-    },
-    {
-        "lat": "-0.1164830000",
-        "lng": "99.8846000000",
-        "area": "Sumatera Barat - 2",
-        "area_id": "48"
-    },
-    {
-        "lat": "0.5176580000",
-        "lng": "101.4283250000",
-        "area": "Riau - 1",
-        "area_id": "81"
-    },
-    {
-        "lat": "1.1231250000",
-        "lng": "103.9456640000",
-        "area": "Kepulauan Riau - 1",
-        "area_id": "214"
-    },
-    {
-        "lat": "1.3319810000",
-        "lng": "102.1521440000",
-        "area": "Riau - 4",
-        "area_id": "103"
-    },
-    {
-        "lat": "3.2228670000",
-        "lng": "106.2233670000",
-        "area": "Kepulauan Riau - 2",
-        "area_id": "216"
-    },
-    {
-        "lat": "-2.0165170000",
-        "lng": "105.1810890000",
-        "area": "Kepulauan Bangka Belitung - 2",
-        "area_id": "215"
-    },
-    {
-        "lat": "-2.2397780000",
-        "lng": "106.0984000000",
-        "area": "Kepulauan Bangka Belitung - 1",
-        "area_id": "213"
-    },
-    {
-        "lat": "3.2638330000",
-        "lng": "98.5400670000",
-        "area": "Sumatera Utara - 1",
-        "area_id": "10"
-    },
-    {
-        "lat": "-1.6153470000",
-        "lng": "103.5719720000",
-        "area": "Jambi - 1",
-        "area_id": "139"
-    },
-    {
-        "lat": "-2.9763810000",
-        "lng": "104.7389000000",
-        "area": "Sumatera Selatan - 1",
-        "area_id": "173"
-    },
-    {
-        "lat": "-3.7676250000",
-        "lng": "102.3115390000",
-        "area": "Bengkulu - 1",
-        "area_id": "180"
-    },
-    {
-        "lat": "-5.4063860000",
-        "lng": "105.1789580000",
-        "area": "Lampung - 1",
-        "area_id": "209"
-    },
-    {
-        "lat": "-6.2207690000",
-        "lng": "106.7258190000",
-        "area": "DKI Jakarta",
-        "area_id": "3"
-    },
-    {
-        "lat": "-6.8147640000",
-        "lng": "107.5604560000",
-        "area": "Jawa Barat - 1",
-        "area_id": "88"
-    },
-    {
-        "lat": "-7.8375610000",
-        "lng": "110.5243220000",
-        "area": "DI Yogyakarta",
-        "area_id": "221"
-    },
-    {
-        "lat": "-7.2897330000",
-        "lng": "112.7140750000",
-        "area": "Jawa Timur - 1",
-        "area_id": "138"
-    },
-    {
-        "lat": "-0.0437140000",
-        "lng": "109.3407690000",
-        "area": "Kalimantan Barat - 1",
-        "area_id": "30"
-    },
-    {
-        "lat": "0.8325560000",
-        "lng": "109.4908890000",
-        "area": "Kalimantan Barat - 3",
-        "area_id": "33"
-    },
-    {
-        "lat": "1.3581170000",
-        "lng": "109.2998670000",
-        "area": "Kalimantan Barat - 4",
-        "area_id": "34"
-    },
-    {
-        "lat": "0.8075080000",
-        "lng": "110.4217330000",
-        "area": "Kalimantan Barat - 5",
-        "area_id": "36"
-    },
-    {
-        "lat": "0.0712170000",
-        "lng": "111.5043110000",
-        "area": "Kalimantan Barat - 6",
-        "area_id": "37"
-    },
-    {
-        "lat": "-3.3461110000",
-        "lng": "114.6247220000",
-        "area": "Kalimantan Selatan - 1",
-        "area_id": "45"
-    },
-    {
-        "lat": "-2.2121110000",
-        "lng": "113.9103670000",
-        "area": "Kalimantan Tengah - 1",
-        "area_id": "11"
-    },
-    {
-        "lat": "-0.5375000000",
-        "lng": "117.1463890000",
-        "area": "Kalimantan Timur - 1",
-        "area_id": "53"
-    },
-    {
-        "lat": "4.1410280000",
-        "lng": "117.6574390000",
-        "area": "Kalimantan Utara - 3",
-        "area_id": "228"
-    },
-    {
-        "lat": "-0.2307500000",
-        "lng": "115.8155000000",
-        "area": "Kalimantan Timur - 5",
-        "area_id": "59"
-    },
-    {
-        "lat": "3.5271500000",
-        "lng": "116.5910940000",
-        "area": "Kalimantan Utara - 2",
-        "area_id": "227"
-    },
-    {
-        "lat": "3.3048220000",
-        "lng": "117.5951390000",
-        "area": "Kalimantan Utara - 1",
-        "area_id": "226"
-    },
-    {
-        "lat": "-8.8187440000",
-        "lng": "115.1882330000",
-        "area": "Bali - 1",
-        "area_id": "225"
-    },
-    {
-        "lat": "-8.5868890000",
-        "lng": "116.0886580000",
-        "area": "Nusa Tenggara Barat - 1",
-        "area_id": "160"
-    },
-    {
-        "lat": "-10.2704720000",
-        "lng": "123.6664030000",
-        "area": "Nusa Tenggara Timur - 1",
-        "area_id": "185"
-    },
-    {
-        "lat": "-9.0914810000",
-        "lng": "124.8637860000",
-        "area": "Nusa Tenggara Timur - 4",
-        "area_id": "190"
-    },
-    {
-        "lat": "-9.5280500000",
-        "lng": "124.2585000000",
-        "area": "Nusa Tenggara Timur - 2",
-        "area_id": "187"
-    },
-    {
-        "lat": "-9.4603000000",
-        "lng": "124.4764670000",
-        "area": "Nusa Tenggara Timur - 3",
-        "area_id": "189"
-    },
-    {
-        "lat": "-9.6768970000",
-        "lng": "120.1935220000",
-        "area": "Nusa Tenggara Timur - 7",
-        "area_id": "194"
-    },
-    {
-        "lat": "-5.4496830000",
-        "lng": "119.9169000000",
-        "area": "Sulawesi Selatan - 2",
-        "area_id": "20"
-    },
-    {
-        "lat": "-5.1606690000",
-        "lng": "119.4159220000",
-        "area": "Sulawesi Selatan - 1",
-        "area_id": "15"
-    },
-    {
-        "lat": "-0.8868190000",
-        "lng": "119.8636690000",
-        "area": "Sulawesi Tengah - 1",
-        "area_id": "67"
-    },
-    {
-        "lat": "-3.9873530000",
-        "lng": "122.5085060000",
-        "area": "Sulawesi Tenggara - 1",
-        "area_id": "93"
-    },
-    {
-        "lat": "-5.2948810000",
-        "lng": "123.5452310000",
-        "area": "Sulawesi Tenggara - 5",
-        "area_id": "104"
-    },
-    {
-        "lat": "-4.8214110000",
-        "lng": "121.6766640000",
-        "area": "Sulawesi Tenggara - 3",
-        "area_id": "99"
-    },
-    {
-        "lat": "1.4794780000",
-        "lng": "124.8497280000",
-        "area": "Sulawesi Utara - 1",
-        "area_id": "137"
-    },
-    {
-        "lat": "4.0137500000",
-        "lng": "126.6417830000",
-        "area": "Sulawesi Utara - 7",
-        "area_id": "156"
-    },
-    {
-        "lat": "3.6318170000",
-        "lng": "125.5143000000",
-        "area": "Sulawesi Utara - 6",
-        "area_id": "154"
-    },
-    {
-        "lat": "0.5584610000",
-        "lng": "123.0487970000",
-        "area": "Gorontalo - 1",
-        "area_id": "130"
-    },
-    {
-        "lat": "-2.7138500000",
-        "lng": "118.8587190000",
-        "area": "Sulawesi Barat - 1",
-        "area_id": "112"
-    },
-    {
-        "lat": "-3.7196610000",
-        "lng": "128.1639610000",
-        "area": "Maluku - 1",
-        "area_id": "74"
-    },
-    {
-        "lat": "0.7897610000",
-        "lng": "127.3555470000",
-        "area": "Maluku Utara - 1",
-        "area_id": "91"
-    },
-    {
-        "lat": "-7.9757330000",
-        "lng": "131.3059500000",
-        "area": "Maluku - 4",
-        "area_id": "80"
-    },
-    {
-        "lat": "-2.1191670000",
-        "lng": "133.5371170000",
-        "area": "Papua Barat - 7",
-        "area_id": "183"
-    },
-    {
-        "lat": "-2.5499220000",
-        "lng": "140.7094280000",
-        "area": "Papua - 1",
-        "area_id": "106"
-    },
-    {
-        "lat": "-6.0879170000",
-        "lng": "140.3045830000",
-        "area": "Papua - 3",
-        "area_id": "116"
-    },
-    {
-        "lat": "-6.9435560000",
-        "lng": "106.2555000000",
-        "area": "Banten - 3",
-        "area_id": "224"
-    },
-    {
-        "lat": "-6.7291940000",
-        "lng": "107.6593330000",
-        "area": "Jawa Barat - 6",
-        "area_id": "105"
-    },
-    {
-        "lat": "-7.0701110000",
-        "lng": "109.2399720000",
-        "area": "Jawa Tengah - 3",
-        "area_id": "126"
-    },
-    {
-        "lat": "-7.7109720000",
-        "lng": "109.9133610000",
-        "area": "Jawa Tengah - 8",
-        "area_id": "133"
-    },
-    {
-        "lat": "-8.2537780000",
-        "lng": "113.9352220000",
-        "area": "Jawa Timur - 4",
-        "area_id": "145"
-    },
-    {
-        "lat": "-4.7025000000",
-        "lng": "104.7841670000",
-        "area": "Lampung - 3",
-        "area_id": "211"
-    },
-    {
-        "lat": "4.5186470000",
-        "lng": "97.9334860000",
-        "area": "Aceh - 8",
-        "area_id": "235"
-    },
-    {
-        "lat": "5.8552780000",
-        "lng": "95.3358330000",
-        "area": "Aceh - 2",
-        "area_id": "229"
-    },
-    {
-        "lat": "-3.9502780000",
-        "lng": "119.6777780000",
-        "area": "Sulawesi Selatan - 6",
-        "area_id": "28"
-    },
-    {
-        "lat": "-0.8587500000",
-        "lng": "134.0626390000",
-        "area": "Papua Barat - 4",
-        "area_id": "179"
-    },
-    {
-        "lat": "4.1700420000",
-        "lng": "96.1349530000",
-        "area": "Aceh - 5",
-        "area_id": "232"
-    },
-    {
-        "lat": "-6.2902600000",
-        "lng": "106.1149230000",
-        "area": "Banten - 2",
-        "area_id": "223"
-    },
-    {
-        "lat": "-7.0851110000",
-        "lng": "107.1182750000",
-        "area": "Jawa Barat - 7",
-        "area_id": "108"
-    },
-    {
-        "lat": "-6.8116670000",
-        "lng": "108.4374170000",
-        "area": "Jawa Barat - 3",
-        "area_id": "95"
-    },
-    {
-        "lat": "-7.1803530000",
-        "lng": "107.9770830000",
-        "area": "Jawa Barat - 4",
-        "area_id": "100"
-    },
-    {
-        "lat": "-8.1604110000",
-        "lng": "113.5539200000",
-        "area": "Jawa Timur - 3",
-        "area_id": "143"
-    },
-    {
-        "lat": "-7.8632020000",
-        "lng": "111.8561250000",
-        "area": "Jawa Timur - 7",
-        "area_id": "155"
-    },
-    {
-        "lat": "-7.6733330000",
-        "lng": "111.2386110000",
-        "area": "Jawa Timur - 9",
-        "area_id": "158"
-    },
-    {
-        "lat": "-7.0439170000",
-        "lng": "110.4243330000",
-        "area": "Jawa Tengah - 1",
-        "area_id": "123"
-    },
-    {
-        "lat": "-6.7930040000",
-        "lng": "107.9608340000",
-        "area": "Jawa Barat - 8",
-        "area_id": "111"
-    },
-    {
-        "lat": "-1.2472220000",
-        "lng": "116.8388890000",
-        "area": "Kalimantan Timur - 2",
-        "area_id": "55"
-    },
-    {
-        "lat": "-7.5475830000",
-        "lng": "109.2505000000",
-        "area": "Jawa Tengah - 7",
-        "area_id": "132"
-    },
-    {
-        "lat": "-8.1811360000",
-        "lng": "114.2522500000",
-        "area": "Jawa Timur - 6",
-        "area_id": "152"
-    },
-    {
-        "lat": "5.2115080000",
-        "lng": "96.7239280000",
-        "area": "Aceh - 4",
-        "area_id": "231"
-    },
-    {
-        "lat": "-7.2892500000",
-        "lng": "107.8878610000",
-        "area": "Jawa Barat - 2",
-        "area_id": "90"
-    },
-    {
-        "lat": "1.2880360000",
-        "lng": "97.6085330000",
-        "area": "Sumatera Utara - 9",
-        "area_id": "38"
-    },
-    {
-        "lat": "2.9065170000",
-        "lng": "99.5365280000",
-        "area": "Sumatera Utara - 2",
-        "area_id": "16"
-    },
-    {
-        "lat": "3.4835970000",
-        "lng": "97.8256440000",
-        "area": "Aceh - 10",
-        "area_id": "237"
-    },
-    {
-        "lat": "5.1178280000",
-        "lng": "97.1535190000",
-        "area": "Aceh - 7",
-        "area_id": "234"
-    },
-    {
-        "lat": "-8.1805560000",
-        "lng": "111.1613890000",
-        "area": "Jawa Timur - 10",
-        "area_id": "159"
-    },
-    {
-        "lat": "1.3891560000",
-        "lng": "99.2631080000",
-        "area": "Sumatera Utara - 7",
-        "area_id": "32"
-    },
-    {
-        "lat": "1.7517280000",
-        "lng": "98.7785670000",
-        "area": "Sumatera Utara - 6",
-        "area_id": "29"
-    },
-    {
-        "lat": "2.6983940000",
-        "lng": "98.3046140000",
-        "area": "Sumatera Utara - 5",
-        "area_id": "27"
-    },
-    {
-        "lat": "-6.8709890000",
-        "lng": "106.9546890000",
-        "area": "Jawa Barat - 5",
-        "area_id": "101"
-    },
-    {
-        "lat": "-7.0116670000",
-        "lng": "112.0072220000",
-        "area": "Jawa Timur - 8",
-        "area_id": "157"
-    },
-    {
-        "lat": "0.8946360000",
-        "lng": "123.2331080000",
-        "area": "Sulawesi Utara - 4",
-        "area_id": "151"
-    },
-    {
-        "lat": "-0.6708190000",
-        "lng": "119.7457140000",
-        "area": "Sulawesi Tengah - 2",
-        "area_id": "70"
-    },
-    {
-        "lat": "-2.9857310000",
-        "lng": "106.5250170000",
-        "area": "Kepulauan Bangka Belitung - 3",
-        "area_id": "219"
-    },
-    {
-        "lat": "-2.9927860000",
-        "lng": "101.4926420000",
-        "area": "Bengkulu - 6",
-        "area_id": "165"
-    },
-    {
-        "lat": "-2.8557190000",
-        "lng": "115.2480420000",
-        "area": "Kalimantan Selatan - 2",
-        "area_id": "46"
-    },
-    {
-        "lat": "-1.0269440000",
-        "lng": "103.0405560000",
-        "area": "Jambi - 2",
-        "area_id": "144"
-    },
-    {
-        "lat": "-3.3229920000",
-        "lng": "128.9410310000",
-        "area": "Maluku - 2",
-        "area_id": "76"
-    },
-    {
-        "lat": "-8.4886780000",
-        "lng": "140.3875250000",
-        "area": "Papua - 4",
-        "area_id": "119"
-    },
-    {
-        "lat": "3.9371780000",
-        "lng": "108.3712580000",
-        "area": "Kepulauan Riau - 3",
-        "area_id": "217"
-    },
-    {
-        "lat": "0.8560500000",
-        "lng": "100.3053390000",
-        "area": "Riau - 2",
-        "area_id": "86"
-    },
-    {
-        "lat": "-2.5639440000",
-        "lng": "112.9517440000",
-        "area": "Kalimantan Tengah - 6",
-        "area_id": "18"
-    },
-    {
-        "lat": "-7.0584220000",
-        "lng": "111.4387860000",
-        "area": "Jawa Tengah - 2",
-        "area_id": "125"
-    },
-    {
-        "lat": "-0.8698670000",
-        "lng": "131.2627720000",
-        "area": "Papua Barat - 1",
-        "area_id": "174"
-    },
-    {
-        "lat": "-0.7119720000",
-        "lng": "120.0941640000",
-        "area": "Sulawesi Tengah - 5",
-        "area_id": "75"
-    },
-    {
-        "lat": "-8.5436310000",
-        "lng": "118.8110780000",
-        "area": "Nusa Tenggara Barat - 5",
-        "area_id": "171"
-    },
-    {
-        "lat": "2.4699670000",
-        "lng": "96.3849720000",
-        "area": "Aceh - 14",
-        "area_id": "241"
-    },
-    {
-        "lat": "2.0100000000",
-        "lng": "128.2826690000",
-        "area": "Maluku Utara - 2",
-        "area_id": "92"
-    },
-    {
-        "lat": "-4.0236750000",
-        "lng": "105.2503720000",
-        "area": "Lampung - 2",
-        "area_id": "210"
-    },
-    {
-        "lat": "2.3344170000",
-        "lng": "99.0369440000",
-        "area": "Sumatera Utara - 4",
-        "area_id": "26"
-    },
-    {
-        "lat": "2.1488060000",
-        "lng": "117.4832580000",
-        "area": "Kalimantan Timur - 4",
-        "area_id": "58"
-    },
-    {
-        "lat": "2.0810970000",
-        "lng": "99.8407860000",
-        "area": "Sumatera Utara - 3",
-        "area_id": "25"
-    },
-    {
-        "lat": "-2.0340610000",
-        "lng": "101.4082140000",
-        "area": "Jambi - 4",
-        "area_id": "147"
-    },
-    {
-        "lat": "-8.6325560000",
-        "lng": "122.2246690000",
-        "area": "Nusa Tenggara Timur - 13",
-        "area_id": "203"
-    },
-    {
-        "lat": "-8.4907220000",
-        "lng": "119.8809440000",
-        "area": "Nusa Tenggara Timur - 9",
-        "area_id": "197"
-    },
-    {
-        "lat": "0.4961190000",
-        "lng": "117.5058890000",
-        "area": "Kalimantan Timur - 3",
-        "area_id": "57"
-    },
-    {
-        "lat": "-6.1200280000",
-        "lng": "106.1819440000",
-        "area": "Banten - 1",
-        "area_id": "222"
-    },
-    {
-        "lat": "-6.7571150000",
-        "lng": "111.0487900000",
-        "area": "Jawa Tengah - 6",
-        "area_id": "131"
-    },
-    {
-        "lat": "-1.9098780000",
-        "lng": "116.1969330000",
-        "area": "Kalimantan Timur - 7",
-        "area_id": "62"
-    },
-    {
-        "lat": "-3.2405720000",
-        "lng": "116.2370530000",
-        "area": "Kalimantan Selatan - 3",
-        "area_id": "47"
-    },
-    {
-        "lat": "0.8312080000",
-        "lng": "99.5676500000",
-        "area": "Sumatera Utara - 8",
-        "area_id": "35"
-    },
-    {
-        "lat": "-2.1653280000",
-        "lng": "115.4329810000",
-        "area": "Kalimantan Selatan - 4",
-        "area_id": "49"
-    },
-    {
-        "lat": "0.3196310000",
-        "lng": "103.1650940000",
-        "area": "Riau - 7",
-        "area_id": "114"
-    },
-    {
-        "lat": "4.6458890000",
-        "lng": "96.8354440000",
-        "area": "Aceh - 6",
-        "area_id": "233"
-    },
-    {
-        "lat": "-7.3553030000",
-        "lng": "110.3916930000",
-        "area": "Jawa Tengah - 5",
-        "area_id": "129"
-    },
-    {
-        "lat": "-7.6922170000",
-        "lng": "113.9948690000",
-        "area": "Jawa Timur - 5",
-        "area_id": "148"
-    },
-    {
-        "lat": "3.9955800000",
-        "lng": "97.3287640000",
-        "area": "Aceh - 9",
-        "area_id": "236"
-    },
-    {
-        "lat": "-1.8400080000",
-        "lng": "109.9772220000",
-        "area": "Kalimantan Barat - 9",
-        "area_id": "42"
-    },
-    {
-        "lat": "-5.0366690000",
-        "lng": "104.0772280000",
-        "area": "Lampung - 4",
-        "area_id": "212"
-    },
-    {
-        "lat": "-0.9341850000",
-        "lng": "122.8236130000",
-        "area": "Sulawesi Tengah - 8",
-        "area_id": "82"
-    },
-    {
-        "lat": "-1.4930730000",
-        "lng": "102.1214120000",
-        "area": "Jambi - 3",
-        "area_id": "146"
-    },
-    {
-        "lat": "-2.6933560000",
-        "lng": "111.6255780000",
-        "area": "Kalimantan Tengah - 5",
-        "area_id": "17"
-    },
-    {
-        "lat": "-1.1747390000",
-        "lng": "119.3666670000",
-        "area": "Sulawesi Barat - 4",
-        "area_id": "118"
-    },
-    {
-        "lat": "-4.7997220000",
-        "lng": "122.7155810000",
-        "area": "Sulawesi Tenggara - 2",
-        "area_id": "96"
-    },
-    {
-        "lat": "-4.0872460000",
-        "lng": "103.1519600000",
-        "area": "Sumatera Selatan - 5",
-        "area_id": "202"
-    }
+  {
+    "lat": -7.90165,
+    "lng": 112.526649,
+    "area": "Jawa Timur - 2",
+    "area_id": 140
+  },
+  {
+    "lat": 2.305333,
+    "lng": 97.408867,
+    "area": "Aceh - 13",
+    "area_id": 240
+  },
+  {
+    "lat": 5.508797,
+    "lng": 95.302481,
+    "area": "Aceh - 1",
+    "area_id": 2
+  },
+  {
+    "lat": -0.963525,
+    "lng": 100.645608,
+    "area": "Sumatera Barat - 1",
+    "area_id": 39
+  },
+  {
+    "lat": -0.116483,
+    "lng": 99.8846,
+    "area": "Sumatera Barat - 2",
+    "area_id": 48
+  },
+  {
+    "lat": 0.517658,
+    "lng": 101.428325,
+    "area": "Riau - 1",
+    "area_id": 81
+  },
+  {
+    "lat": 1.123125,
+    "lng": 103.945664,
+    "area": "Kepulauan Riau - 1",
+    "area_id": 214
+  },
+  {
+    "lat": 1.331981,
+    "lng": 102.152144,
+    "area": "Riau - 4",
+    "area_id": 103
+  },
+  {
+    "lat": 3.222867,
+    "lng": 106.223367,
+    "area": "Kepulauan Riau - 2",
+    "area_id": 216
+  },
+  {
+    "lat": -2.016517,
+    "lng": 105.181089,
+    "area": "Kepulauan Bangka Belitung - 2",
+    "area_id": 215
+  },
+  {
+    "lat": -2.239778,
+    "lng": 106.0984,
+    "area": "Kepulauan Bangka Belitung - 1",
+    "area_id": 213
+  },
+  {
+    "lat": 3.263833,
+    "lng": 98.540067,
+    "area": "Sumatera Utara - 1",
+    "area_id": 10
+  },
+  {
+    "lat": -0.974744,
+    "lng": 100.367081,
+    "area": "Sumatera Barat - 1",
+    "area_id": 39
+  },
+  {
+    "lat": -1.615347,
+    "lng": 103.571972,
+    "area": "Jambi - 1",
+    "area_id": 139
+  },
+  {
+    "lat": -2.976381,
+    "lng": 104.7389,
+    "area": "Sumatera Selatan - 1",
+    "area_id": 173
+  },
+  {
+    "lat": -3.767625,
+    "lng": 102.311539,
+    "area": "Bengkulu - 1",
+    "area_id": 180
+  },
+  {
+    "lat": -5.406386,
+    "lng": 105.178958,
+    "area": "Lampung - 1",
+    "area_id": 209
+  },
+  {
+    "lat": -6.220769,
+    "lng": 106.725819,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -6.814764,
+    "lng": 107.560456,
+    "area": "Jawa Barat - 1",
+    "area_id": 88
+  },
+  {
+    "lat": -7.837561,
+    "lng": 110.524322,
+    "area": "DI Yogyakarta",
+    "area_id": 221
+  },
+  {
+    "lat": -7.289733,
+    "lng": 112.714075,
+    "area": "Jawa Timur - 1",
+    "area_id": 138
+  },
+  {
+    "lat": -0.043714,
+    "lng": 109.340769,
+    "area": "Kalimantan Barat  1",
+    "area_id": 30
+  },
+  {
+    "lat": 0.832556,
+    "lng": 109.490889,
+    "area": "Kalimantan Barat  3",
+    "area_id": 33
+  },
+  {
+    "lat": 1.358117,
+    "lng": 109.299867,
+    "area": "Kalimantan Barat  4",
+    "area_id": 34
+  },
+  {
+    "lat": 0.807508,
+    "lng": 110.421733,
+    "area": "Kalimantan Barat  5",
+    "area_id": 36
+  },
+  {
+    "lat": 1.168503,
+    "lng": 109.722767,
+    "area": "Kalimantan Barat  3",
+    "area_id": 33
+  },
+  {
+    "lat": 0.071217,
+    "lng": 111.504311,
+    "area": "Kalimantan Barat  6",
+    "area_id": 37
+  },
+  {
+    "lat": -3.346111,
+    "lng": 114.624722,
+    "area": "Kalimantan Selatan  1",
+    "area_id": 45
+  },
+  {
+    "lat": -2.212111,
+    "lng": 113.910367,
+    "area": "Kalimantan Tengah  1",
+    "area_id": 11
+  },
+  {
+    "lat": -0.5375,
+    "lng": 117.146389,
+    "area": "Kalimantan Timur  1",
+    "area_id": 53
+  },
+  {
+    "lat": 4.141028,
+    "lng": 117.657439,
+    "area": "Kalimantan Utara - 3",
+    "area_id": 228
+  },
+  {
+    "lat": -0.23075,
+    "lng": 115.8155,
+    "area": "Kalimantan Timur  5",
+    "area_id": 59
+  },
+  {
+    "lat": 3.52715,
+    "lng": 116.591094,
+    "area": "Kalimantan Utara - 2",
+    "area_id": 227
+  },
+  {
+    "lat": 3.304822,
+    "lng": 117.595139,
+    "area": "Kalimantan Utara - 1",
+    "area_id": 226
+  },
+  {
+    "lat": -8.818744,
+    "lng": 115.188233,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -8.586889,
+    "lng": 116.088658,
+    "area": "Nusa Tenggara Barat - 1",
+    "area_id": 160
+  },
+  {
+    "lat": -8.523142,
+    "lng": 116.574044,
+    "area": "Nusa Tenggara Barat - 1",
+    "area_id": 160
+  },
+  {
+    "lat": -8.882117,
+    "lng": 116.262367,
+    "area": "Nusa Tenggara Barat - 1",
+    "area_id": 160
+  },
+  {
+    "lat": -10.270472,
+    "lng": 123.666403,
+    "area": "Nusa Tenggara Timur - 1",
+    "area_id": 185
+  },
+  {
+    "lat": -9.091481,
+    "lng": 124.863786,
+    "area": "Nusa Tenggara Timur - 4",
+    "area_id": 190
+  },
+  {
+    "lat": -9.52805,
+    "lng": 124.2585,
+    "area": "Nusa Tenggara Timur - 2",
+    "area_id": 187
+  },
+  {
+    "lat": -9.4603,
+    "lng": 124.476467,
+    "area": "Nusa Tenggara Timur - 3",
+    "area_id": 189
+  },
+  {
+    "lat": -9.676897,
+    "lng": 120.193522,
+    "area": "Nusa Tenggara Timur - 7",
+    "area_id": 194
+  },
+  {
+    "lat": -5.449683,
+    "lng": 119.9169,
+    "area": "Sulawesi Selatan - 2",
+    "area_id": 20
+  },
+  {
+    "lat": -5.160669,
+    "lng": 119.415922,
+    "area": "Sulawesi Selatan - 1",
+    "area_id": 15
+  },
+  {
+    "lat": -0.886819,
+    "lng": 119.863669,
+    "area": "Sulawesi Tengah - 1",
+    "area_id": 67
+  },
+  {
+    "lat": -3.987353,
+    "lng": 122.508506,
+    "area": "Sulawesi Tenggara - 1",
+    "area_id": 93
+  },
+  {
+    "lat": -5.294881,
+    "lng": 123.545231,
+    "area": "Sulawesi Tenggara - 5",
+    "area_id": 104
+  },
+  {
+    "lat": -4.821411,
+    "lng": 121.676664,
+    "area": "Sulawesi Tenggara - 3",
+    "area_id": 99
+  },
+  {
+    "lat": 1.479478,
+    "lng": 124.849728,
+    "area": "Sulawesi Utara - 1",
+    "area_id": 137
+  },
+  {
+    "lat": 4.01375,
+    "lng": 126.641783,
+    "area": "Sulawesi Utara - 7",
+    "area_id": 156
+  },
+  {
+    "lat": 3.631817,
+    "lng": 125.5143,
+    "area": "Sulawesi Utara - 6",
+    "area_id": 154
+  },
+  {
+    "lat": 0.558461,
+    "lng": 123.048797,
+    "area": "Gorontalo - 1",
+    "area_id": 130
+  },
+  {
+    "lat": -2.71385,
+    "lng": 118.858719,
+    "area": "Sulawesi Barat - 1",
+    "area_id": 112
+  },
+  {
+    "lat": -3.719661,
+    "lng": 128.163961,
+    "area": "Maluku  1",
+    "area_id": 74
+  },
+  {
+    "lat": 0.789761,
+    "lng": 127.355547,
+    "area": "Maluku Utara  1",
+    "area_id": 91
+  },
+  {
+    "lat": -7.975733,
+    "lng": 131.30595,
+    "area": "Maluku  4",
+    "area_id": 80
+  },
+  {
+    "lat": -2.119167,
+    "lng": 133.537117,
+    "area": "Papua Barat  7",
+    "area_id": 183
+  },
+  {
+    "lat": -2.549922,
+    "lng": 140.709428,
+    "area": "Papua  1",
+    "area_id": 106
+  },
+  {
+    "lat": -6.087917,
+    "lng": 140.304583,
+    "area": "Papua  3",
+    "area_id": 116
+  },
+  {
+    "lat": -6.943556,
+    "lng": 106.2555,
+    "area": "Banten - 3",
+    "area_id": 224
+  },
+  {
+    "lat": -6.729194,
+    "lng": 107.659333,
+    "area": "Jawa Barat - 6",
+    "area_id": 105
+  },
+  {
+    "lat": -7.070111,
+    "lng": 109.239972,
+    "area": "Jawa Tengah - 3",
+    "area_id": 126
+  },
+  {
+    "lat": -7.710972,
+    "lng": 109.913361,
+    "area": "Jawa Tengah - 8",
+    "area_id": 133
+  },
+  {
+    "lat": -8.253778,
+    "lng": 113.935222,
+    "area": "Jawa Timur - 4",
+    "area_id": 145
+  },
+  {
+    "lat": -4.7025,
+    "lng": 104.784167,
+    "area": "Lampung - 3",
+    "area_id": 211
+  },
+  {
+    "lat": 4.518647,
+    "lng": 97.933486,
+    "area": "Aceh - 8",
+    "area_id": 235
+  },
+  {
+    "lat": 5.855278,
+    "lng": 95.335833,
+    "area": "Aceh - 2",
+    "area_id": 229
+  },
+  {
+    "lat": -3.950278,
+    "lng": 119.677778,
+    "area": "Sulawesi Selatan - 6",
+    "area_id": 28
+  },
+  {
+    "lat": -0.85875,
+    "lng": 134.062639,
+    "area": "Papua Barat  4",
+    "area_id": 179
+  },
+  {
+    "lat": 5.510325,
+    "lng": 95.298911,
+    "area": "Aceh - 1",
+    "area_id": 2
+  },
+  {
+    "lat": 4.170042,
+    "lng": 96.134953,
+    "area": "Aceh - 5",
+    "area_id": 232
+  },
+  {
+    "lat": 5.852383,
+    "lng": 95.348115,
+    "area": "Aceh - 2",
+    "area_id": 229
+  },
+  {
+    "lat": 1.122869,
+    "lng": 103.945516,
+    "area": "Kepulauan Riau - 1",
+    "area_id": 214
+  },
+  {
+    "lat": -6.29026,
+    "lng": 106.114923,
+    "area": "Banten - 2",
+    "area_id": 223
+  },
+  {
+    "lat": -3.3308571,
+    "lng": 114.6300805,
+    "area": "Kalimantan Selatan  1",
+    "area_id": 45
+  },
+  {
+    "lat": 5.5089434,
+    "lng": 95.3044024,
+    "area": "Aceh - 1",
+    "area_id": 2
+  },
+  {
+    "lat": -0.537128,
+    "lng": 117.146575,
+    "area": "Kalimantan Timur  1",
+    "area_id": 53
+  },
+  {
+    "lat": -6.815353,
+    "lng": 107.560355,
+    "area": "Jawa Barat - 1",
+    "area_id": 88
+  },
+  {
+    "lat": -7.085111,
+    "lng": 107.118275,
+    "area": "Jawa Barat - 7",
+    "area_id": 108
+  },
+  {
+    "lat": -6.811667,
+    "lng": 108.437417,
+    "area": "Jawa Barat - 3",
+    "area_id": 95
+  },
+  {
+    "lat": -7.180353,
+    "lng": 107.977083,
+    "area": "Jawa Barat - 4",
+    "area_id": 100
+  },
+  {
+    "lat": -6.216167,
+    "lng": 106.724444,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -8.160411,
+    "lng": 113.55392,
+    "area": "Jawa Timur - 3",
+    "area_id": 143
+  },
+  {
+    "lat": -7.863202,
+    "lng": 111.856125,
+    "area": "Jawa Timur - 7",
+    "area_id": 155
+  },
+  {
+    "lat": -7.673333,
+    "lng": 111.238611,
+    "area": "Jawa Timur - 9",
+    "area_id": 158
+  },
+  {
+    "lat": -7.549361,
+    "lng": 109.251056,
+    "area": "Jawa Tengah - 3",
+    "area_id": 126
+  },
+  {
+    "lat": -7.043917,
+    "lng": 110.424333,
+    "area": "Jawa Tengah - 1",
+    "area_id": 123
+  },
+  {
+    "lat": -6.871766,
+    "lng": 106.971572,
+    "area": "Jawa Barat - 4",
+    "area_id": 100
+  },
+  {
+    "lat": -6.793004,
+    "lng": 107.960834,
+    "area": "Jawa Barat - 8",
+    "area_id": 111
+  },
+  {
+    "lat": -7.274167,
+    "lng": 112.675833,
+    "area": "Jawa Timur - 1",
+    "area_id": 138
+  },
+  {
+    "lat": -7.264605,
+    "lng": 108.240062,
+    "area": "Jawa Barat - 7",
+    "area_id": 108
+  },
+  {
+    "lat": -7.837972,
+    "lng": 110.501056,
+    "area": "DI Yogyakarta",
+    "area_id": 221
+  },
+  {
+    "lat": -1.247222,
+    "lng": 116.838889,
+    "area": "Kalimantan Timur  2",
+    "area_id": 55
+  },
+  {
+    "lat": -3.330556,
+    "lng": 114.630278,
+    "area": "Kalimantan Selatan  1",
+    "area_id": 45
+  },
+  {
+    "lat": -7.547583,
+    "lng": 109.2505,
+    "area": "Jawa Tengah - 7",
+    "area_id": 132
+  },
+  {
+    "lat": -8.181136,
+    "lng": 114.25225,
+    "area": "Jawa Timur - 6",
+    "area_id": 152
+  },
+  {
+    "lat": 5.211508,
+    "lng": 96.723928,
+    "area": "Aceh - 4",
+    "area_id": 231
+  },
+  {
+    "lat": -6.812944,
+    "lng": 108.435917,
+    "area": "Jawa Barat - 3",
+    "area_id": 95
+  },
+  {
+    "lat": -7.28925,
+    "lng": 107.887861,
+    "area": "Jawa Barat - 2",
+    "area_id": 90
+  },
+  {
+    "lat": 1.288036,
+    "lng": 97.608533,
+    "area": "Sumatera Utara - 9",
+    "area_id": 38
+  },
+  {
+    "lat": -6.2185479,
+    "lng": 106.7294358,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -8.171597,
+    "lng": 113.601303,
+    "area": "Jawa Timur - 4",
+    "area_id": 145
+  },
+  {
+    "lat": -7.85695,
+    "lng": 111.892981,
+    "area": "Jawa Timur - 7",
+    "area_id": 155
+  },
+  {
+    "lat": 2.906517,
+    "lng": 99.536528,
+    "area": "Sumatera Utara - 2",
+    "area_id": 16
+  },
+  {
+    "lat": 3.483597,
+    "lng": 97.825644,
+    "area": "Aceh - 10",
+    "area_id": 237
+  },
+  {
+    "lat": 5.117828,
+    "lng": 97.153519,
+    "area": "Aceh - 7",
+    "area_id": 234
+  },
+  {
+    "lat": -7.673377,
+    "lng": 111.238852,
+    "area": "Jawa Timur - 9",
+    "area_id": 158
+  },
+  {
+    "lat": 3.54475,
+    "lng": 116.611639,
+    "area": "Kalimantan Utara - 2",
+    "area_id": 227
+  },
+  {
+    "lat": 3.275975,
+    "lng": 98.553272,
+    "area": "Sumatera Utara - 1",
+    "area_id": 10
+  },
+  {
+    "lat": 4.128333,
+    "lng": 117.648333,
+    "area": "Kalimantan Utara - 3",
+    "area_id": 228
+  },
+  {
+    "lat": -8.180556,
+    "lng": 111.161389,
+    "area": "Jawa Timur - 10",
+    "area_id": 159
+  },
+  {
+    "lat": 1.389156,
+    "lng": 99.263108,
+    "area": "Sumatera Utara - 7",
+    "area_id": 32
+  },
+  {
+    "lat": 2.823025,
+    "lng": 98.771831,
+    "area": "Sumatera Utara - 2",
+    "area_id": 16
+  },
+  {
+    "lat": -7.055581,
+    "lng": 113.525033,
+    "area": "Jawa Timur - 3",
+    "area_id": 143
+  },
+  {
+    "lat": 1.751728,
+    "lng": 98.778567,
+    "area": "Sumatera Utara - 6",
+    "area_id": 29
+  },
+  {
+    "lat": 2.698394,
+    "lng": 98.304614,
+    "area": "Sumatera Utara - 5",
+    "area_id": 27
+  },
+  {
+    "lat": 2.364042,
+    "lng": 97.933469,
+    "area": "Aceh - 13",
+    "area_id": 240
+  },
+  {
+    "lat": -6.870989,
+    "lng": 106.954689,
+    "area": "Jawa Barat - 5",
+    "area_id": 101
+  },
+  {
+    "lat": 3.396392,
+    "lng": 117.539517,
+    "area": "Kalimantan Utara - 1",
+    "area_id": 226
+  },
+  {
+    "lat": -7.365546,
+    "lng": 107.97346,
+    "area": "Jawa Barat - 4",
+    "area_id": 100
+  },
+  {
+    "lat": -7.070306,
+    "lng": 109.241972,
+    "area": "Jawa Tengah - 3",
+    "area_id": 126
+  },
+  {
+    "lat": -7.011667,
+    "lng": 112.007222,
+    "area": "Jawa Timur - 8",
+    "area_id": 157
+  },
+  {
+    "lat": -7.836583,
+    "lng": 110.527306,
+    "area": "DI Yogyakarta",
+    "area_id": 221
+  },
+  {
+    "lat": -7.120653,
+    "lng": 108.854978,
+    "area": "Jawa Tengah - 7",
+    "area_id": 132
+  },
+  {
+    "lat": 0.894636,
+    "lng": 123.233108,
+    "area": "Sulawesi Utara - 4",
+    "area_id": 151
+  },
+  {
+    "lat": -7.3047,
+    "lng": 107.881314,
+    "area": "Jawa Barat - 2",
+    "area_id": 90
+  },
+  {
+    "lat": -0.670819,
+    "lng": 119.745714,
+    "area": "Sulawesi Tengah - 2",
+    "area_id": 70
+  },
+  {
+    "lat": 1.288075,
+    "lng": 97.615917,
+    "area": "Sumatera Utara - 9",
+    "area_id": 38
+  },
+  {
+    "lat": -7.556292,
+    "lng": 109.253714,
+    "area": "Jawa Tengah - 7",
+    "area_id": 132
+  },
+  {
+    "lat": -2.985731,
+    "lng": 106.525017,
+    "area": "Kepulauan Bangka Belitung - 3",
+    "area_id": 219
+  },
+  {
+    "lat": -7.946625,
+    "lng": 113.133653,
+    "area": "Jawa Timur - 2",
+    "area_id": 140
+  },
+  {
+    "lat": -6.913722,
+    "lng": 106.836125,
+    "area": "Jawa Barat - 5",
+    "area_id": 101
+  },
+  {
+    "lat": -2.992786,
+    "lng": 101.492642,
+    "area": "Bengkulu - 6",
+    "area_id": 165
+  },
+  {
+    "lat": -2.855719,
+    "lng": 115.248042,
+    "area": "Kalimantan Selatan  2",
+    "area_id": 46
+  },
+  {
+    "lat": 0.843575,
+    "lng": 104.599806,
+    "area": "Kepulauan Riau - 1",
+    "area_id": 214
+  },
+  {
+    "lat": -1.026944,
+    "lng": 103.040556,
+    "area": "Jambi - 2",
+    "area_id": 144
+  },
+  {
+    "lat": -3.322992,
+    "lng": 128.941031,
+    "area": "Maluku  2",
+    "area_id": 76
+  },
+  {
+    "lat": -8.488678,
+    "lng": 140.387525,
+    "area": "Papua  4",
+    "area_id": 119
+  },
+  {
+    "lat": 3.937178,
+    "lng": 108.371258,
+    "area": "Kepulauan Riau - 3",
+    "area_id": 217
+  },
+  {
+    "lat": 0.558461,
+    "lng": 123.048797,
+    "area": "Gorontalo - 1",
+    "area_id": 130
+  },
+  {
+    "lat": 0.85605,
+    "lng": 100.305339,
+    "area": "Riau - 2",
+    "area_id": 86
+  },
+  {
+    "lat": -2.563944,
+    "lng": 112.951744,
+    "area": "Kalimantan Tengah  6",
+    "area_id": 18
+  },
+  {
+    "lat": -7.058422,
+    "lng": 111.438786,
+    "area": "Jawa Tengah - 2",
+    "area_id": 125
+  },
+  {
+    "lat": -0.869867,
+    "lng": 131.262772,
+    "area": "Papua Barat  1",
+    "area_id": 174
+  },
+  {
+    "lat": -0.711972,
+    "lng": 120.094164,
+    "area": "Sulawesi Tengah - 5",
+    "area_id": 75
+  },
+  {
+    "lat": -7.015494,
+    "lng": 112.0114,
+    "area": "Jawa Timur - 8",
+    "area_id": 157
+  },
+  {
+    "lat": -8.543631,
+    "lng": 118.811078,
+    "area": "Nusa Tenggara Barat - 5",
+    "area_id": 171
+  },
+  {
+    "lat": -8.587581,
+    "lng": 116.347078,
+    "area": "Nusa Tenggara Barat - 1",
+    "area_id": 160
+  },
+  {
+    "lat": 1.288075,
+    "lng": 99.255642,
+    "area": "Sumatera Utara - 7",
+    "area_id": 32
+  },
+  {
+    "lat": 2.469967,
+    "lng": 96.384972,
+    "area": "Aceh - 14",
+    "area_id": 241
+  },
+  {
+    "lat": -6.527744,
+    "lng": 106.546858,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": 2.01,
+    "lng": 128.282669,
+    "area": "Maluku Utara  2",
+    "area_id": 92
+  },
+  {
+    "lat": -4.023675,
+    "lng": 105.250372,
+    "area": "Lampung - 2",
+    "area_id": 210
+  },
+  {
+    "lat": 2.334417,
+    "lng": 99.036944,
+    "area": "Sumatera Utara - 4",
+    "area_id": 26
+  },
+  {
+    "lat": 2.148806,
+    "lng": 117.483258,
+    "area": "Kalimantan Timur  4",
+    "area_id": 58
+  },
+  {
+    "lat": 2.843611,
+    "lng": 117.401667,
+    "area": "Kalimantan Utara - 1",
+    "area_id": 226
+  },
+  {
+    "lat": 2.081097,
+    "lng": 99.840786,
+    "area": "Sumatera Utara - 3",
+    "area_id": 25
+  },
+  {
+    "lat": -7.070278,
+    "lng": 109.237222,
+    "area": "Jawa Tengah - 2",
+    "area_id": 125
+  },
+  {
+    "lat": -2.034061,
+    "lng": 101.408214,
+    "area": "Jambi - 4",
+    "area_id": 147
+  },
+  {
+    "lat": -8.632556,
+    "lng": 122.224669,
+    "area": "Nusa Tenggara Timur - 13",
+    "area_id": 203
+  },
+  {
+    "lat": -7.351456,
+    "lng": 110.029253,
+    "area": "Jawa Tengah - 8",
+    "area_id": 133
+  },
+  {
+    "lat": -8.490722,
+    "lng": 119.880944,
+    "area": "Nusa Tenggara Timur - 9",
+    "area_id": 197
+  },
+  {
+    "lat": 2.666317,
+    "lng": 98.927111,
+    "area": "Sumatera Utara - 4",
+    "area_id": 26
+  },
+  {
+    "lat": 1.748926,
+    "lng": 98.774532,
+    "area": "Sumatera Utara - 6",
+    "area_id": 29
+  },
+  {
+    "lat": -0.2317,
+    "lng": 115.805733,
+    "area": "Kalimantan Timur  5",
+    "area_id": 59
+  },
+  {
+    "lat": 0.496119,
+    "lng": 117.505889,
+    "area": "Kalimantan Timur  3",
+    "area_id": 57
+  },
+  {
+    "lat": 5.380253,
+    "lng": 95.965814,
+    "area": "Aceh - 4",
+    "area_id": 231
+  },
+  {
+    "lat": -6.761528,
+    "lng": 106.02225,
+    "area": "Banten - 3",
+    "area_id": 224
+  },
+  {
+    "lat": -6.160556,
+    "lng": 106.818056,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -6.238611,
+    "lng": 106.992778,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -6.309139,
+    "lng": 106.109139,
+    "area": "Banten - 2",
+    "area_id": 223
+  },
+  {
+    "lat": -6.120028,
+    "lng": 106.181944,
+    "area": "Banten - 1",
+    "area_id": 222
+  },
+  {
+    "lat": -6.190594,
+    "lng": 106.739697,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -7.8345,
+    "lng": 110.527861,
+    "area": "DI Yogyakarta",
+    "area_id": 221
+  },
+  {
+    "lat": 5.510439,
+    "lng": 95.299006,
+    "area": "Aceh - 1",
+    "area_id": 2
+  },
+  {
+    "lat": -6.805836,
+    "lng": 108.403347,
+    "area": "Jawa Barat - 3",
+    "area_id": 95
+  },
+  {
+    "lat": 1.120278,
+    "lng": 103.951222,
+    "area": "Kepulauan Riau - 1",
+    "area_id": 214
+  },
+  {
+    "lat": -6.193389,
+    "lng": 106.766611,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -6.222972,
+    "lng": 106.719306,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -7.045011,
+    "lng": 110.42625,
+    "area": "Jawa Tengah - 1",
+    "area_id": 123
+  },
+  {
+    "lat": -7.835556,
+    "lng": 110.527222,
+    "area": "DI Yogyakarta",
+    "area_id": 221
+  },
+  {
+    "lat": 1.179167,
+    "lng": 104.013333,
+    "area": "Kepulauan Riau - 1",
+    "area_id": 214
+  },
+  {
+    "lat": -6.21224,
+    "lng": 106.731713,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -7.547303,
+    "lng": 109.249897,
+    "area": "Jawa Tengah - 7",
+    "area_id": 132
+  },
+  {
+    "lat": -7.0427103,
+    "lng": 110.4209624,
+    "area": "Jawa Tengah - 1",
+    "area_id": 123
+  },
+  {
+    "lat": -7.836648,
+    "lng": 110.519974,
+    "area": "DI Yogyakarta",
+    "area_id": 221
+  },
+  {
+    "lat": -2.408389,
+    "lng": 115.247139,
+    "area": "Kalimantan Selatan  2",
+    "area_id": 46
+  },
+  {
+    "lat": -1.24825,
+    "lng": 116.839278,
+    "area": "Kalimantan Timur  2",
+    "area_id": 55
+  },
+  {
+    "lat": 0.1375,
+    "lng": 117.42675,
+    "area": "Kalimantan Timur  3",
+    "area_id": 57
+  },
+  {
+    "lat": -2.852333,
+    "lng": 115.249139,
+    "area": "Kalimantan Selatan  2",
+    "area_id": 46
+  },
+  {
+    "lat": -7.908028,
+    "lng": 112.524333,
+    "area": "Jawa Timur - 2",
+    "area_id": 140
+  },
+  {
+    "lat": -6.761667,
+    "lng": 106.021778,
+    "area": "Banten - 3",
+    "area_id": 224
+  },
+  {
+    "lat": -0.537306,
+    "lng": 117.146194,
+    "area": "Kalimantan Timur  1",
+    "area_id": 53
+  },
+  {
+    "lat": -6.106861,
+    "lng": 105.920194,
+    "area": "Banten - 1",
+    "area_id": 222
+  },
+  {
+    "lat": -6.793583,
+    "lng": 107.961333,
+    "area": "Jawa Barat - 8",
+    "area_id": 111
+  },
+  {
+    "lat": -0.53705,
+    "lng": 117.146647,
+    "area": "Kalimantan Timur  1",
+    "area_id": 53
+  },
+  {
+    "lat": 2.836944,
+    "lng": 117.403333,
+    "area": "Kalimantan Utara - 1",
+    "area_id": 226
+  },
+  {
+    "lat": -3.330472,
+    "lng": 114.630111,
+    "area": "Kalimantan Selatan  1",
+    "area_id": 45
+  },
+  {
+    "lat": -6.757115,
+    "lng": 111.04879,
+    "area": "Jawa Tengah - 6",
+    "area_id": 131
+  },
+  {
+    "lat": -7.070111,
+    "lng": 109.240111,
+    "area": "Jawa Tengah - 3",
+    "area_id": 126
+  },
+  {
+    "lat": -3.330389,
+    "lng": 114.629167,
+    "area": "Kalimantan Selatan  1",
+    "area_id": 45
+  },
+  {
+    "lat": -7.042076,
+    "lng": 110.423206,
+    "area": "Jawa Tengah - 1",
+    "area_id": 123
+  },
+  {
+    "lat": -7.278691,
+    "lng": 112.678593,
+    "area": "Jawa Timur - 1",
+    "area_id": 138
+  },
+  {
+    "lat": -6.814964,
+    "lng": 107.561974,
+    "area": "Jawa Barat - 1",
+    "area_id": 88
+  },
+  {
+    "lat": 5.141056,
+    "lng": 97.135333,
+    "area": "Aceh - 7",
+    "area_id": 234
+  },
+  {
+    "lat": 2.096969,
+    "lng": 99.841318,
+    "area": "Sumatera Utara - 3",
+    "area_id": 25
+  },
+  {
+    "lat": -6.382,
+    "lng": 105.983528,
+    "area": "Banten - 2",
+    "area_id": 223
+  },
+  {
+    "lat": 3.305217,
+    "lng": 117.583897,
+    "area": "Kalimantan Utara - 1",
+    "area_id": 226
+  },
+  {
+    "lat": 3.262522,
+    "lng": 98.539314,
+    "area": "Sumatera Utara - 1",
+    "area_id": 10
+  },
+  {
+    "lat": -1.909878,
+    "lng": 116.196933,
+    "area": "Kalimantan Timur  7",
+    "area_id": 62
+  },
+  {
+    "lat": -3.240572,
+    "lng": 116.237053,
+    "area": "Kalimantan Selatan  3",
+    "area_id": 47
+  },
+  {
+    "lat": 0.831208,
+    "lng": 99.56765,
+    "area": "Sumatera Utara - 8",
+    "area_id": 35
+  },
+  {
+    "lat": -2.165328,
+    "lng": 115.432981,
+    "area": "Kalimantan Selatan  4",
+    "area_id": 49
+  },
+  {
+    "lat": -6.815778,
+    "lng": 107.50166,
+    "area": "Jawa Barat - 1",
+    "area_id": 88
+  },
+  {
+    "lat": -7.303752,
+    "lng": 107.881575,
+    "area": "Jawa Barat - 2",
+    "area_id": 90
+  },
+  {
+    "lat": -6.814463,
+    "lng": 107.953626,
+    "area": "Jawa Barat - 8",
+    "area_id": 111
+  },
+  {
+    "lat": -7.284838,
+    "lng": 112.6778,
+    "area": "Jawa Timur - 1",
+    "area_id": 138
+  },
+  {
+    "lat": 3.280005,
+    "lng": 98.552249,
+    "area": "Sumatera Utara - 1",
+    "area_id": 10
+  },
+  {
+    "lat": -6.873356,
+    "lng": 106.952231,
+    "area": "Jawa Barat - 5",
+    "area_id": 101
+  },
+  {
+    "lat": 3.098611,
+    "lng": 99.063333,
+    "area": "Sumatera Utara - 2",
+    "area_id": 16
+  },
+  {
+    "lat": 3.256389,
+    "lng": 98.539167,
+    "area": "Sumatera Utara - 1",
+    "area_id": 10
+  },
+  {
+    "lat": -0.537501,
+    "lng": 117.14639,
+    "area": "Kalimantan Timur  1",
+    "area_id": 53
+  },
+  {
+    "lat": -1.243814,
+    "lng": 116.839499,
+    "area": "Kalimantan Timur  2",
+    "area_id": 55
+  },
+  {
+    "lat": -7.287144,
+    "lng": 107.1049,
+    "area": "Jawa Barat - 7",
+    "area_id": 108
+  },
+  {
+    "lat": -2.971764,
+    "lng": 104.736733,
+    "area": "Sumatera Selatan - 1",
+    "area_id": 173
+  },
+  {
+    "lat": -7.697592,
+    "lng": 109.724025,
+    "area": "Jawa Tengah - 8",
+    "area_id": 133
+  },
+  {
+    "lat": -6.794033,
+    "lng": 107.961253,
+    "area": "Jawa Barat - 8",
+    "area_id": 111
+  },
+  {
+    "lat": 2.149639,
+    "lng": 117.482167,
+    "area": "Kalimantan Timur  4",
+    "area_id": 58
+  },
+  {
+    "lat": -2.550294,
+    "lng": 140.708878,
+    "area": "Papua  1",
+    "area_id": 106
+  },
+  {
+    "lat": 5.203664,
+    "lng": 96.705932,
+    "area": "Aceh - 4",
+    "area_id": 231
+  },
+  {
+    "lat": -2.784167,
+    "lng": 115.263278,
+    "area": "Kalimantan Selatan  2",
+    "area_id": 46
+  },
+  {
+    "lat": -3.849889,
+    "lng": 104.893056,
+    "area": "Sumatera Selatan - 1",
+    "area_id": 173
+  },
+  {
+    "lat": 4.147389,
+    "lng": 96.131778,
+    "area": "Aceh - 5",
+    "area_id": 232
+  },
+  {
+    "lat": 1.384694,
+    "lng": 99.266056,
+    "area": "Sumatera Utara - 7",
+    "area_id": 32
+  },
+  {
+    "lat": -2.970766,
+    "lng": 104.735818,
+    "area": "Sumatera Selatan - 1",
+    "area_id": 173
+  },
+  {
+    "lat": -2.547788,
+    "lng": 140.477691,
+    "area": "Papua  1",
+    "area_id": 106
+  },
+  {
+    "lat": 1.726806,
+    "lng": 98.805861,
+    "area": "Sumatera Utara - 6",
+    "area_id": 29
+  },
+  {
+    "lat": 2.309117,
+    "lng": 98.982086,
+    "area": "Sumatera Utara - 4",
+    "area_id": 26
+  },
+  {
+    "lat": 2.389722,
+    "lng": 97.964778,
+    "area": "Aceh - 13",
+    "area_id": 240
+  },
+  {
+    "lat": -3.268311,
+    "lng": 105.371667,
+    "area": "Sumatera Selatan - 1",
+    "area_id": 173
+  },
+  {
+    "lat": 4.141361,
+    "lng": 117.655398,
+    "area": "Kalimantan Utara - 3",
+    "area_id": 228
+  },
+  {
+    "lat": 3.325011,
+    "lng": 117.50037,
+    "area": "Kalimantan Utara - 1",
+    "area_id": 226
+  },
+  {
+    "lat": 4.139425,
+    "lng": 117.651019,
+    "area": "Kalimantan Utara - 3",
+    "area_id": 228
+  },
+  {
+    "lat": -0.536,
+    "lng": 117.147222,
+    "area": "Kalimantan Timur  1",
+    "area_id": 53
+  },
+  {
+    "lat": 2.805767,
+    "lng": 117.405372,
+    "area": "Kalimantan Utara - 1",
+    "area_id": 226
+  },
+  {
+    "lat": -0.393714,
+    "lng": 100.364128,
+    "area": "Sumatera Barat - 1",
+    "area_id": 39
+  },
+  {
+    "lat": -8.822575,
+    "lng": 115.185586,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -8.378614,
+    "lng": 115.635111,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -3.986667,
+    "lng": 122.494722,
+    "area": "Sulawesi Tenggara - 1",
+    "area_id": 93
+  },
+  {
+    "lat": -5.420467,
+    "lng": 105.226408,
+    "area": "Lampung - 1",
+    "area_id": 209
+  },
+  {
+    "lat": -5.249317,
+    "lng": 119.527439,
+    "area": "Sulawesi Selatan - 1",
+    "area_id": 15
+  },
+  {
+    "lat": 1.327064,
+    "lng": 124.955,
+    "area": "Sulawesi Utara - 1",
+    "area_id": 137
+  },
+  {
+    "lat": -8.586667,
+    "lng": 116.088056,
+    "area": "Nusa Tenggara Barat - 1",
+    "area_id": 160
+  },
+  {
+    "lat": -0.957319,
+    "lng": 100.475961,
+    "area": "Sumatera Barat - 1",
+    "area_id": 39
+  },
+  {
+    "lat": -5.382872,
+    "lng": 105.0161,
+    "area": "Lampung - 1",
+    "area_id": 209
+  },
+  {
+    "lat": -8.159021,
+    "lng": 115.100958,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": 5.509417,
+    "lng": 95.29875,
+    "area": "Aceh - 1",
+    "area_id": 2
+  },
+  {
+    "lat": -6.810892,
+    "lng": 108.436384,
+    "area": "Jawa Barat - 3",
+    "area_id": 95
+  },
+  {
+    "lat": -7.304403,
+    "lng": 107.881683,
+    "area": "Jawa Barat - 2",
+    "area_id": 90
+  },
+  {
+    "lat": 5.202639,
+    "lng": 97.051389,
+    "area": "Aceh - 7",
+    "area_id": 234
+  },
+  {
+    "lat": -6.871639,
+    "lng": 106.955056,
+    "area": "Jawa Barat - 5",
+    "area_id": 101
+  },
+  {
+    "lat": -8.168642,
+    "lng": 113.537667,
+    "area": "Jawa Timur - 4",
+    "area_id": 145
+  },
+  {
+    "lat": -7.671722,
+    "lng": 111.239639,
+    "area": "Jawa Timur - 9",
+    "area_id": 158
+  },
+  {
+    "lat": -7.902583,
+    "lng": 112.524806,
+    "area": "Jawa Timur - 2",
+    "area_id": 140
+  },
+  {
+    "lat": -7.555219,
+    "lng": 109.253669,
+    "area": "Jawa Tengah - 7",
+    "area_id": 132
+  },
+  {
+    "lat": -7.070222,
+    "lng": 109.240528,
+    "area": "Jawa Tengah - 3",
+    "area_id": 126
+  },
+  {
+    "lat": 2.470211,
+    "lng": 96.385278,
+    "area": "Aceh - 14",
+    "area_id": 241
+  },
+  {
+    "lat": -1.883281,
+    "lng": 116.189536,
+    "area": "Kalimantan Timur  7",
+    "area_id": 62
+  },
+  {
+    "lat": 0.319631,
+    "lng": 103.165094,
+    "area": "Riau - 7",
+    "area_id": 114
+  },
+  {
+    "lat": 0.891267,
+    "lng": 108.973722,
+    "area": "Kalimantan Barat  3",
+    "area_id": 33
+  },
+  {
+    "lat": -2.152833,
+    "lng": 106.115472,
+    "area": "Kepulauan Bangka Belitung - 1",
+    "area_id": 213
+  },
+  {
+    "lat": 4.645889,
+    "lng": 96.835444,
+    "area": "Aceh - 6",
+    "area_id": 233
+  },
+  {
+    "lat": -1.247917,
+    "lng": 116.83825,
+    "area": "Kalimantan Timur  2",
+    "area_id": 55
+  },
+  {
+    "lat": -6.793056,
+    "lng": 107.960022,
+    "area": "Jawa Barat - 8",
+    "area_id": 111
+  },
+  {
+    "lat": -8.820013,
+    "lng": 115.19001,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -8.207222,
+    "lng": 115.328895,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -8.236689,
+    "lng": 115.136128,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -8.247224,
+    "lng": 114.951136,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -8.378361,
+    "lng": 115.637231,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -8.243354,
+    "lng": 114.517244,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -6.709445,
+    "lng": 108.504723,
+    "area": "Jawa Barat - 3",
+    "area_id": 95
+  },
+  {
+    "lat": -5.419449,
+    "lng": 105.228063,
+    "area": "Lampung - 1",
+    "area_id": 209
+  },
+  {
+    "lat": -0.942224,
+    "lng": 100.446112,
+    "area": "Sumatera Barat - 1",
+    "area_id": 39
+  },
+  {
+    "lat": -0.393612,
+    "lng": 100.364167,
+    "area": "Sumatera Barat - 1",
+    "area_id": 39
+  },
+  {
+    "lat": -0.8439,
+    "lng": 100.647784,
+    "area": "Sumatera Barat - 1",
+    "area_id": 39
+  },
+  {
+    "lat": -8.066622,
+    "lng": 111.703917,
+    "area": "Jawa Timur - 9",
+    "area_id": 158
+  },
+  {
+    "lat": -3.71625,
+    "lng": 128.168278,
+    "area": "Maluku  1",
+    "area_id": 74
+  },
+  {
+    "lat": -3.768389,
+    "lng": 102.310917,
+    "area": "Bengkulu - 1",
+    "area_id": 180
+  },
+  {
+    "lat": 0.601056,
+    "lng": 123.030889,
+    "area": "Gorontalo - 1",
+    "area_id": 130
+  },
+  {
+    "lat": -2.550806,
+    "lng": 140.709083,
+    "area": "Papua  1",
+    "area_id": 106
+  },
+  {
+    "lat": -5.273917,
+    "lng": 119.570833,
+    "area": "Sulawesi Selatan - 1",
+    "area_id": 15
+  },
+  {
+    "lat": -2.699064,
+    "lng": 118.861519,
+    "area": "Sulawesi Barat - 1",
+    "area_id": 112
+  },
+  {
+    "lat": -0.843056,
+    "lng": 119.910167,
+    "area": "Sulawesi Tengah - 1",
+    "area_id": 67
+  },
+  {
+    "lat": -2.151389,
+    "lng": 106.119917,
+    "area": "Kepulauan Bangka Belitung - 1",
+    "area_id": 213
+  },
+  {
+    "lat": 0.378907,
+    "lng": 101.029748,
+    "area": "Riau - 1",
+    "area_id": 81
+  },
+  {
+    "lat": 0.671667,
+    "lng": 122.603611,
+    "area": "Gorontalo - 1",
+    "area_id": 130
+  },
+  {
+    "lat": 0.554723,
+    "lng": 123.043058,
+    "area": "Gorontalo - 1",
+    "area_id": 130
+  },
+  {
+    "lat": -1.619723,
+    "lng": 103.56278,
+    "area": "Jambi - 1",
+    "area_id": 139
+  },
+  {
+    "lat": 0.842878,
+    "lng": 122.912907,
+    "area": "Gorontalo - 1",
+    "area_id": 130
+  },
+  {
+    "lat": 1.450279,
+    "lng": 124.852222,
+    "area": "Sulawesi Utara - 1",
+    "area_id": 137
+  },
+  {
+    "lat": -1.7,
+    "lng": 103.295556,
+    "area": "Jambi - 1",
+    "area_id": 139
+  },
+  {
+    "lat": -2.23278,
+    "lng": 113.910278,
+    "area": "Kalimantan Tengah  1",
+    "area_id": 11
+  },
+  {
+    "lat": 0.508056,
+    "lng": 101.503056,
+    "area": "Riau - 1",
+    "area_id": 81
+  },
+  {
+    "lat": -0.056111,
+    "lng": 109.337501,
+    "area": "Kalimantan Barat  1",
+    "area_id": 30
+  },
+  {
+    "lat": -2.738146,
+    "lng": 114.265446,
+    "area": "Kalimantan Tengah  1",
+    "area_id": 11
+  },
+  {
+    "lat": -2.296111,
+    "lng": 102.718611,
+    "area": "Jambi - 1",
+    "area_id": 139
+  },
+  {
+    "lat": 0.779723,
+    "lng": 127.36639,
+    "area": "Maluku Utara  1",
+    "area_id": 91
+  },
+  {
+    "lat": 0.516667,
+    "lng": 122.349167,
+    "area": "Gorontalo - 1",
+    "area_id": 130
+  },
+  {
+    "lat": 1.564446,
+    "lng": 124.897779,
+    "area": "Sulawesi Utara - 1",
+    "area_id": 137
+  },
+  {
+    "lat": 0.507513,
+    "lng": 101.503097,
+    "area": "Riau - 1",
+    "area_id": 81
+  },
+  {
+    "lat": -3.234722,
+    "lng": 116.230694,
+    "area": "Kalimantan Selatan  3",
+    "area_id": 47
+  },
+  {
+    "lat": -8.856556,
+    "lng": 116.290194,
+    "area": "Nusa Tenggara Barat - 1",
+    "area_id": 160
+  },
+  {
+    "lat": -10.2002,
+    "lng": 123.622425,
+    "area": "Nusa Tenggara Timur - 1",
+    "area_id": 185
+  },
+  {
+    "lat": -10.202497,
+    "lng": 123.622542,
+    "area": "Nusa Tenggara Timur - 1",
+    "area_id": 185
+  },
+  {
+    "lat": -8.207804,
+    "lng": 115.325844,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -7.666968,
+    "lng": 111.191688,
+    "area": "Jawa Timur - 9",
+    "area_id": 158
+  },
+  {
+    "lat": -7.901389,
+    "lng": 112.526406,
+    "area": "Jawa Timur - 2",
+    "area_id": 140
+  },
+  {
+    "lat": -7.496944,
+    "lng": 108.297525,
+    "area": "Jawa Barat - 4",
+    "area_id": 100
+  },
+  {
+    "lat": -3.716667,
+    "lng": 128.166667,
+    "area": "Maluku  1",
+    "area_id": 74
+  },
+  {
+    "lat": -0.318644,
+    "lng": 100.048206,
+    "area": "Sumatera Barat - 1",
+    "area_id": 39
+  },
+  {
+    "lat": -7.343056,
+    "lng": 107.129722,
+    "area": "Jawa Barat - 7",
+    "area_id": 108
+  },
+  {
+    "lat": -7.355303,
+    "lng": 110.391693,
+    "area": "Jawa Tengah - 5",
+    "area_id": 129
+  },
+  {
+    "lat": -3.760556,
+    "lng": 102.304722,
+    "area": "Bengkulu - 1",
+    "area_id": 180
+  },
+  {
+    "lat": -7.004472,
+    "lng": 111.407583,
+    "area": "Jawa Tengah - 2",
+    "area_id": 125
+  },
+  {
+    "lat": -7.349958,
+    "lng": 108.347497,
+    "area": "Jawa Barat - 4",
+    "area_id": 100
+  },
+  {
+    "lat": -1.627444,
+    "lng": 103.554778,
+    "area": "Jambi - 1",
+    "area_id": 139
+  },
+  {
+    "lat": -0.099722,
+    "lng": 109.346111,
+    "area": "Kalimantan Barat  1",
+    "area_id": 30
+  },
+  {
+    "lat": -7.247037,
+    "lng": 109.37477,
+    "area": "Jawa Tengah - 7",
+    "area_id": 132
+  },
+  {
+    "lat": -8.186111,
+    "lng": 114.2575,
+    "area": "Jawa Timur - 6",
+    "area_id": 152
+  },
+  {
+    "lat": -3.984167,
+    "lng": 122.5,
+    "area": "Sulawesi Tenggara - 1",
+    "area_id": 93
+  },
+  {
+    "lat": -0.908233,
+    "lng": 134.025444,
+    "area": "Papua Barat  4",
+    "area_id": 179
+  },
+  {
+    "lat": -8.5883,
+    "lng": 116.087361,
+    "area": "Nusa Tenggara Barat - 1",
+    "area_id": 160
+  },
+  {
+    "lat": -8.181086,
+    "lng": 111.164539,
+    "area": "Jawa Timur - 10",
+    "area_id": 159
+  },
+  {
+    "lat": -0.843303,
+    "lng": 119.909603,
+    "area": "Sulawesi Tengah - 1",
+    "area_id": 67
+  },
+  {
+    "lat": -6.941667,
+    "lng": 113.863056,
+    "area": "Jawa Timur - 3",
+    "area_id": 143
+  },
+  {
+    "lat": -7.2625,
+    "lng": 112.674167,
+    "area": "Jawa Timur - 1",
+    "area_id": 138
+  },
+  {
+    "lat": -6.815042,
+    "lng": 107.559756,
+    "area": "Jawa Barat - 1",
+    "area_id": 88
+  },
+  {
+    "lat": -7.306361,
+    "lng": 107.902833,
+    "area": "Jawa Barat - 2",
+    "area_id": 90
+  },
+  {
+    "lat": -6.945627,
+    "lng": 108.446575,
+    "area": "Jawa Barat - 3",
+    "area_id": 95
+  },
+  {
+    "lat": 3.262683,
+    "lng": 98.539906,
+    "area": "Sumatera Utara - 1",
+    "area_id": 10
+  },
+  {
+    "lat": -7.548083,
+    "lng": 109.250889,
+    "area": "Jawa Tengah - 7",
+    "area_id": 132
+  },
+  {
+    "lat": -7.07,
+    "lng": 109.239244,
+    "area": "Jawa Tengah - 3",
+    "area_id": 126
+  },
+  {
+    "lat": -1.247778,
+    "lng": 116.838333,
+    "area": "Kalimantan Timur  2",
+    "area_id": 55
+  },
+  {
+    "lat": -3.325833,
+    "lng": 114.618889,
+    "area": "Kalimantan Selatan  1",
+    "area_id": 45
+  },
+  {
+    "lat": -6.106169,
+    "lng": 105.913492,
+    "area": "Banten - 1",
+    "area_id": 222
+  },
+  {
+    "lat": -6.219642,
+    "lng": 106.722514,
+    "area": "DKI Jakarta",
+    "area_id": 3
+  },
+  {
+    "lat": -8.160556,
+    "lng": 113.553889,
+    "area": "Jawa Timur - 4",
+    "area_id": 145
+  },
+  {
+    "lat": -7.671389,
+    "lng": 111.239722,
+    "area": "Jawa Timur - 9",
+    "area_id": 158
+  },
+  {
+    "lat": -7.903419,
+    "lng": 112.526589,
+    "area": "Jawa Timur - 2",
+    "area_id": 140
+  },
+  {
+    "lat": -3.857806,
+    "lng": 122.040333,
+    "area": "Sulawesi Tenggara - 1",
+    "area_id": 93
+  },
+  {
+    "lat": 5.209611,
+    "lng": 97.039906,
+    "area": "Aceh - 7",
+    "area_id": 234
+  },
+  {
+    "lat": -6.835139,
+    "lng": 108.287036,
+    "area": "Jawa Barat - 8",
+    "area_id": 111
+  },
+  {
+    "lat": 2.82387,
+    "lng": 98.77053,
+    "area": "Sumatera Utara - 2",
+    "area_id": 16
+  },
+  {
+    "lat": -7.057485,
+    "lng": 111.429106,
+    "area": "Jawa Tengah - 2",
+    "area_id": 125
+  },
+  {
+    "lat": 4.533983,
+    "lng": 97.933958,
+    "area": "Aceh - 8",
+    "area_id": 235
+  },
+  {
+    "lat": -8.823,
+    "lng": 115.173,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": 5.853389,
+    "lng": 95.348833,
+    "area": "Aceh - 2",
+    "area_id": 229
+  },
+  {
+    "lat": -6.578064,
+    "lng": 106.073906,
+    "area": "Banten - 3",
+    "area_id": 224
+  },
+  {
+    "lat": -7.110086,
+    "lng": 113.482533,
+    "area": "Jawa Timur - 3",
+    "area_id": 143
+  },
+  {
+    "lat": -6.297778,
+    "lng": 106.014444,
+    "area": "Banten - 2",
+    "area_id": 223
+  },
+  {
+    "lat": 0.950842,
+    "lng": 104.460836,
+    "area": "Kepulauan Riau - 1",
+    "area_id": 214
+  },
+  {
+    "lat": 3.316583,
+    "lng": 117.586111,
+    "area": "Kalimantan Utara - 1",
+    "area_id": 226
+  },
+  {
+    "lat": 1.1338,
+    "lng": 127.482,
+    "area": "Maluku Utara  1",
+    "area_id": 91
+  },
+  {
+    "lat": -7.965833,
+    "lng": 114.018056,
+    "area": "Jawa Timur - 4",
+    "area_id": 145
+  },
+  {
+    "lat": -2.230556,
+    "lng": 113.91,
+    "area": "Kalimantan Tengah  1",
+    "area_id": 11
+  },
+  {
+    "lat": -7.692217,
+    "lng": 113.994869,
+    "area": "Jawa Timur - 5",
+    "area_id": 148
+  },
+  {
+    "lat": 3.99558,
+    "lng": 97.328764,
+    "area": "Aceh - 9",
+    "area_id": 236
+  },
+  {
+    "lat": -5.985021,
+    "lng": 106.044749,
+    "area": "Banten - 1",
+    "area_id": 222
+  },
+  {
+    "lat": -7.044722,
+    "lng": 110.425278,
+    "area": "Jawa Tengah - 1",
+    "area_id": 123
+  },
+  {
+    "lat": -1.840008,
+    "lng": 109.977222,
+    "area": "Kalimantan Barat  9",
+    "area_id": 42
+  },
+  {
+    "lat": -3.254444,
+    "lng": 116.216667,
+    "area": "Kalimantan Selatan  3",
+    "area_id": 47
+  },
+  {
+    "lat": -5.036669,
+    "lng": 104.077228,
+    "area": "Lampung - 4",
+    "area_id": 212
+  },
+  {
+    "lat": -0.934185,
+    "lng": 122.823613,
+    "area": "Sulawesi Tengah - 8",
+    "area_id": 82
+  },
+  {
+    "lat": -1.493073,
+    "lng": 102.121412,
+    "area": "Jambi - 3",
+    "area_id": 146
+  },
+  {
+    "lat": -2.693356,
+    "lng": 111.625578,
+    "area": "Kalimantan Tengah  5",
+    "area_id": 17
+  },
+  {
+    "lat": -1.174739,
+    "lng": 119.366667,
+    "area": "Sulawesi Barat - 4",
+    "area_id": 118
+  },
+  {
+    "lat": -4.799722,
+    "lng": 122.715581,
+    "area": "Sulawesi Tenggara - 2",
+    "area_id": 96
+  },
+  {
+    "lat": -6.381972,
+    "lng": 105.985842,
+    "area": "Banten - 2",
+    "area_id": 223
+  },
+  {
+    "lat": 1.988889,
+    "lng": 98.950278,
+    "area": "Sumatera Utara - 4",
+    "area_id": 26
+  },
+  {
+    "lat": -7.120565,
+    "lng": 106.596414,
+    "area": "Jawa Barat - 5",
+    "area_id": 101
+  },
+  {
+    "lat": -7.467243,
+    "lng": 111.798343,
+    "area": "Jawa Timur - 9",
+    "area_id": 158
+  },
+  {
+    "lat": -7.091944,
+    "lng": 113.593066,
+    "area": "Jawa Timur - 3",
+    "area_id": 143
+  },
+  {
+    "lat": -6.029722,
+    "lng": 106.049278,
+    "area": "Banten - 1",
+    "area_id": 222
+  },
+  {
+    "lat": 1.989117,
+    "lng": 98.950806,
+    "area": "Sumatera Utara - 4",
+    "area_id": 26
+  },
+  {
+    "lat": 5.377228,
+    "lng": 95.948764,
+    "area": "Aceh - 4",
+    "area_id": 231
+  },
+  {
+    "lat": 5.203167,
+    "lng": 96.706194,
+    "area": "Aceh - 4",
+    "area_id": 231
+  },
+  {
+    "lat": -6.0887,
+    "lng": 106.1474,
+    "area": "Banten - 1",
+    "area_id": 222
+  },
+  {
+    "lat": 1.443641,
+    "lng": 125.188538,
+    "area": "Sulawesi Utara - 1",
+    "area_id": 137
+  },
+  {
+    "lat": -5.419,
+    "lng": 105.225,
+    "area": "Lampung - 1",
+    "area_id": 209
+  },
+  {
+    "lat": -7.278064,
+    "lng": 112.676133,
+    "area": "Jawa Timur - 1",
+    "area_id": 138
+  },
+  {
+    "lat": -7.0443888889,
+    "lng": 110.4244166667,
+    "area": "Jawa Tengah - 1",
+    "area_id": 123
+  },
+  {
+    "lat": -7.9656,
+    "lng": 114.0186,
+    "area": "Jawa Timur - 4",
+    "area_id": 145
+  },
+  {
+    "lat": -6.8164,
+    "lng": 107.5613,
+    "area": "Jawa Barat - 1",
+    "area_id": 88
+  },
+  {
+    "lat": 5.508934,
+    "lng": 95.302507,
+    "area": "Aceh - 1",
+    "area_id": 2
+  },
+  {
+    "lat": 2.956712,
+    "lng": 99.037513,
+    "area": "Sumatera Utara - 2",
+    "area_id": 16
+  },
+  {
+    "lat": -8.1188888889,
+    "lng": 115.1056944444,
+    "area": "Bali - 1",
+    "area_id": 225
+  },
+  {
+    "lat": -7.692307,
+    "lng": 113.995056,
+    "area": "Jawa Timur - 5",
+    "area_id": 148
+  },
+  {
+    "lat": 1.654192,
+    "lng": 125.140267,
+    "area": "Sulawesi Utara - 1",
+    "area_id": 137
+  },
+  {
+    "lat": -6.651111,
+    "lng": 110.734306,
+    "area": "Jawa Tengah - 6",
+    "area_id": 131
+  },
+  {
+    "lat": -1.266268,
+    "lng": 116.840257,
+    "area": "Kalimantan Timur  2",
+    "area_id": 55
+  },
+  {
+    "lat": -7.862249,
+    "lng": 111.867502,
+    "area": "Jawa Timur - 7",
+    "area_id": 155
+  },
+  {
+    "lat": -6.79295,
+    "lng": 107.960117,
+    "area": "Jawa Barat - 8",
+    "area_id": 111
+  },
+  {
+    "lat": -6.686075,
+    "lng": 108.548194,
+    "area": "Jawa Barat - 3",
+    "area_id": 95
+  },
+  {
+    "lat": 1.635542,
+    "lng": 101.40175,
+    "area": "Riau - 4",
+    "area_id": 103
+  },
+  {
+    "lat": -4.087246,
+    "lng": 103.15196,
+    "area": "Sumatera Selatan - 5",
+    "area_id": 202
+  },
+  {
+    "lat": -0.394231,
+    "lng": 100.363675,
+    "area": "Sumatera Barat - 1",
+    "area_id": 39
+  },
+  {
+    "lat": 2.8378,
+    "lng": 98.772503,
+    "area": "Sumatera Utara - 2",
+    "area_id": 16
+  },
+  {
+    "lat": -1.163044,
+    "lng": 136.073481,
+    "area": "Papua  13",
+    "area_id": 166
+  },
+  {
+    "lat": -5.121156,
+    "lng": 120.236097,
+    "area": "Sulawesi Selatan - 8",
+    "area_id": 52
+  },
+  {
+    "lat": -8.628092,
+    "lng": 120.463661,
+    "area": "Nusa Tenggara Timur - 10",
+    "area_id": 199
+  },
+  {
+    "lat": -4.458437,
+    "lng": 136.856192,
+    "area": "Papua  9",
+    "area_id": 136
+  },
+  {
+    "lat": -3.334386,
+    "lng": 135.538778,
+    "area": "Papua  11",
+    "area_id": 163
+  },
+  {
+    "lat": -4.543844,
+    "lng": 120.304778,
+    "area": "Sulawesi Selatan - 7",
+    "area_id": 44
+  },
+  {
+    "lat": -8.837619,
+    "lng": 121.668836,
+    "area": "Nusa Tenggara Timur - 12",
+    "area_id": 201
+  },
+  {
+    "lat": -2.747978,
+    "lng": 107.885425,
+    "area": "Kepulauan Bangka Belitung - 4",
+    "area_id": 220
+  },
+  {
+    "lat": -3.093622,
+    "lng": 102.936875,
+    "area": "Sumatera Selatan - 3",
+    "area_id": 195
+  },
+  {
+    "lat": -1.349036,
+    "lng": 100.579828,
+    "area": "Sumatera Barat - 7",
+    "area_id": 69
+  },
+  {
+    "lat": -3.422039,
+    "lng": 104.243675,
+    "area": "Sumatera Selatan - 4",
+    "area_id": 198
+  },
+  {
+    "lat": 1.873986,
+    "lng": 100.958497,
+    "area": "Riau - 3",
+    "area_id": 89
+  },
+  {
+    "lat": -3.049444,
+    "lng": 120.225,
+    "area": "Sulawesi Selatan - 5",
+    "area_id": 23
+  },
+  {
+    "lat": -2.8783,
+    "lng": 103.832497,
+    "area": "Sumatera Selatan - 2",
+    "area_id": 193
+  },
+  {
+    "lat": -0.127031,
+    "lng": 100.603794,
+    "area": "Sumatera Barat - 4",
+    "area_id": 56
+  }
 ]
