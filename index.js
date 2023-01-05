@@ -304,6 +304,13 @@ if (!cluster.isPrimary) {
         index: false
     })
 
+    app_play.register(fastify_static, {
+        root: path.join(__dirname, '/tests/'),
+        prefix: "/test/",
+        decorateReply: false,
+        index: false
+    })
+
     app_play.register(fastify_cors, {
         
     })
