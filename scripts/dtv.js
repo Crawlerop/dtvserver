@@ -170,7 +170,7 @@ RunSignal.once("run", async (params) => {
             used_watermark = params.watermark.replace(/\(pathname\)/g, params.pathname)
         }
 
-        const tsp_fork_prm = ["-y", "-loglevel", "repeat+level+error", "-probesize", "24M"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : -1, audio_filters, passed_params.dtv_use_fork ? true : false, used_watermark))
+        const tsp_fork_prm = ["-y", "-loglevel", "repeat+level+error", "-probesize", "12M"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, channel.video.id, channel.audio ? channel.audio.id : -1, audio_filters, passed_params.dtv_use_fork ? true : false, used_watermark))
         
         if (passed_params.dtv_use_fork) {
             tsp_args.push("-P")
@@ -186,9 +186,9 @@ RunSignal.once("run", async (params) => {
                 //tsp_args.push(`tsp -P zap ${channel.id} | node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
                 //console.log(`${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
                 if (!REPEAT_DETECT_STALLS) {
-                    tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
+                    tsp_args.push(`tsp -P zap ${channel.id} | node ${path.join(__dirname, "/cmds")}/repeat2.js "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
                 } else {
-                    tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat4.js "${channel.name}" ${channel.video.fps >= 30 ? (channel.video.fps / 2) : channel.video.fps} ${params.ffmpeg} -stats_period 2 -progress - -nostats ${tsp_fork_prm.join(" ")}`)
+                    tsp_args.push(`tsp -P zap ${channel.id} | node ${path.join(__dirname, "/cmds")}/repeat4.js "${channel.name}" ${channel.video.fps >= 30 ? (channel.video.fps / 2) : channel.video.fps} ${params.ffmpeg} -stats_period 2 -progress - -nostats ${tsp_fork_prm.join(" ")}`)
                 }
                 //tsp_args.push(`python ${path.join(__dirname, "/cmds")}/repeat.py "${channel.name}" '${params.ffmpeg} ${tsp_fork_prm.join(" ")}'`)
             } else {
