@@ -17,6 +17,10 @@ const os = require("os")
 const nc = require("nominatim-client")
 const geoip = require("geoip-lite")
 
+if (!fs_sync.existsSync(path.join(__dirname, "/upstream.db"))) {
+    fs_sync.copyFileSync(path.join(__dirname, "/upstream-default.db"), path.join(__dirname, "/upstream.db"))
+}
+
 const Knex = require("knex")
 const knex = Knex(require("./knexFile"))
 const objection = require("objection");
