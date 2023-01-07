@@ -673,6 +673,7 @@
                     $("#dvb2ip-setting > #dvb2ip-msg").text('')
                     $("#dvb2ip-setting > #source").val('')
                     $("#rtmp-setting > #passthrough").prop("checked", false)
+                    $("#pull-setting > #source").val('')
                     DTV_SYSTEM = "DVB-T2"
                     DVBAppliedStreams = undefined
                 })
@@ -733,7 +734,7 @@
                             $("#dvb2ip-results > #dvb2ip-channels > center > #additional-params").val(d.params.additional_params)
                         } else if (d.type == "rtmp") {
                             $("#rtmp-setting > #passthrough").prop("checked", d.params.passthrough)
-                        } else if (d.type == "push") {
+                        } else if (d.type == "pull") {
                             $("#pull-setting > #source").val(d.params.source)
                         }
                     })

@@ -111,13 +111,12 @@ RunSignal.once("run", (params) => {
 
             ffmp.stderr.pipe(process.stderr)
         }).catch((e) => {
-            console.trace(e)
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                 src: params.src
             }})
             process.exit(1)
         })        
-    }).catch((e) => {
+    }).catch((e) => {        
         process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
             src: params.src
         }})

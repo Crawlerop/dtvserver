@@ -1500,7 +1500,7 @@ if (!cluster.isPrimary) {
                     name: req.body.name,
                     type: req.body.type,
                     params: JSON.stringify({
-                        src: req.body.source
+                        source: req.body.source
                     })
                 }).where("stream_id", '=', req.body.id)
 
