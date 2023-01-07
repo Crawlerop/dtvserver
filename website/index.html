@@ -108,7 +108,7 @@
                     <fast-radio value="dtv">Digital TV Tuner</fast-radio>
                     <fast-radio value="dvb2ip">DVB2IP</fast-radio>
                     <fast-radio value="rtmp">RTMP</fast-radio>
-                    <fast-radio value="udp" disabled>UDP</fast-radio>                
+                    <fast-radio value="pull">Pull</fast-radio>                
                 </fast-radio-group>
                 <div id="dvb-setting">
                     <p id="dvb-msg"></p>
@@ -154,6 +154,9 @@
                 </div>
                 <div id="rtmp-setting" hidden>
                     <fast-checkbox id="passthrough">Stream passthrough</fast-checkbox>
+                </div>
+                <div id="pull-setting" hidden>
+                    <fast-text-field type="text" id="source">Source address</fast-text-field>
                 </div>
             </div>
             <fast-button appearance="accent" id="cancel" style="float: left">Cancel</fast-button>                
@@ -730,6 +733,8 @@
                             $("#dvb2ip-results > #dvb2ip-channels > center > #additional-params").val(d.params.additional_params)
                         } else if (d.type == "rtmp") {
                             $("#rtmp-setting > #passthrough").prop("checked", d.params.passthrough)
+                        } else if (d.type == "push") {
+                            $("#pull-setting > #source").val(d.params.source)
                         }
                     })
                 })
@@ -1047,21 +1052,43 @@
                                 updateStreamsList()
                             })
                             break
+                        case "pull":
+                            $.ajax(`/api/${EditMode ? "edit" : "add"}`, {
+                                data: JSON.stringify({
+                                    id: EditMode ? StreamsList[streamVal].id : undefined,
+                                    name: $("#add-channels-options > #name").val(),
+                                    type: "pull",
+                                    source: $("#pull-setting > #source").val()
+                                }),
+                                contentType: "application/JSON",
+                                type: "POST"
+                            }).done((d) => {
+                                $("#add-channels").prop("hidden", true)
+                                updateStreamsList()
+                            })
+                            break
                     }                    
                 })
 
                 $("#add-channels-options > #name").on("input", () => {
                     switch ($("#add-channels-options > #dtv-type").val()) {
                         case "dtv":                            
-                            $("#add-channels > #create").prop("disabled", DVBAppliedStreams ? $("#add-channels-options > #name").val() <= 0 : true)
+                            $("#add-channels > #create").prop("disabled", DVBAppliedStreams ? $("#add-channels-options > #name").val().length <= 0 : true)
                             break
                         case "dvb2ip":
-                            $("#add-channels > #create").prop("disabled", DVB2IPSelectedStream !== -1 ? $("#add-channels-options > #name").val() <= 0 : true)
+                            $("#add-channels > #create").prop("disabled", DVB2IPSelectedStream !== -1 ? $("#add-channels-options > #name").val().length <= 0 : true)
                             break
                         case "rtmp":
                             $("#add-channels > #create").prop("disabled", $("#add-channels-options > #name").val().length <= 0)
                             break
+                        case "pull":
+                            $("#add-channels > #create").prop("disabled", $("#add-channels-options > #name").val().length <= 0 || $("#pull-setting > #source").val().length <= 0)
+                            break
                     }
+                })
+
+                $("#pull-setting > #source").on("input", () => {                            
+                    $("#add-channels > #create").prop("disabled", $("#add-channels-options > #name").val().length <= 0 || $("#pull-setting > #source").val().length <= 0)
                 })
 
                 $("#dvb2ip-setting > #scan").click(() => {
@@ -1175,19 +1202,24 @@
                 $("#add-channels-options > #dtv-type").change(() => {
                     $("#dvb-setting").prop("hidden", true)
                     $("#dvb2ip-setting").prop("hidden", true)
-                    $("#rtmp-setting").prop("hidden", true)                    
+                    $("#rtmp-setting").prop("hidden", true)            
+                    $("#pull-setting").prop("hidden", true)        
                     switch ($("#add-channels-options > #dtv-type").val()) {
                         case "dtv":
                             $("#dvb-setting").prop("hidden", false)                            
-                            $("#add-channels > #create").prop("disabled", DVBAppliedStreams ? $("#add-channels-options > #name").val() <= 0 : true)
+                            $("#add-channels > #create").prop("disabled", DVBAppliedStreams ? $("#add-channels-options > #name").val().length <= 0 : true)
                             break
                         case "dvb2ip":
                             $("#dvb2ip-setting").prop("hidden", false)
-                            $("#add-channels > #create").prop("disabled", DVB2IPSelectedStream !== -1 ? $("#add-channels-options > #name").val() <= 0 : true)
+                            $("#add-channels > #create").prop("disabled", DVB2IPSelectedStream !== -1 ? $("#add-channels-options > #name").val().length <= 0 : true)
                             break
                         case "rtmp":
                             $("#rtmp-setting").prop("hidden", false)
                             $("#add-channels > #create").prop("disabled", $("#add-channels-options > #name").val().length <= 0)
+                            break
+                        case "pull":
+                            $("#pull-setting").prop("hidden", false)
+                            $("#add-channels > #create").prop("disabled", $("#add-channels-options > #name").val().length <= 0 || $("#pull-setting > #source").val().length <= 0)
                             break
                     }
                 })

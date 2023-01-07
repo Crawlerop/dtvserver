@@ -896,6 +896,20 @@ if (!cluster.isPrimary) {
                     watermark_ignore_streams: config.watermark_ignore_streams,
                     pathname: __dirname
                 })
+            } else if (type == "pull") {
+                cur_proc.send({
+                    ffmpeg: config.ffmpeg, 
+                    src: params.source,                     
+                    stream_id: stream_id,
+                    type: type,
+                    output_path: out_path, 
+                    renditions_hd: config.renditions_hd, 
+                    renditions_sd: config.renditions_sd, 
+                    multiple_renditions: config.multiple_renditions, 
+                    hls_settings: config.hls_settings,
+                    watermark: config.watermark_ignore_streams.indexOf(stream_id) ? "" : config.watermark,
+                    pathname: __dirname
+                })
             }
             cur_proc.on("message", (d) => {
                 if (d.retry) {
@@ -1358,7 +1372,18 @@ if (!cluster.isPrimary) {
                         additional_params: req.body.additional_params
                     }
                 })
-                return res.status(200).json({status: "ok", id: random_id})                                    
+                return res.status(200).json({status: "ok", id: random_id}) 
+            case "pull":
+                if (!req.body.source) return res.status(400).json({error: "A source address must be specified"}) 
+                await streams.query().insert({
+                    stream_id: random_id,
+                    name: req.body.name,
+                    type: req.body.type,
+                    params: {
+                        source: req.body.source
+                    }
+                })
+                return res.status(200).json({status: "ok", id: random_id})                                      
             default:
                 return res.status(400).json({error: "Invalid channel input type"})
         }
@@ -1468,7 +1493,21 @@ if (!cluster.isPrimary) {
                     system: req.body.system ? req.body.system : "DVB-T2",
                     additional_params: req.body.additional_params
                 })
-                return res.status(200).json({status: "ok"})                                    
+                return res.status(200).json({status: "ok"})          
+            case "pull":
+                if (!req.body.source) return res.status(400).json({error: "A source address must be specified"}) 
+                await streams.query().patch({
+                    name: req.body.name,
+                    type: req.body.type,
+                    params: JSON.stringify({
+                        src: req.body.source
+                    })
+                }).where("stream_id", '=', req.body.id)
+
+                if (stream[0].active) addDTVJobs(req.body.id, req.body.type, {
+                    source: req.body.source
+                })
+                return res.status(200).json({status: "ok"})                          
             default:
                 return res.status(400).json({error: "Invalid channel input type"})
         }
