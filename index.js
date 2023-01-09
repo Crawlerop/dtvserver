@@ -1561,7 +1561,7 @@ if (!cluster.isPrimary) {
             }
 
             if (!found) throw new Error("no channels were found at this frequency")
-            const probe_streams = JSON.parse((await check_output(config.ffmpeg.replace(/mpeg/g, "probe"), "-loglevel quiet -print_format json -show_error -probesize 32M -show_format -show_programs -".split(" "), 0, dtv_chunk)).toString("utf-8")).programs
+            const probe_streams = JSON.parse((await check_output(config.ffmpeg.replace(/mpeg/g, "probe"), "-loglevel quiet -print_format json -show_error -probesize 64M -show_format -show_programs -".split(" "), 0, dtv_chunk)).toString("utf-8")).programs
 
             var channels_temp = []
             for (let i = 0; i<probe_streams.length; i++) {
