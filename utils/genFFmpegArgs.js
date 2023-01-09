@@ -141,9 +141,9 @@ module.exports = {
                         }  
 
                         if (supports_watermark) {
-                            filter_complex += `format=yuv420p|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${video.height*WIDESCREEN}:${video.height}:mode=256[a];[1:v:0]format=yuva420p|vaapi,hwupload[b];[a][b]overlay_vaapi=x=16:y=H-h-16,`
+                            filter_complex += `format=yuv420p|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${Math.floor(video.height*WIDESCREEN)}:${video.height}:mode=256[a];[1:v:0]format=yuva420p|vaapi,hwupload[b];[a][b]overlay_vaapi=x=16:y=H-h-16,`
                         } else {
-                            filter_complex += `format=yuv420p,yadif,scale=${video.height*WIDESCREEN}:${video.height}:flags=neighbor[a];[1:v:0]format=yuva420p[b];[a][b]overlay=shortest=1:x=16:y=H-h-16,format=nv12|vaapi,hwupload,`
+                            filter_complex += `format=yuv420p,yadif,scale=${Math.floor(video.height*WIDESCREEN)}:${video.height}:flags=neighbor[a];[1:v:0]format=yuva420p[b];[a][b]overlay=shortest=1:x=16:y=H-h-16,format=nv12|vaapi,hwupload,`
                         }
 
                         filter_complex += `fps=${fps},split=${renditions.length}`
@@ -153,7 +153,7 @@ module.exports = {
                         filter_complex += ";"
 
                         for (let p = 0; p<renditions.length; p++) {
-                            filter_complex += `[temp${p}]scale_vaapi=${Math.min(Math.floor(video.width*WIDESCREEN), renditions[p].width)}:${Math.min(video.height, renditions[p].height)}:mode=${INTERP_ALGO_TO_VAAPI[renditions[p].interp_algo]},setsar=1[out${p}];` 
+                            filter_complex += `[temp${p}]scale_vaapi=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[p].width)}:${Math.min(video.height, renditions[p].height)}:mode=${INTERP_ALGO_TO_VAAPI[renditions[p].interp_algo]},setsar=1[out${p}];` 
                         }
 
                         if (audio) {
@@ -274,7 +274,7 @@ module.exports = {
                             filter_complex += `[0:v:0]`
                         }  
 
-                        filter_complex += `format=yuv420p,hwupload_cuda,yadif_cuda,scale_cuda=${video.height*WIDESCREEN}:${video.height}:interp_algo=1[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=shortest=1:x=16:y=H-h-16,`
+                        filter_complex += `format=yuv420p,hwupload_cuda,yadif_cuda,scale_cuda=${Math.floor(video.height*WIDESCREEN)}:${video.height}:interp_algo=1[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=shortest=1:x=16:y=H-h-16,`
 
                         filter_complex += `fps=${fps},split=${renditions.length}`
                         for (let p = 0; p<renditions.length; p++) {
@@ -283,7 +283,7 @@ module.exports = {
                         filter_complex += ";"
 
                         for (let p = 0; p<renditions.length; p++) {
-                            filter_complex += `[temp${p}]scale_cuda=${Math.min(Math.floor(video.width*WIDESCREEN), renditions[p].width)}:${Math.min(video.height, renditions[p].height)}:interp_algo=${renditions[p].interp_algo},setsar=1[out${p}];`  
+                            filter_complex += `[temp${p}]scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[p].width)}:${Math.min(video.height, renditions[p].height)}:interp_algo=${renditions[p].interp_algo},setsar=1[out${p}];`  
                         }
 
                         if (audio) {
@@ -508,9 +508,9 @@ module.exports = {
                     args.push("h264_vaapi")
                     args.push(`-filter:v:${i}`)
                     if (escape_filters) {
-                        args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${Math.min(Math.floor(video.width*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}"`)
+                        args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}"`)
                     } else {
-                        args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${Math.min(Math.floor(video.width*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}`)
+                        args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}`)
                     }
                     args.push(`-compression_level:v:${i}`)
                     args.push(rendition.speed)
@@ -586,9 +586,9 @@ module.exports = {
                     if (rendition.height !== video.height || video.interlace !== 'progressive') {
                         args.push(`-filter:v:${i}`)
                         if (escape_filters) {
-                            args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${Math.min(Math.floor(video.width*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}"`)
+                            args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}"`)
                         } else {
-                            args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${Math.min(Math.floor(video.width*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}`)
+                            args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}`)
                         }
                     } else {
                         args.push(`-filter:v:${i}`)
