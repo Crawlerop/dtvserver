@@ -153,7 +153,7 @@ module.exports = {
                         filter_complex += ";"
 
                         for (let p = 0; p<renditions.length; p++) {
-                            filter_complex += `[temp${p}]scale_vaapi=${renditions[p].width}:${renditions[p].height}:mode=${INTERP_ALGO_TO_VAAPI[renditions[p].interp_algo]},setsar=1[out${p}];` 
+                            filter_complex += `[temp${p}]scale_vaapi=${Math.main(video.width, renditions[p].width)}:${Math.min(video.height, renditions[p].height)}:mode=${INTERP_ALGO_TO_VAAPI[renditions[p].interp_algo]},setsar=1[out${p}];` 
                         }
 
                         if (audio) {
@@ -283,7 +283,7 @@ module.exports = {
                         filter_complex += ";"
 
                         for (let p = 0; p<renditions.length; p++) {
-                            filter_complex += `[temp${p}]scale_cuda=${renditions[p].width}:${renditions[p].height}:interp_algo=${renditions[p].interp_algo},setsar=1[out${p}];`  
+                            filter_complex += `[temp${p}]scale_cuda=${Math.main(video.width, renditions[p].width)}:${Math.min(video.height, renditions[p].height)}:interp_algo=${renditions[p].interp_algo},setsar=1[out${p}];`  
                         }
 
                         if (audio) {
@@ -508,9 +508,9 @@ module.exports = {
                     args.push("h264_vaapi")
                     args.push(`-filter:v:${i}`)
                     if (escape_filters) {
-                        args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}"`)
+                        args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${Math.min(video.width, rendition.width)}:${Math.min(video.height, rendition.height)}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}"`)
                     } else {
-                        args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${rendition.width}:${rendition.height}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}`)
+                        args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${Math.min(video.width, rendition.width)}:${Math.min(video.height, rendition.height)}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}`)
                     }
                     args.push(`-compression_level:v:${i}`)
                     args.push(rendition.speed)
@@ -586,9 +586,9 @@ module.exports = {
                     if (rendition.height !== video.height || video.interlace !== 'progressive') {
                         args.push(`-filter:v:${i}`)
                         if (escape_filters) {
-                            args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}"`)
+                            args.push(`"hwupload_cuda,yadif_cuda,scale_cuda=${Math.min(video.width, rendition.width)}:${Math.min(video.height, rendition.height)}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}"`)
                         } else {
-                            args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${rendition.width}:${rendition.height}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}`)
+                            args.push(`hwupload_cuda,yadif_cuda,scale_cuda=${Math.min(video.width, rendition.width)}:${Math.min(video.height, rendition.height)}:interp_algo=${rendition.interp_algo},setsar=1,fps=${fps}`)
                         }
                     } else {
                         args.push(`-filter:v:${i}`)

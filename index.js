@@ -122,6 +122,20 @@ const config_defaults_nvenc = {
     "renditions_sd": [
         {
             "hwaccel": "nvenc",
+            "width": 960,
+            "height": 540,
+            "speed": 2,
+            "profile": "high",
+            "video_bitrate": 1250000,
+            "bufsize": 1750000,
+            "bf": 2,
+            "interp_algo": 1,
+            "audio_bitrate": 128000,
+            "audio_profile": "low",
+            "audio_codec": "aac"
+        },
+        {
+            "hwaccel": "nvenc",
             "width": 640,
             "height": 360,
             "speed": 2,
@@ -239,6 +253,20 @@ const config_defaults = {
         }
     ],
     "renditions_sd": [
+        {
+            "hwaccel": "vaapi",
+            "width": 960,
+            "height": 540,
+            "speed": 2,
+            "profile": "high",
+            "video_bitrate": 1250000,
+            "bufsize": 1750000,
+            "bf": 2,
+            "interp_algo": 1,
+            "audio_bitrate": 128000,
+            "audio_profile": "low",
+            "audio_codec": "aac"
+        },
         {
             "hwaccel": "vaapi",
             "width": 640,
