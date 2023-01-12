@@ -491,7 +491,7 @@ module.exports = {
                     if (audio) {
                         args.push("-map")
                         if (audio_id != -1) {
-                            args.push(`0:a:#${audio_id}`)
+                            args.push(`0:a:#${audio_id}?`)
                         } else {
                             args.push("0:a:0")
                         }
@@ -557,8 +557,6 @@ module.exports = {
                         args.push("-i")
                         args.push(source)
 
-                        args.push("-filter_complex")
-
                         var filter_complex = ""
 
                         if (video_id != -1) {
@@ -585,6 +583,7 @@ module.exports = {
                         }
 
                         //console.log(filter_complex)
+                        args.push("-filter_complex")
                         if (escape_filters) {
                             args.push(`"${filter_complex}"`)
                         } else {
@@ -606,7 +605,7 @@ module.exports = {
                     if (audio) {
                         args.push("-map")
                         if (audio_id != -1) {
-                            args.push(`0:a:#${audio_id}`)
+                            args.push(`0:a:#${audio_id}?`)
                         } else {
                             args.push("0:a:0")
                         }
@@ -682,7 +681,7 @@ module.exports = {
                     if (audio) {
                         args.push("-map")
                         if (audio_id != -1) {
-                            args.push(`0:a:#${audio_id}`)
+                            args.push(`0:a:#${audio_id}?`)
                         } else {
                             args.push("0:a:0")
                         }
