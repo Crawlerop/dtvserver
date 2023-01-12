@@ -556,14 +556,53 @@ module.exports = {
 
                         args.push("-i")
                         args.push(source)
+
+                        args.push("-filter_complex")
+
+                        var filter_complex = ""
+
+                        if (video_id != -1) {
+                            filter_complex += `[0:v:#${video_id}]`
+                        } else {
+                            filter_complex += "[0:v:0]"
+                        }
+                        
+                        filter_complex += `hwupload_cuda,yadif_cuda,split=${renditions.length}`
+                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                            filter_complex += `[a${rend_id}]`
+                        }
+
+                        filter_complex += ";"
+
+                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                            filter_complex += `[a${rend_id}]`
+                            if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
+                                filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo},setsar=1,fps=${fps}[p${rend_id}]`
+                            } else {
+                                filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
+                            }
+                            if (rend_id < renditions.length-1) filter_complex += ";"
+                        }
+
+                        //console.log(filter_complex)
+                        if (escape_filters) {
+                            args.push(`"${filter_complex}"`)
+                        } else {
+                            args.push(filter_complex)
+                        }
                     }
     
                     args.push("-map")
+                    /*
                     if (video_id != -1) {
                         args.push(`0:v:#${video_id}`)
                     } else {
                         args.push("0:v:0")
-                    }                
+                    } 
+                    */  
+                    
+                    args.push(`[p${i}]`)
+                    
                     if (audio) {
                         args.push("-map")
                         if (audio_id != -1) {
@@ -583,6 +622,7 @@ module.exports = {
                     args.push(`-c:v:${i}`)
                     args.push("h264_nvenc")
 
+                    /*
                     if (rendition.height !== video.height || video.interlace !== 'progressive') {
                         args.push(`-filter:v:${i}`)
                         if (escape_filters) {
@@ -598,6 +638,7 @@ module.exports = {
                             args.push(`setsar=1,fps=${fps}`)
                         }
                     }
+                    */
 
                     args.push(`-preset:v:${i}`)
                     args.push(`p${rendition.speed}`)
@@ -769,7 +810,7 @@ module.exports = {
         args.push(10)
         */
         args.push("-hls_flags")
-        args.push("+delete_segments+omit_endlist+append_list+discont_start+program_date_time+second_level_segment_index+temp_file")
+        args.push("+independent_segments+delete_segments+omit_endlist+append_list+discont_start+program_date_time+second_level_segment_index+temp_file")
         args.push("-strftime")
         args.push(1)
         args.push("-hls_segment_filename")
