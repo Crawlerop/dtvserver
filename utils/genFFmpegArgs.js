@@ -491,7 +491,7 @@ module.exports = {
                     if (audio) {
                         args.push("-map")
                         if (audio_id != -1) {
-                            args.push(`0:a:#${audio_id}?`)
+                            args.push(`0:a:#${audio_id}`)
                         } else {
                             args.push("0:a:0")
                         }
@@ -605,7 +605,7 @@ module.exports = {
                     if (audio) {
                         args.push("-map")
                         if (audio_id != -1) {
-                            args.push(`0:a:#${audio_id}?`)
+                            args.push(`0:a:#${audio_id}`)
                         } else {
                             args.push("0:a:0")
                         }
@@ -681,7 +681,7 @@ module.exports = {
                     if (audio) {
                         args.push("-map")
                         if (audio_id != -1) {
-                            args.push(`0:a:#${audio_id}?`)
+                            args.push(`0:a:#${audio_id}`)
                         } else {
                             args.push("0:a:0")
                         }
