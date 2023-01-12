@@ -609,6 +609,81 @@ module.exports = {
                     args.push(`-tune:v:${i}`)
                     args.push("ll")
                     */
+                } else if (rendition.hwaccel == "none") {
+                    if (!is_start) {
+                        is_start = true
+                            
+                        if (COPY_TS) {
+                            args.push("-copyts")
+                        } else {
+                            args.push("-async")
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+
+                            args.push("-vsync")
+                            args.push(VSYNC_MODE)
+                        }
+    
+                        /*
+                        args.push("-r")
+                        args.push('1')
+                        */
+
+                        args.push("-i")
+                        args.push(source)
+                    }
+    
+                    args.push("-map")
+                    if (video_id != -1) {
+                        args.push(`0:v:#${video_id}`)
+                    } else {
+                        args.push("0:v:0")
+                    }                
+                    if (audio) {
+                        args.push("-map")
+                        if (audio_id != -1) {
+                            args.push(`0:a:#${audio_id}`)
+                        } else {
+                            args.push("0:a:0")
+                        }
+                    }
+                    if (audio) {
+                        stream_map += `v:${i},a:${i},name:${(i+1).toString().padStart(2, "0")} `
+                    } else {
+                        stream_map += `v:${i},name:${(i+1).toString().padStart(2, "0")} `
+                    }            
+    
+                    args.push(`-map_metadata`)
+                    args.push("-1")
+                    args.push(`-c:v:${i}`)
+                    args.push("libx264")
+
+                    const INTERP_ALGO_TO_SCALE = {
+                        1: "neighbor",
+                        2: "bilinear",
+                        3: "bicubic",
+                        4: "lanczos"
+                    }
+
+                    const interp_algo = INTERP_ALGO_TO_SCALE[rendition.interp_algo]
+
+                    args.push(`-filter:v:${i}`)
+                    if (escape_filters) {
+                        args.push(`"yadif,scale=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:flags=${interp_algo},setsar=1,fps=${fps}"`)
+                    } else {
+                        args.push(`yadif,scale=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:flags=${interp_algo},setsar=1,fps=${fps}`)
+                    }
+                    
+
+                    args.push(`-preset:v:${i}`)
+                    args.push(`${rendition.speed}`)
+    
+                    args.push(`-x264-params`)
+                    args.push("nal-hrd=cbr")
+    
+                    /*
+                    args.push(`-tune:v:${i}`)
+                    args.push("ll")
+                    */
                 } else {
                     throw new Error("hwaccel not implemented yet")
                 }
@@ -616,6 +691,8 @@ module.exports = {
                 args.push(`-profile:v:${i}`)
                 args.push(rendition.profile)
                 args.push(`-b:v:${i}`)
+                args.push(rendition.video_bitrate)
+                args.push(`-minrate:v:${i}`)
                 args.push(rendition.video_bitrate)
                 args.push(`-maxrate:v:${i}`)
                 args.push(rendition.video_bitrate)
