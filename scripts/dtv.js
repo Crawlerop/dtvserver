@@ -194,7 +194,7 @@ RunSignal.once("run", async (params) => {
             } else {
                 //tsp_args.push(`${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
                 //tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
-                tsp_args.push(`${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
+                tsp_args.push(`tsp --buffer-size-mb ${params.buffer_size*2} -P zap ${channel.id} | ${params.ffmpeg} ${tsp_fork_prm.join(" ")}`)
             }
         } else {
             ffmpeg_params.push(tsp_fork_prm)
