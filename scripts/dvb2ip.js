@@ -16,7 +16,7 @@ process.on("uncaughtException", (e) => {
 })
 */
 
-const TSP_BUFFER_SIZE = 20
+const TSP_BUFFER_SIZE = 24
 var pipe = null;
 
 var is_quit = false
