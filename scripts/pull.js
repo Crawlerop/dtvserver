@@ -4,6 +4,7 @@ const check_output = require("../utils/check_output")
 const events = require("events")
 const ffmp_args = require("../utils/genFFmpegArgs")
 const fs = require("fs")
+const os = require("os")
 
 //var passed_params = {}
 //var is_ready = false
@@ -76,7 +77,7 @@ RunSignal.once("run", (params) => {
         
         ffmp_args.genSingle(params.src, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, "", false, params.watermark).then((e) => {
             // "-loglevel", "quiet", 
-            const args = ["-loglevel", "quiet", "-y"].concat(e)
+            const args = ["-loglevel", "repeat+level+error", "-y"].concat(e)
 
             const ffmp = cp.spawn(params.ffmpeg, args)                
 
@@ -109,7 +110,12 @@ RunSignal.once("run", (params) => {
                 })
             })                
 
-            ffmp.stderr.pipe(process.stderr)
+            ffmp.stderr.on("data", (d) => {
+                const lines = d.toString().split(os.EOL)
+                for (let ln = 0; ln<lines.length; ln++) {
+                    if (lines[ln].length > 0) process.stderr.write(`${params.src}: ${lines[ln]}${os.EOL}`)
+                }
+            })
         }).catch((e) => {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                 src: params.src
