@@ -114,7 +114,7 @@ ExecSignal.once("exec", (args, folders) => {
     tsduck.stderr.pipe(process.stderr)
 })
 
-DEMUX_BUFFER = 16*1024*1024
+DEMUX_BUFFER = 188000
 
 RunSignal.once("run", async (params) => {    
    try {

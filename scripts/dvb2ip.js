@@ -16,7 +16,7 @@ process.on("uncaughtException", (e) => {
 })
 */
 
-const TSP_BUFFER_SIZE = 24
+const TSP_BUFFER_SIZE = 48
 var pipe = null;
 
 var is_quit = false
@@ -29,7 +29,7 @@ const QuitCheck = () => {
     }
 }
 
-const USE_TSDUCK = true
+const USE_TSDUCK = false
 
 setInterval(QuitCheck, 2000);
 
