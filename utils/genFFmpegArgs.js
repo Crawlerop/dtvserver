@@ -44,7 +44,7 @@ module.exports = {
         args.push("-nostdin")
 
         let fps = video.fps
-        if (fps >= 30) fps /= 2
+        if (fps > 30) fps /= 2
 
         if (watermark) {
             var filter_complex = ""
