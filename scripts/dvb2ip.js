@@ -105,7 +105,7 @@ RunSignal.once("run", (params) => {
 
                 pipe = cp.spawn(params.ffmpeg, ["-raw_packet_size", "188", "-loglevel", "quiet", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-f", "data", "-i", src_url, "-c", "copy", "-map", "0:0", "-f", "data", "-"])
                 const tssync = cp.spawn("tsresync", ["-c", "-"])
-                const tsduck = cp.spawn("tsp")
+                const tsduck = cp.spawn("tsp", ["--buffer-size-mb",params.buffer_size])
                 const ffmp = cp.spawn(params.ffmpeg, args)                
 
                 ffmp.on("close", () => {

@@ -905,6 +905,7 @@ if (!cluster.isPrimary) {
                     multiple_renditions: config.multiple_renditions, 
                     hls_settings: config.hls_settings,
                     additional_params: params.additional_params,
+                    buffer_size: config.dtv_buffer_size,
                     watermark: config.watermark_ignore_streams.indexOf(stream_id) ? "" : config.watermark,
                     pathname: __dirname
                 })
