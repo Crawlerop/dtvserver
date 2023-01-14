@@ -4,6 +4,7 @@ const check_output = require("../utils/check_output")
 const events = require("events")
 const ffmp_args = require("../utils/genFFmpegArgs")
 const fs = require("fs")
+const os = require("os")
 
 //var passed_params = {}
 //var is_ready = false
@@ -27,7 +28,7 @@ const QuitCheck = () => {
     }
 }
 
-const USE_TSDUCK = false
+const USE_TSDUCK = true
 
 setInterval(QuitCheck, 2000);
 
@@ -45,7 +46,8 @@ RunSignal.once("run", (params) => {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                 src: params.src,
                 src_id: params.src_id,
-                additional_params: params.additional_params
+                additional_params: params.additional_params,
+                name: params.name
             }})
             process.exit(1)
         }
@@ -86,7 +88,7 @@ RunSignal.once("run", (params) => {
         if (USE_TSDUCK) {
             ffmp_args.genSingle("-", current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, ad_param.audio_params, false, params.watermark).then((e) => {
                 // "-loglevel", "quiet", 
-                const args = ["-loglevel", "quiet", "-y"].concat(e)
+                const args = ["-loglevel", "repeat+level+error", "-y"].concat(e)
                 
                 //throw new Error("e")
                 //console.log(args)
@@ -103,7 +105,7 @@ RunSignal.once("run", (params) => {
 
                 pipe = cp.spawn(params.ffmpeg, ["-raw_packet_size", "188", "-loglevel", "quiet", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-f", "data", "-i", src_url, "-c", "copy", "-map", "0:0", "-f", "data", "-"])
                 const tssync = cp.spawn("tsresync", ["-c", "-"])
-                const tsduck = cp.spawn("tsp",  ["--realtime"])
+                const tsduck = cp.spawn("tsp")
                 const ffmp = cp.spawn(params.ffmpeg, args)                
 
                 ffmp.on("close", () => {
@@ -111,7 +113,8 @@ RunSignal.once("run", (params) => {
                         process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                             src: params.src,
                             src_id: params.src_id,
-                            additional_params: params.additional_params
+                            additional_params: params.additional_params,
+                            name: params.name
                         }})
                         process.exit(1)
                     } else {
@@ -164,20 +167,28 @@ RunSignal.once("run", (params) => {
                 tsduck.stderr.pipe(process.stderr)
                 tssync.stderr.pipe(process.stderr)
                 pipe.stderr.pipe(process.stderr)
-                ffmp.stderr.pipe(process.stderr)
+                //ffmp.stderr.pipe(process.stderr)
+
+                ffmp.stderr.on("data", (d) => {
+                    const lines = d.toString().split(os.EOL)
+                    for (let ln = 0; ln<lines.length; ln++) {
+                        if (lines[ln].length > 0) process.stderr.write(`${args[2]}: ${lines[ln]}${os.EOL}`)
+                    }
+                })
             }).catch((e) => {
                 console.trace(e)
                 process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                     src: params.src,
                     src_id: params.src_id,
-                    additional_params: params.additional_params
+                    additional_params: params.additional_params,
+                    name: params.name
                 }})
                 process.exit(1)
             })
         } else (
             ffmp_args.genSingle(src_url, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, ad_param.audio_params, false, params.watermark).then((e) => {
                 // "-loglevel", "quiet", 
-                const args = ["-loglevel", "quiet", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-y"].concat(e)
+                const args = ["-loglevel", "repeat+level+error", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1", "-y"].concat(e)
                 
                 //throw new Error("e")
                 //console.log(args)
@@ -199,7 +210,8 @@ RunSignal.once("run", (params) => {
                         process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                             src: params.src,
                             src_id: params.src_id,
-                            additional_params: params.additional_params
+                            additional_params: params.additional_params,
+                            name: params.name
                         }})
                         process.exit(1)
                     } else {
@@ -225,13 +237,21 @@ RunSignal.once("run", (params) => {
                     })
                 })                
 
-                ffmp.stderr.pipe(process.stderr)
+                ffmp.stderr.on("data", (d) => {
+                    const lines = d.toString().split(os.EOL)
+                    for (let ln = 0; ln<lines.length; ln++) {
+                        if (lines[ln].length > 0) process.stderr.write(`${params.name}: ${lines[ln]}${os.EOL}`)
+                    }
+                })
+
+                //ffmp.stderr.pipe(process.stderr)
             }).catch((e) => {
                 console.trace(e)
                 process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                     src: params.src,
                     src_id: params.src_id,
-                    additional_params: params.additional_params
+                    additional_params: params.additional_params,
+                    name: params.name
                 }})
                 process.exit(1)
             })
@@ -240,7 +260,8 @@ RunSignal.once("run", (params) => {
         process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
             src: params.src,
             src_id: params.src_id,
-            additional_params: params.additional_params
+            additional_params: params.additional_params,
+            name: params.name
         }})
         process.exit(1)
     });    

@@ -886,7 +886,7 @@ if (!cluster.isPrimary) {
     //const StreamDTV = new bull("broadcast dtv");
 
 
-    const addDTVJobs = (stream_id, type, params) => {
+    const addDTVJobs = (stream_id, type, params, name="") => {
         if (type == "rtmp") return;
         const out_path = `${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${stream_id}/`
         fs.mkdir(out_path, {recursive: true}).then(() => {
@@ -897,6 +897,7 @@ if (!cluster.isPrimary) {
                     src: params.src, 
                     src_id: params.src_id,
                     stream_id: stream_id,
+                    name: name,
                     type: type,
                     output_path: out_path, 
                     renditions_hd: config.renditions_hd, 
@@ -946,7 +947,7 @@ if (!cluster.isPrimary) {
             cur_proc.on("message", (d) => {
                 if (d.retry) {
                     console.log("stream has encountered an error, retrying.")                
-                    addDTVJobs(d.stream_id, d.type, d.params)
+                    addDTVJobs(d.stream_id, d.type, d.params, d.name)
                 } else {            
                     delete StreamDTVJobs[d.stream_id]     
                     delete StreamDTVOutput[d.stream_id]                           
@@ -1296,7 +1297,7 @@ if (!cluster.isPrimary) {
     proc.nextTick(async () => {
         const active_streams = await streams.query().where("active", '=', true)
         for (let v = 0; v<active_streams.length; v++) {        
-            addDTVJobs(active_streams[v].stream_id, active_streams[v].type, JSON.parse(active_streams[v].params))
+            addDTVJobs(active_streams[v].stream_id, active_streams[v].type, JSON.parse(active_streams[v].params), active_streams[v].name)
         }
     })
 
@@ -1306,7 +1307,7 @@ if (!cluster.isPrimary) {
         if (stream.length <= 0) return res.status(400).json({error: `A channel with id ${req.body.id} could not be found.`})
         await streams.query().patch({active: req.body.active}).where("stream_id", '=', req.body.id)
         if (req.body.active) {
-            addDTVJobs(req.body.id, stream[0].type, JSON.parse(stream[0].params))
+            addDTVJobs(req.body.id, stream[0].type, JSON.parse(stream[0].params), stream[0].name)
         } else {
             if (StreamDTVJobs[req.body.id]) StreamDTVJobs[req.body.id].send({quit: true, stream_id: req.body.id})
             
@@ -1502,7 +1503,7 @@ if (!cluster.isPrimary) {
                     src: req.body.source_address,
                     src_id: req.body.source_id,
                     additional_params: req.body.additional_params
-                })
+                }, req.body.name)
                 return res.status(200).json({status: "ok"})                        
             case "dtv":
                 if (!req.body.name || req.body.tuner === undefined || !req.body.frequency || !req.body.channels) return res.status(400).json({error: "A stream name, tuner id, frequency, and channels must be specified"}) 
