@@ -172,7 +172,7 @@ RunSignal.once("run", (params) => {
                 ffmp.stderr.on("data", (d) => {
                     const lines = d.toString().split(os.EOL)
                     for (let ln = 0; ln<lines.length; ln++) {
-                        if (lines[ln].length > 0) process.stderr.write(`${args[2]}: ${lines[ln]}${os.EOL}`)
+                        if (lines[ln].length > 0) process.stderr.write(`${params.name}: ${lines[ln]}${os.EOL}`)
                     }
                 })
             }).catch((e) => {
