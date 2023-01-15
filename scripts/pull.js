@@ -78,7 +78,7 @@ RunSignal.once("run", (params) => {
         
         ffmp_args.genSingle(params.src, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, "", false, params.watermark).then((e) => {
             // "-loglevel", "quiet", 
-            const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y"] : ["-loglevel", "repeat+level+error", "-y"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp", "-reconnect", "1"] : []).concat(e)
+            const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y"] : ["-loglevel", "repeat+level+error", "-y"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : []).concat(e)
 
             const ffmp = cp.spawn(params.ffmpeg, args)                
 
