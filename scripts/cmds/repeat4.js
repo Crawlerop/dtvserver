@@ -21,6 +21,8 @@ setInterval(() => {
         app.kill("SIGKILL")
     }
 
+    if (LAST_FRAME === -1) process.stderr.write(`${args[2]} : Pending${os.EOL}`)
+
     if (STREAM_TIMEOUT_VAL !== -1 && (Date.now() > STREAM_TIMEOUT_VAL)) {
         process.stderr.write(`Stream is completely stalled for ${args[2]}${os.EOL}`)
         app.kill("SIGKILL")
