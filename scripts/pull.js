@@ -95,7 +95,7 @@ RunSignal.once("run", (params) => {
                     } catch (e) {
                         console.trace(e)
                     }
-                    console.log("dvb2ip shut down gracefully")
+                    console.log("pull shut down gracefully")
                     process.exit(0)
                 }
             })
