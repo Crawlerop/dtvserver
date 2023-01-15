@@ -89,7 +89,7 @@ RunSignal.once("run", (params) => {
         if (USE_TSDUCK) {
             ffmp_args.genSingle("-", current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, ad_param.audio_params, false, params.watermark).then((e) => {
                 // "-loglevel", "quiet", 
-                const args = ["-loglevel", "repeat+level+error", "-y"].concat(e)
+                const args = ["-loglevel", "repeat+level+error", "-probesize", "32", "-y"].concat(e)
                 
                 //throw new Error("e")
                 //console.log(args)
