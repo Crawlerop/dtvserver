@@ -37,7 +37,7 @@ RunSignal.once("run", (params) => {
         const probe_streams = JSON.parse(o).streams
         if (probe_streams.length <= 0) {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
-                src: params.src,
+                source: params.src,
                 realtime: params.realtime
             }})
             process.exit(1)
@@ -85,7 +85,7 @@ RunSignal.once("run", (params) => {
             ffmp.on("close", () => {
                 if (!is_quit) {
                     process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
-                        src: params.src,
+                        source: params.src,
                         realtime: params.realtime                           
                     }})
                     process.exit(1)
@@ -120,14 +120,14 @@ RunSignal.once("run", (params) => {
             })
         }).catch((e) => {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
-                src: params.src,
+                source: params.src,
                 realtime: params.realtime
             }})
             process.exit(1)
         })        
     }).catch((e) => {        
         process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
-            src: params.src,
+            source: params.src,
             realtime: params.realtime
         }})
         process.exit(1)
