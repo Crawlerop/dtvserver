@@ -39,7 +39,7 @@ module.exports = {
         var stream_map = ""
 
         args.push("-threads")
-        args.push("4")
+        args.push("2")
 
         args.push("-nostdin")
 
