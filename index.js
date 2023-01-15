@@ -933,7 +933,8 @@ if (!cluster.isPrimary) {
             } else if (type == "pull") {
                 cur_proc.send({
                     ffmpeg: config.ffmpeg, 
-                    src: params.source,                     
+                    src: params.source,  
+                    realtime: params.realtime,                   
                     stream_id: stream_id,
                     type: type,
                     output_path: out_path, 
@@ -1414,7 +1415,8 @@ if (!cluster.isPrimary) {
                     name: req.body.name,
                     type: req.body.type,
                     params: {
-                        source: req.body.source
+                        source: req.body.source,
+                        realtime: req.body.realtime ? req.body.realtime : false
                     }
                 })
                 return res.status(200).json({status: "ok", id: random_id})                                      
@@ -1534,12 +1536,14 @@ if (!cluster.isPrimary) {
                     name: req.body.name,
                     type: req.body.type,
                     params: JSON.stringify({
-                        source: req.body.source
+                        source: req.body.source,
+                        realtime: req.body.realtime ? req.body.realtime : false
                     })
                 }).where("stream_id", '=', req.body.id)
 
                 if (stream[0].active) addDTVJobs(req.body.id, req.body.type, {
-                    source: req.body.source
+                    source: req.body.source,
+                    realtime: req.body.realtime ? req.body.realtime : false
                 })
                 return res.status(200).json({status: "ok"})                          
             default:
