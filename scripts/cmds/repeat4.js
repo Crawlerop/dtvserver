@@ -1,5 +1,4 @@
 const cp = require("child_process")
-const { start } = require("repl")
 const args = require("process").argv
 const os = require("os")
 
@@ -8,7 +7,10 @@ process.stdin.on("close", () => {
 })
 
 const TIMEOUT_DUR = 30000
+const STREAM_TIMEOUT_DUR = 60000
+
 var TIMEOUT_VAL = -1
+var STREAM_TIMEOUT_VAL = -1
 
 var LAST_FRAME = -1
 var app;
@@ -17,6 +19,15 @@ setInterval(() => {
     if (TIMEOUT_VAL !== -1 && (Date.now() > TIMEOUT_VAL)) {
         process.stderr.write(`Transcode stream was stalled for ${args[2]}${os.EOL}`)
         app.kill("SIGKILL")
+    }
+
+    if (STREAM_TIMEOUT_VAL !== -1 && (Date.now() > STREAM_TIMEOUT_VAL)) {
+        process.stderr.write(`Stream is completely stalled for ${args[2]}${os.EOL}`)
+        app.kill("SIGKILL")
+        process.stdin.read()
+        process.stdin.destroy()
+        process.stderr.write(`Restarting this stream...${os.EOL}`)
+        process.exit(1)
     }
 }, 2000)
 
@@ -53,6 +64,7 @@ const startProcess = () => {
                 const key = chunks[i].split("=")[0]
                 const val = chunks[i].split("=")[1]
 
+                STREAM_TIMEOUT_VAL = Date.now() + STREAM_TIMEOUT_DUR
                 if (key === "frame") {
                     if (parseInt(val) !== LAST_FRAME) {
                         LAST_FRAME = parseInt(val)
