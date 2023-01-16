@@ -98,7 +98,7 @@ RunSignal.once("run", async (params) => {
             //console.log(is_hd)
 
             const current_rendition = is_hd ? (params.multiple_renditions ? params.renditions_hd : [params.renditions_hd[0]]) : (params.multiple_renditions ? params.renditions_sd : [params.renditions_sd[0]])
-            const ffmp_arg = ["-loglevel", "quiet", "-y", "-rw_timeout", "10000000"].concat(await ffmp_args.genSingle(rtmp_url, current_rendition, program_streams, params.output_path, params.hls_settings))
+            const ffmp_arg = ["-loglevel", "quiet", "-y", "-rw_timeout", "10000000", "-probesize", "32", "-analyzeduration", "0"].concat(await ffmp_args.genSingle(rtmp_url, current_rendition, program_streams, params.output_path, params.hls_settings))
 
             ExecSignal.emit("exec", ffmp_arg)
         }
