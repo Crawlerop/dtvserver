@@ -1029,21 +1029,23 @@ if (!cluster.isPrimary) {
         const tuners = (await check_output("tslsdvb")).toString("ascii").replace(/\r/g, "").split("\n")
         var tuners_stat = []
 
-        for (let i = 0; i<(tuners.length-1); i++) {
-            const tuner_stat = (await check_output('tslsdvb', ['-a', i, '-e'], 0, null, new stream.Writable({write:()=>{}}), true)).toString("ascii").replace(/\r/g, "").split("\n")
-            var status;
-            var current;
+        try {
+            for (let i = 0; i<(tuners.length-1); i++) {
+                const tuner_stat = (await check_output('tslsdvb', ['-a', i, '-e'], 0, null, new stream.Writable({write:()=>{}}), true)).toString("ascii").replace(/\r/g, "").split("\n")
+                var status;
+                var current;
 
-            for (let j = 0; j<tuner_stat.length; j++) {
-                if (tuner_stat[j].indexOf("Current ") !== -1) {
-                    current = tuner_stat[j].slice(tuner_stat[j].indexOf("Current "))
-                } else if (tuner_stat[j].indexOf("Signal: ") !== -1) {
-                    status = tuner_stat[j].slice(tuner_stat[j].indexOf("Signal: "))
+                for (let j = 0; j<tuner_stat.length; j++) {
+                    if (tuner_stat[j].indexOf("Current ") !== -1) {
+                        current = tuner_stat[j].slice(tuner_stat[j].indexOf("Current "))
+                    } else if (tuner_stat[j].indexOf("Signal: ") !== -1) {
+                        status = tuner_stat[j].slice(tuner_stat[j].indexOf("Signal: "))
+                    }
                 }
-            }
 
-            tuners_stat.push({name: tuners[i], status, current: current ? current : "Current N/A"})
-        }
+                tuners_stat.push({name: tuners[i], status, current: current ? current : "Current N/A"})
+            }
+        } catch {}
 
         return res.status(200).json(tuners_stat)
     })
@@ -1609,17 +1611,24 @@ if (!cluster.isPrimary) {
     });
 
     app.get("/api/tuners", async (req, res) => {
-    const tuners = (await check_output("tslsdvb")).toString("ascii").replace(/\r/g, "").split("\n")
-    var tuner = [];
-    
-    for (let i = 0; i<tuners.length; i++) {
-        if (tuners[i]) tuner.push(tuners[i])
-    }
+        try {
+            const tuners = (await check_output("tslsdvb")).toString("ascii").replace(/\r/g, "").split("\n")
+            var tuner = [];
+            
+            for (let i = 0; i<tuners.length; i++) {
+                if (tuners[i]) tuner.push(tuners[i])
+            }
 
-    return res.status(200).json({
-        status: "ok",
-        tuners: tuner
-    })
+            return res.status(200).json({
+                status: "ok",
+                tuners: tuner
+            })
+        } catch (e) {
+            return res.status(200).json({
+                status: "ok",
+                tuners: []
+            })
+        }
     })
 
     app.get("/manifest.json", cors(), async (req, res) => {
