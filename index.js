@@ -1485,6 +1485,7 @@ if (!cluster.isPrimary) {
                 if (!req.body.name) return res.status(400).json({error: "A stream name must be specified"}) 
                 let rtmp_params = JSON.parse(stream[0].params)
                 rtmp_params.passthrough = req.body.passthrough !== undefined ? req.body.passthrough : false
+                if (!rtmp_params.rtmp_key) rtmp_params.rtmp_key = crypto.randomBytes(32).toString("hex")
 
                 await streams.query().patch({                
                     name: req.body.name,
