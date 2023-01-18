@@ -906,7 +906,7 @@ if (!cluster.isPrimary) {
                     hls_settings: config.hls_settings,
                     additional_params: params.additional_params,
                     buffer_size: config.dtv_buffer_size,
-                    watermark: config.watermark_ignore_streams.indexOf(stream_id) ? "" : config.watermark,
+                    watermark: config.watermark_ignore_streams.indexOf(stream_id) !== -1 ? "" : config.watermark,
                     pathname: __dirname
                 })
             } else if (type == "dtv") {
@@ -942,7 +942,7 @@ if (!cluster.isPrimary) {
                     renditions_sd: config.renditions_sd, 
                     multiple_renditions: config.multiple_renditions, 
                     hls_settings: config.hls_settings,
-                    watermark: config.watermark_ignore_streams.indexOf(stream_id) ? "" : config.watermark,
+                    watermark: config.watermark_ignore_streams.indexOf(stream_id) !== -1 ? "" : config.watermark,
                     pathname: __dirname
                 })
             }

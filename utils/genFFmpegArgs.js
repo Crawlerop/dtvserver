@@ -420,6 +420,13 @@ module.exports = {
                 }
 
                 if (rendition.hwaccel == "vaapi") {
+                    const INTERP_ALGO_TO_VAAPI = {
+                        0: 0,
+                        1: 256,
+                        2: 512,
+                        3: 768
+                    }
+
                     if (!is_start) {
                         is_start = true
 
@@ -473,21 +480,51 @@ module.exports = {
 
                         args.push("-i")
                         args.push(source)
-                    }
-    
-                    const INTERP_ALGO_TO_VAAPI = {
-                        0: 0,
-                        1: 256,
-                        2: 512,
-                        3: 768
+
+                        var filter_complex = ""
+
+                        if (video_id != -1) {
+                            filter_complex += `[0:v:#${video_id}]`
+                        } else {
+                            filter_complex += "[0:v:0]"
+                        }
+                        
+                        filter_complex += `format=nv12|vaapi,hwupload,deinterlace_vaapi,split=${renditions.length}`
+                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                            filter_complex += `[a${rend_id}]`
+                        }
+
+                        filter_complex += ";"
+
+                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                            filter_complex += `[a${rend_id}]`
+                            if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
+                                filter_complex += `scale_vaapi=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:mode=${INTERP_ALGO_TO_VAAPI[renditions[rend_id].interp_algo]},setsar=1,fps=${fps}[p${rend_id}]`
+                            } else {
+                                filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
+                            }
+                            if (rend_id < renditions.length-1) filter_complex += ";"
+                        }
+
+                        //console.log(filter_complex)
+                        args.push("-filter_complex")
+                        if (escape_filters) {
+                            args.push(`"${filter_complex}"`)
+                        } else {
+                            args.push(filter_complex)
+                        }
                     }
                 
                     args.push("-map")
+                    /*
                     if (video_id != -1) {
                         args.push(`0:v:#${video_id}`)
                     } else {
                         args.push("0:v:0")
-                    }                
+                    } 
+                    */
+                    args.push(`[p${i}]`)
+                    
                     if (audio) {
                         args.push("-map")
                         if (audio_id != -1) {
@@ -506,12 +543,14 @@ module.exports = {
                     args.push("-1")
                     args.push(`-c:v:${i}`)
                     args.push("h264_vaapi")
+                    /*
                     args.push(`-filter:v:${i}`)
                     if (escape_filters) {
                         args.push(`"format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}"`)
                     } else {
                         args.push(`format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:mode=${INTERP_ALGO_TO_VAAPI[rendition.interp_algo]},setsar=1,fps=${fps}`)
                     }
+                    */
                     args.push(`-compression_level:v:${i}`)
                     args.push(rendition.speed)
 

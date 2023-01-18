@@ -33,7 +33,7 @@ const USE_TSDUCK = false
 setInterval(QuitCheck, 2000);
 
 RunSignal.once("run", (params) => {    
-    check_output(params.ffmpeg.replace(/mpeg/g, "probe"), [..."-probesize 12M -loglevel quiet -print_format json -show_error -show_format -show_streams".split(" "), params.src]).then((o) => {
+    check_output(params.ffmpeg.replace(/mpeg/g, "probe"), [..."-probesize 48M -loglevel quiet -print_format json -show_error -show_format -show_streams".split(" "), params.src]).then((o) => {
         const probe_streams = JSON.parse(o).streams
         if (probe_streams.length <= 0) {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
