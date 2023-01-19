@@ -949,7 +949,7 @@ if (!cluster.isPrimary) {
             cur_proc.on("message", (d) => {
                 if (d.retry) {
                     console.log("stream has encountered an error, retrying.")                
-                    addDTVJobs(d.stream_id, d.type, d.params, d.name)
+                    setTimeout(() => addDTVJobs(d.stream_id, d.type, d.params, d.name), 2000)
                 } else {            
                     delete StreamDTVJobs[d.stream_id]     
                     delete StreamDTVOutput[d.stream_id]                           
