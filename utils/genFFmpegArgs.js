@@ -38,10 +38,10 @@ module.exports = {
         var is_start = false
         var stream_map = ""
 
-        /*
-        args.push("-threads")
-        args.push("8")
-        */
+        if (renditions[0].hwaccel !== "none") {
+            args.push("-threads")
+            args.push("1")
+        }
 
         args.push("-nostdin")
 
@@ -566,21 +566,34 @@ module.exports = {
                             args.push("-hwaccel")
                             args.push("cuda")
                             args.push("-hwaccel_output_format")
-                            args.push("nv12")
+                            args.push("cuda")
         
-                            if (video.codec === "h264") {
-                                args.push(`-c:v:${i}`)
+                            if (video.codec === "h264") { // 1080i
+                                args.push(`-c:v`)
                                 args.push("h264_cuvid")
                             } else if (video.codec === "mpeg4") {
-                                args.push(`-c:v:${i}`)
+                                args.push(`-c:v`)
                                 args.push("mpeg4_cuvid")
-                            } else if (video.codec === "mpeg2video") {
-                                args.push(`-c:v:${i}`)
+                            } else if (video.codec === "mpeg2video") { // 576i
+                                args.push(`-c:v`)
                                 args.push("mpeg2_cuvid")
                             } else if (video.codec === "mpeg1video") {
-                                args.push(`-c:v:${i}`)
+                                args.push(`-c:v`)
                                 args.push("mpeg1_cuvid")
+                            } else if (video.codec === "hevc") { // 2160p
+                                args.push(`-c:v`)
+                                args.push("hevc_cuvid")
                             }
+
+                            args.push("-resize")
+                            args.push(`${rendition.width}x${rendition.height}`)
+                            args.push("-surfaces")
+                            args.push("16")
+                            args.push("-deint")
+                            args.push("1")
+                            args.push("-drop_second_field")
+                            args.push("1")
+                            
                         }
     
                         if (COPY_TS) {
@@ -609,6 +622,7 @@ module.exports = {
                             filter_complex += "[0:v:0]"
                         }
                         
+                        /*
                         filter_complex += `hwupload_cuda,yadif_cuda,split=${renditions.length}`
                         for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
                             filter_complex += `[a${rend_id}]`
@@ -622,6 +636,26 @@ module.exports = {
                                 filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo},setsar=1,fps=${fps}[p${rend_id}]`
                             } else {
                                 filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
+                            }
+                            if (rend_id < renditions.length-1) filter_complex += ";"
+                        }
+                        */
+
+                        filter_complex += `setsar=1,fps=${fps},split=${renditions.length}`
+                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                            filter_complex += `[a${rend_id}]`
+                        }
+
+                        filter_complex += ";"
+
+                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                            filter_complex += `[a${rend_id}]`
+                            //if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
+                            if (rend_id > 0) {
+                                filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo}`
+                            } else {
+                                //filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
+                                filter_complex += `null`
                             }
                             if (rend_id < renditions.length-1) filter_complex += ";"
                         }

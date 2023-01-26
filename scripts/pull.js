@@ -129,9 +129,10 @@ RunSignal.once("run", (params) => {
                             }
                             */
                         } else if (key === "fps") {
+                            fps = video.fps <= 30 ? video.fps : video.fps / 2
                             
-                            if (parseFloat(val) < parseFloat(video.fps)) {
-                                console.log(`${params.src} FPS: ${parseFloat(val)} < ${parseFloat(video.fps)}`)
+                            if (parseFloat(val) < parseFloat(fps)) {
+                                console.log(`${params.src} FPS: ${parseFloat(val)} < ${parseFloat(fps)}`)
                             }
                             
                             //
