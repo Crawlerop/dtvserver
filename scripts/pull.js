@@ -112,6 +112,7 @@ RunSignal.once("run", (params) => {
 
             })
 
+            /*
             ffmp.stdout.on("data", (d) => {
                 const chunks = d.toString().split(os.EOL)
                 for (let i = 0; i<chunks.length; i++) {
@@ -127,7 +128,7 @@ RunSignal.once("run", (params) => {
                                 TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
                                 //process.stderr.write(`Track stalled status\n`)
                             }
-                            */
+                            /
                         } else if (key === "fps") {
                             fps = video.fps <= 30 ? video.fps : video.fps / 2
                             
@@ -140,6 +141,7 @@ RunSignal.once("run", (params) => {
                     }
                 }
             })
+            */
 
             QuitSignal.once("quit", () => {
                 process.nextTick(() => {
