@@ -655,7 +655,7 @@ module.exports = {
                                 filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo}`
                             } else {
                                 //filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
-                                filter_complex += `null`
+                                filter_complex += `null[p${rend_id}]`
                             }
                             if (rend_id < renditions.length-1) filter_complex += ";"
                         }
