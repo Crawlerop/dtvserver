@@ -44,12 +44,15 @@ RunSignal.once("run", (params) => {
         }
         var is_hd = false;
         var program_streams = []
+
+        var video;
+        var audio;
         
         for (let j = 0; j<probe_streams.length; j++) {
             var stream = probe_streams[j];
             if (stream.codec_type == "video") {
                 if (stream.height >= 720) is_hd = true
-                program_streams.push({
+                video = {
                     type: "video", 
                     width: stream.width, 
                     height: stream.height,
@@ -57,16 +60,18 @@ RunSignal.once("run", (params) => {
                     interlace: stream.field_order,
                     id: stream.id,
                     codec: stream.codec_name
-                })
+                }
+                program_streams.push(video)
             } else if (stream.codec_type == "audio" && eval(stream.sample_rate) > 0) {
-                program_streams.push({
+                audio = {
                     type: "audio", 
                     sample_rate: eval(stream.sample_rate),
                     channels: stream.channels,
                     bitrate: eval(stream.bit_rate) / 1000,
                     id: stream.id,
                     codec: stream.codec_name
-                })
+                }
+                program_streams.push(audio)
             }
         }
         
@@ -79,7 +84,7 @@ RunSignal.once("run", (params) => {
         ffmp_args.genSingle(params.src, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, "", false, params.watermark).then((e) => {
             // "-loglevel", "quiet", 
             //const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1"] : []).concat(e)
-            const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000"] : []).concat(e)
+            const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0", "-progress", "-"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0", "-progress", "-"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000"] : []).concat(e)
 
             const ffmp = cp.spawn(params.ffmpeg, args)                
 
@@ -103,6 +108,34 @@ RunSignal.once("run", (params) => {
 
             ffmp.stdin.on("error", (e) => {
 
+            })
+
+            ffmp.stdout.on("data", (d) => {
+                const chunks = d.toString().split(os.EOL)
+                for (let i = 0; i<chunks.length; i++) {
+                    if (chunks[i].length >= 0) {
+                        const key = chunks[i].split("=")[0]
+                        const val = chunks[i].split("=")[1]
+        
+                        //STREAM_TIMEOUT_VAL = Date.now() + STREAM_TIMEOUT_DUR
+                        if (key === "frame") {
+                            /*
+                            if (parseInt(val) !== LAST_FRAME) {
+                                LAST_FRAME = parseInt(val)
+                                TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
+                                //process.stderr.write(`Track stalled status\n`)
+                            }
+                            */
+                        } else if (key === "fps") {
+                            
+                            if (parseFloat(val) < parseFloat(video.fps)) {
+                                console.log(`${params.src} FPS: ${parseFloat(val)} < ${parseFloat(video.fps)}`)
+                            }
+                            
+                            //
+                        }
+                    }
+                }
             })
 
             QuitSignal.once("quit", () => {
