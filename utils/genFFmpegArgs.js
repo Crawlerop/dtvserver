@@ -15,7 +15,7 @@ const NV_HW_DECODER = config.nvenc_use_nvdec // Saves GPU memory if disabled!
 const VSYNC_MODE = "1"
 const ASYNC_MODE = "(fps)"
 const HW_FRAMES = "0"
-const HW_SURFACES = "8"
+const HW_SURFACES = "12"
 const COPY_TS = true
 
 module.exports = {
@@ -591,7 +591,7 @@ module.exports = {
                             args.push("-surfaces")
                             args.push(HW_SURFACES)
                             args.push("-deint")
-                            args.push("2")
+                            args.push("1")
                             args.push("-drop_second_field")
                             args.push("1")
                             
