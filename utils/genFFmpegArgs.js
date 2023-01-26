@@ -591,7 +591,7 @@ module.exports = {
                             args.push("-surfaces")
                             args.push(HW_SURFACES)
                             args.push("-deint")
-                            args.push("1")
+                            args.push("2")
                             args.push("-drop_second_field")
                             args.push("1")
                             
