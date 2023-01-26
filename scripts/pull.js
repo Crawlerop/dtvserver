@@ -81,7 +81,7 @@ RunSignal.once("run", (params) => {
         const current_rendition = is_hd ? (params.multiple_renditions ? params.renditions_hd : [params.renditions_hd[0]]) : (params.multiple_renditions ? params.renditions_sd : [params.renditions_sd[0]])
         //console.log(current_rendition)
         
-        const PROBE = "256k"
+        const PROBE = "32"
 
         ffmp_args.genSingle(params.src, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, "", false, params.watermark).then((e) => {
             // "-loglevel", "quiet", 
