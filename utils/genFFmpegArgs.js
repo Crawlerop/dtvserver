@@ -588,7 +588,7 @@ module.exports = {
                             args.push("-resize")
                             args.push(`${rendition.width}x${rendition.height}`)
                             args.push("-surfaces")
-                            args.push("16")
+                            args.push("12")
                             args.push("-deint")
                             args.push("1")
                             args.push("-drop_second_field")
