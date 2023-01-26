@@ -622,42 +622,42 @@ module.exports = {
                             filter_complex += "[0:v:0]"
                         }
                         
-                        /*
-                        filter_complex += `hwupload_cuda,yadif_cuda,split=${renditions.length}`
-                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
-                            filter_complex += `[a${rend_id}]`
-                        }
-
-                        filter_complex += ";"
-
-                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
-                            filter_complex += `[a${rend_id}]`
-                            if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
-                                filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo},setsar=1,fps=${fps}[p${rend_id}]`
-                            } else {
-                                filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
+                        if (!NV_HW_DECODER) {
+                            filter_complex += `hwupload_cuda,yadif_cuda,split=${renditions.length}`
+                            for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                                filter_complex += `[a${rend_id}]`
                             }
-                            if (rend_id < renditions.length-1) filter_complex += ";"
-                        }
-                        */
 
-                        filter_complex += `setsar=1,fps=${fps},split=${renditions.length}`
-                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
-                            filter_complex += `[a${rend_id}]`
-                        }
+                            filter_complex += ";"
 
-                        filter_complex += ";"
-
-                        for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
-                            filter_complex += `[a${rend_id}]`
-                            //if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
-                            if (rend_id > 0) {
-                                filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo}`
-                            } else {
-                                //filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
-                                filter_complex += `null[p${rend_id}]`
+                            for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                                filter_complex += `[a${rend_id}]`
+                                if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
+                                    filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo},setsar=1,fps=${fps}[p${rend_id}]`
+                                } else {
+                                    filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
+                                }
+                                if (rend_id < renditions.length-1) filter_complex += ";"
                             }
-                            if (rend_id < renditions.length-1) filter_complex += ";"
+                        } else {
+                            filter_complex += `setsar=1,fps=${fps},split=${renditions.length}`
+                            for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                                filter_complex += `[a${rend_id}]`
+                            }
+
+                            filter_complex += ";"
+
+                            for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
+                                filter_complex += `[a${rend_id}]`
+                                //if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
+                                if (rend_id > 0) {
+                                    filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo}`
+                                } else {
+                                    //filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
+                                    filter_complex += `null[p${rend_id}]`
+                                }
+                                if (rend_id < renditions.length-1) filter_complex += ";"
+                            }
                         }
 
                         //console.log(filter_complex)
