@@ -11,11 +11,11 @@ const _globAsync = (pattern) => {
     })
 }
 
-const NV_HW_DECODER = config.nvenc_use_nvdec // Saves GPU memory if disabled!
+const NV_HW_DECODER = config.nvenc_use_nvdec
 const VSYNC_MODE = "1"
 const ASYNC_MODE = "(fps)"
 const HW_FRAMES = "0"
-const HW_SURFACES = "14"
+const HW_SURFACES = "8"
 const COPY_TS = true
 
 module.exports = {
@@ -232,19 +232,31 @@ module.exports = {
                             args.push("-hwaccel_output_format")
                             args.push("nv12")
 
-                            if (video.codec === "h264") {
-                                args.push(`-c:v:${i}`)
+                            if (video.codec === "h264") { // 1080i
+                                args.push(`-c:v`)
                                 args.push("h264_cuvid")
                             } else if (video.codec === "mpeg4") {
-                                args.push(`-c:v:${i}`)
+                                args.push(`-c:v`)
                                 args.push("mpeg4_cuvid")
-                            } else if (video.codec === "mpeg2video") {
-                                args.push(`-c:v:${i}`)
+                            } else if (video.codec === "mpeg2video") { // 576i
+                                args.push(`-c:v`)
                                 args.push("mpeg2_cuvid")
                             } else if (video.codec === "mpeg1video") {
-                                args.push(`-c:v:${i}`)
+                                args.push(`-c:v`)
                                 args.push("mpeg1_cuvid")
+                            } else if (video.codec === "hevc") { // 2160p
+                                args.push(`-c:v`)
+                                args.push("hevc_cuvid")
                             }
+
+                            args.push("-resize")
+                            args.push(`${rendition.width}x${rendition.height}`)
+                            args.push("-surfaces")
+                            args.push(HW_SURFACES)
+                            args.push("-deint")
+                            args.push("1")
+                            args.push("-drop_second_field")
+                            args.push("1")
                         }
 
                         if (COPY_TS) {

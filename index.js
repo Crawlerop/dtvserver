@@ -51,7 +51,8 @@ const config_defaults_nvenc = {
     "streams_path": "(pathname)/streams/",
     "dvr_path": "(pathname)/dvr/",
     "ffmpeg": "ffmpeg",
-    "watermark": "(pathname)/watermarks/lv-high-50-256-dark3.png",
+    //"watermark": "(pathname)/watermarks/lv-high-50-256-dark3.png",
+    "watermark": "",
     "watermark_ignore_streams": [],
     "hls_settings": {
         "duration": 2,
@@ -184,7 +185,8 @@ const config_defaults = {
     "streams_path": "(pathname)/streams/",
     "dvr_path": "(pathname)/dvr/",
     "ffmpeg": "ffmpeg",
-    "watermark": "(pathname)/watermarks/lv-high-50-256-dark3.png",
+    //"watermark": "(pathname)/watermarks/lv-high-50-256-dark3.png",
+    "watermark": "",
     "watermark_ignore_streams": [],
     "hls_settings": {
         "duration": 2,
