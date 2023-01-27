@@ -670,7 +670,7 @@ module.exports = {
                                 filter_complex += `[a${rend_id}]`
                                 //if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
                                 if (!NVDEC_USE_SCALE || rend_id > 0) {
-                                    filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo}`
+                                    filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo}[p${rend_id}]`
                                 } else {
                                     //filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
                                     filter_complex += `null[p${rend_id}]`
