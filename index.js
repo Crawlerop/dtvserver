@@ -1024,7 +1024,7 @@ if (!cluster.isPrimary) {
         next();
     });
 
-    const stream = require("stream")
+    //const stream = require("stream")
 
     /* API */
     app.get("/api/status", async (req,res) => {
