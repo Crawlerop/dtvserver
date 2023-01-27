@@ -1031,7 +1031,7 @@ if (!cluster.isPrimary) {
         var tuners_stat = []
 
         try {
-            const tuners = (await check_output("tslsdvb", [], 0, null, fs_sync.createWriteStream())).toString("ascii").replace(/\r/g, "").split("\n")
+            const tuners = (await check_output("tslsdvb", [], 0, null, new stream.Writable({write:()=>{}}))).toString("ascii").replace(/\r/g, "").split("\n")
             for (let i = 0; i<(tuners.length-1); i++) {
                 const tuner_stat = (await check_output('tslsdvb', ['-a', i, '-e'], 0, null, new stream.Writable({write:()=>{}}), true)).toString("ascii").replace(/\r/g, "").split("\n")
                 var status;
@@ -1613,10 +1613,12 @@ if (!cluster.isPrimary) {
         }
     });
 
+    const stream = require("stream")
+
     app.get("/api/tuners", async (req, res) => {
         var tuner = [];
         try {
-            const tuners = (await check_output("tslsdvb", [], 0, null, fs_sync.createWriteStream())).toString("ascii").replace(/\r/g, "").split("\n")
+            const tuners = (await check_output("tslsdvb", [], 0, null, new stream.Writable({write:()=>{}}))).toString("ascii").replace(/\r/g, "").split("\n")
             
             for (let i = 0; i<tuners.length; i++) {
                 if (tuners[i]) tuner.push(tuners[i])
