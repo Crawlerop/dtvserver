@@ -44,7 +44,7 @@ const startProcess = () => {
         TIMEOUT_VAL = -1
 
         process.stdin.read()
-        setTimeout(startProcess, 500)
+        setTimeout(startProcess, 100)
         //startProcess()
     })
 
