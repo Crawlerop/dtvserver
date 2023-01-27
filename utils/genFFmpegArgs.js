@@ -19,7 +19,7 @@ const HW_SURFACES = "8"
 const COPY_TS = true
 
 module.exports = {
-    genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="") => {
+    genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="", NVDEC_USE_SCALE=config.nvdec_use_scale) => {
         const WIDESCREEN = (640/360)
         var args = [];
 
@@ -249,8 +249,11 @@ module.exports = {
                                 args.push("hevc_cuvid")
                             }
 
-                            args.push("-resize")
-                            args.push(`${rendition.width}x${rendition.height}`)
+                            if (NVDEC_USE_SCALE) {
+                                args.push("-resize")
+                                args.push(`${rendition.width}x${rendition.height}`)
+                            }
+
                             args.push("-surfaces")
                             args.push(HW_SURFACES)
                             args.push("-deint")
@@ -598,8 +601,11 @@ module.exports = {
                                 args.push("hevc_cuvid")
                             }
 
-                            args.push("-resize")
-                            args.push(`${rendition.width}x${rendition.height}`)
+                            if (NVDEC_USE_SCALE) {
+                                args.push("-resize")
+                                args.push(`${rendition.width}x${rendition.height}`)
+                            }
+
                             args.push("-surfaces")
                             args.push(HW_SURFACES)
                             args.push("-deint")
@@ -663,7 +669,7 @@ module.exports = {
                             for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
                                 filter_complex += `[a${rend_id}]`
                                 //if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
-                                if (rend_id > 0) {
+                                if (!NVDEC_USE_RESCALE || rend_id > 0) {
                                     filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo}`
                                 } else {
                                     //filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`

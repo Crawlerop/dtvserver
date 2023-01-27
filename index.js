@@ -61,6 +61,8 @@ const config_defaults_nvenc = {
     },
     "multiple_renditions": false,
     "nvenc_use_nvdec": true,
+    "nvdec_use_scale": false,
+    "nvdec_scale_exclude": [],
     "dtv_use_fork": true,
     "renditions_hd": [
         {
@@ -195,6 +197,8 @@ const config_defaults = {
     },
     "multiple_renditions": false,
     "nvenc_use_nvdec": true,
+    "nvdec_use_scale": false,
+    "nvdec_scale_exclude": [],
     "dtv_use_fork": true,
     "renditions_hd": [
         {
@@ -930,7 +934,9 @@ if (!cluster.isPrimary) {
                     system: params.system ? params.system : "DVB-T2",
                     watermark: config.watermark,
                     watermark_ignore_streams: config.watermark_ignore_streams,
-                    pathname: __dirname
+                    pathname: __dirname,
+                    do_scale: config.nvdec_use_scale,
+                    do_scale_exclude: config.nvdec_scale_exclude
                 })
             } else if (type == "pull") {
                 cur_proc.send({
