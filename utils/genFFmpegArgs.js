@@ -12,11 +12,11 @@ const _globAsync = (pattern) => {
 }
 
 const NV_HW_DECODER = config.nvenc_use_nvdec
-const VSYNC_MODE = "1"
-const ASYNC_MODE = "(fps)"
+const VSYNC_MODE = config.vsync
+const ASYNC_MODE = config.async
 const HW_FRAMES = "0"
 const HW_SURFACES = "8"
-const COPY_TS = true
+const COPY_TS = config.use_copyts
 
 module.exports = {
     genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="", NVDEC_USE_SCALE=config.nvdec_use_scale) => {

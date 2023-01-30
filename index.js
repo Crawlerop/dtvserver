@@ -63,6 +63,9 @@ const config_defaults_nvenc = {
     "nvenc_use_nvdec": true,
     "nvdec_use_scale": false,
     "nvdec_scale_exclude": [],
+    "use_copyts": false,
+    "async": "1",
+    "vsync": "1",
     "dtv_use_fork": true,
     "renditions_hd": [
         {
@@ -199,6 +202,9 @@ const config_defaults = {
     "nvenc_use_nvdec": true,
     "nvdec_use_scale": false,
     "nvdec_scale_exclude": [],
+    "use_copyts": false,
+    "async": "1",
+    "vsync": "1",
     "dtv_use_fork": true,
     "renditions_hd": [
         {
