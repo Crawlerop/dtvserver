@@ -14,6 +14,7 @@ var STREAM_TIMEOUT_VAL = -1
 
 var LAST_FRAME = -1
 var app;
+var RESTART_STALL = false
 
 setInterval(() => {
     if (TIMEOUT_VAL !== -1 && (Date.now() > TIMEOUT_VAL)) {
@@ -23,7 +24,7 @@ setInterval(() => {
 
     if (LAST_FRAME === -1) process.stderr.write(`${args[2]} : Pending${os.EOL}`)
 
-    if (STREAM_TIMEOUT_VAL !== -1 && (Date.now() > STREAM_TIMEOUT_VAL)) {
+    if (RESTART_STALL && STREAM_TIMEOUT_VAL !== -1 && (Date.now() > STREAM_TIMEOUT_VAL)) {
         process.stderr.write(`Stream is completely stalled for ${args[2]}${os.EOL}`)
         app.kill("SIGKILL")
         process.stdin.read()
@@ -43,8 +44,10 @@ const startProcess = () => {
         LAST_FRAME = -1
         TIMEOUT_VAL = -1
 
+        RESTART_STALL = true
+
         process.stdin.read()
-        setTimeout(startProcess, 100)
+        setTimeout(startProcess, 500)
         //startProcess()
     })
 
