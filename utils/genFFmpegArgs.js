@@ -113,7 +113,12 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             //args.push("-start_at_zero")
-                        } else {
+                        } else if (!config.disable_sync) {
+                            if (VSYNC_MODE == 1) {
+                                args.push("-r")
+                                args.push(video.fps)
+                            }
+
                             args.push("-async")
                             args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
 
@@ -149,7 +154,7 @@ module.exports = {
                             filter_complex += `format=yuv420p,yadif,scale=${Math.floor(video.height*WIDESCREEN)}:${video.height}:flags=neighbor[a];[1:v:0]format=yuva420p[b];[a][b]overlay=shortest=1:x=16:y=H-h-16,format=nv12|vaapi,hwupload,`
                         }
 
-                        filter_complex += `fps=${fps},split=${renditions.length}`
+                        filter_complex += `fps=${fps}:start_time=0:round=near,split=${renditions.length}`
                         for (let p = 0; p<renditions.length; p++) {
                             filter_complex += `[temp${p}]` 
                         }
@@ -264,7 +269,12 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
-                        } else {
+                        } else if (!config.disable_sync) {
+                            if (VSYNC_MODE == 1) {
+                                args.push("-r")
+                                args.push(video.fps)
+                            }
+
                             args.push("-async")
                             args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
 
@@ -294,7 +304,7 @@ module.exports = {
 
                         filter_complex += `format=yuv420p,hwupload_cuda,yadif_cuda,scale_cuda=${Math.floor(video.height*WIDESCREEN)}:${video.height}:interp_algo=1[a];[1:v:0]format=yuva420p,hwupload_cuda[b];[a][b]overlay_cuda=shortest=1:x=16:y=H-h-16,`
 
-                        filter_complex += `fps=${fps},split=${renditions.length}`
+                        filter_complex += `fps=${fps}:start_time=0:round=near,split=${renditions.length}`
                         for (let p = 0; p<renditions.length; p++) {
                             filter_complex += `[temp${p}]` 
                         }
@@ -483,7 +493,12 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
-                        } else {
+                        } else if (!config.disable_sync) {
+                            if (VSYNC_MODE == 1) {
+                                args.push("-r")
+                                args.push(video.fps)
+                            }
+
                             args.push("-async")
                             args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
 
@@ -517,9 +532,9 @@ module.exports = {
                         for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
                             filter_complex += `[a${rend_id}]`
                             if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
-                                filter_complex += `scale_vaapi=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:mode=${INTERP_ALGO_TO_VAAPI[renditions[rend_id].interp_algo]},setsar=1,fps=${fps}[p${rend_id}]`
+                                filter_complex += `scale_vaapi=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:mode=${INTERP_ALGO_TO_VAAPI[renditions[rend_id].interp_algo]},setsar=1,fps=${fps}:start_time=0:round=near[p${rend_id}]`
                             } else {
-                                filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
+                                filter_complex += `setsar=1,fps=${fps}:start_time=0:round=near[p${rend_id}]`
                             }
                             if (rend_id < renditions.length-1) filter_complex += ";"
                         }
@@ -617,7 +632,12 @@ module.exports = {
     
                         if (COPY_TS) {
                             args.push("-copyts")
-                        } else {
+                        } else if (!config.disable_sync) {
+                            if (VSYNC_MODE == 1) {
+                                args.push("-r")
+                                args.push(video.fps)
+                            }
+
                             args.push("-async")
                             args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
 
@@ -652,14 +672,14 @@ module.exports = {
                             for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
                                 filter_complex += `[a${rend_id}]`
                                 if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
-                                    filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo},setsar=1,fps=${fps}[p${rend_id}]`
+                                    filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo},setsar=1,fps=${fps}:start_time=0:round=near[p${rend_id}]`
                                 } else {
-                                    filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
+                                    filter_complex += `setsar=1,fps=${fps}:start_time=0:round=near[p${rend_id}]`
                                 }
                                 if (rend_id < renditions.length-1) filter_complex += ";"
                             }
                         } else {
-                            filter_complex += `setsar=1,fps=${fps},split=${renditions.length}`
+                            filter_complex += `setsar=1,fps=${fps}:start_time=0:round=near,split=${renditions.length}`
                             for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
                                 filter_complex += `[a${rend_id}]`
                             }
@@ -752,7 +772,12 @@ module.exports = {
                             
                         if (COPY_TS) {
                             args.push("-copyts")
-                        } else {
+                        } else if (!config.disable_sync) {
+                            if (VSYNC_MODE == 1) {
+                                args.push("-r")
+                                args.push(video.fps)
+                            }
+
                             args.push("-async")
                             args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
 
@@ -805,9 +830,9 @@ module.exports = {
 
                     args.push(`-filter:v:${i}`)
                     if (escape_filters) {
-                        args.push(`"yadif,scale=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:flags=${interp_algo},setsar=1,fps=${fps}"`)
+                        args.push(`"yadif,scale=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:flags=${interp_algo},setsar=1,fps=${fps}:start_time=0:round=near"`)
                     } else {
-                        args.push(`yadif,scale=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:flags=${interp_algo},setsar=1,fps=${fps}`)
+                        args.push(`yadif,scale=${Math.min(Math.floor(video.height*WIDESCREEN), rendition.width)}:${Math.min(video.height, rendition.height)}:flags=${interp_algo},setsar=1,fps=${fps}:start_time=0:round=near`)
                     }
                     
 
