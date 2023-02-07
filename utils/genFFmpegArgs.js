@@ -44,6 +44,10 @@ module.exports = {
             args.push("1")
         }
 
+        
+        args.push("-use_wallclock_as_timestamps")
+        args.push("1")
+        
         args.push("-nostdin")
 
         let fps = video.fps
@@ -112,6 +116,8 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
+                            //args.push("-vsync")
+                            //args.push("1")
                             //args.push("-start_at_zero")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
@@ -269,6 +275,8 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
+                            //args.push("-vsync")
+                            //args.push("1")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -493,6 +501,8 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
+                            //args.push("-vsync")
+                            //args.push("1")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -632,6 +642,8 @@ module.exports = {
     
                         if (COPY_TS) {
                             args.push("-copyts")
+                            //args.push("-vsync")
+                            //args.push("1")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -772,6 +784,8 @@ module.exports = {
                             
                         if (COPY_TS) {
                             args.push("-copyts")
+                            //args.push("-vsync")
+                            //args.push("1")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -916,6 +930,9 @@ module.exports = {
         args.push("0")
         args.push("-muxpreload")
         args.push("0")
+
+        args.push("-avoid_negative_ts")
+        args.push("make_zero")
 
         args.push("-hls_time")
         args.push(hls_settings.duration)
