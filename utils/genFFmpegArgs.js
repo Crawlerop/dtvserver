@@ -118,7 +118,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-vsync")
-                            args.push("1")
+                            args.push("0")
                             //args.push("-start_at_zero")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
@@ -277,7 +277,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-vsync")
-                            args.push("1")
+                            args.push("0")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -503,7 +503,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-vsync")
-                            args.push("1")
+                            args.push("0")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -644,7 +644,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-vsync")
-                            args.push("1")
+                            args.push("0")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -786,7 +786,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-vsync")
-                            args.push("1")
+                            args.push("0")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
