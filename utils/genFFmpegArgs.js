@@ -44,9 +44,10 @@ module.exports = {
             args.push("1")
         }
 
-        
+        /*
         args.push("-use_wallclock_as_timestamps")
         args.push("1")
+        */
         
         args.push("-nostdin")
 
