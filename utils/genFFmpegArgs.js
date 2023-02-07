@@ -120,7 +120,7 @@ module.exports = {
                             }
 
                             args.push("-async")
-                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)).replace(/\(sample_rate\)/g, Math.round(audio.sample_rate)))
 
                             args.push("-vsync")
                             args.push(VSYNC_MODE)
@@ -276,7 +276,7 @@ module.exports = {
                             }
 
                             args.push("-async")
-                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)).replace(/\(sample_rate\)/g, Math.round(audio.sample_rate)))
 
                             args.push("-vsync")
                             args.push(VSYNC_MODE)
@@ -500,7 +500,7 @@ module.exports = {
                             }
 
                             args.push("-async")
-                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)).replace(/\(sample_rate\)/g, Math.round(audio.sample_rate)))
 
                             args.push("-vsync")
                             args.push(VSYNC_MODE)
@@ -639,7 +639,7 @@ module.exports = {
                             }
 
                             args.push("-async")
-                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)).replace(/\(sample_rate\)/g, Math.round(audio.sample_rate)))
 
                             args.push("-vsync")
                             args.push(VSYNC_MODE)
@@ -779,7 +779,7 @@ module.exports = {
                             }
 
                             args.push("-async")
-                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)))
+                            args.push(ASYNC_MODE.replace(/\(fps\)/g, Math.round(video.fps)).replace(/\(sample_rate\)/g, Math.round(audio.sample_rate)))
 
                             args.push("-vsync")
                             args.push(VSYNC_MODE)
