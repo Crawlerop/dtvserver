@@ -31,7 +31,7 @@ setInterval(() => {
         process.stdin.destroy()
         process.stderr.write(`Restarting this stream...${os.EOL}`)
         
-        process.kill(process.ppid, "SIGKILL") // Kill TSP by itself
+        process.kill(process.ppid, "SIGINT") // Kill TSP by itself
         process.kill(process.pid, "SIGKILL") // Kill this pid by itself
         //process.exit(1)
     }

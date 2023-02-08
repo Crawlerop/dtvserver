@@ -18,6 +18,19 @@ process.on("uncaughtException", (e) => {
 })
 */
 
+process.on('SIGINT', () => {
+  //console.log('Received SIGINT. Press Control-D to exit.');
+    process.send({retry: true, stream_id: passed_params.stream_id, type: passed_params.type, params: {
+                tuner: passed_params.tuner,
+                frequency: passed_params.frequency,
+                channels: passed_params.channels,
+                system: passed_params.system,
+                additional_params: passed_params.additional_params
+    }})
+
+    process.kill(process.pid, "SIGKILL")
+});
+
 var pipe = null;
 var passed_params = null;
 

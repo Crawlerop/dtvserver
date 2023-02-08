@@ -1,6 +1,7 @@
 const check_output = require("./check_output")
 const glob = require("glob")
 const config = require("../config.json")
+const COPYTS_ASYNC = false
 
 const _globAsync = (pattern) => {
     return new Promise((res, rej) => {
@@ -117,8 +118,10 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
-                            args.push("-vsync")
-                            args.push("0")
+                            if (COPYTS_ASYNC) {
+                                args.push("-vsync")
+                                args.push("0")
+                            }
                             //args.push("-start_at_zero")
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
@@ -276,8 +279,10 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
-                            args.push("-vsync")
-                            args.push("0")
+                            if (COPYTS_ASYNC) {
+                                args.push("-vsync")
+                                args.push("0")
+                            }
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -502,8 +507,10 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
-                            args.push("-vsync")
-                            args.push("0")
+                            if (COPYTS_ASYNC) {
+                                args.push("-vsync")
+                                args.push("0")
+                            }
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -643,8 +650,10 @@ module.exports = {
     
                         if (COPY_TS) {
                             args.push("-copyts")
-                            args.push("-vsync")
-                            args.push("0")
+                            if (COPYTS_ASYNC) {
+                                args.push("-vsync")
+                                args.push("0")
+                            }
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
@@ -785,8 +794,10 @@ module.exports = {
                             
                         if (COPY_TS) {
                             args.push("-copyts")
-                            args.push("-vsync")
-                            args.push("0")
+                            if (COPYTS_ASYNC) {
+                                args.push("-vsync")
+                                args.push("0")
+                            }
                         } else if (!config.disable_sync) {
                             if (VSYNC_MODE == 1) {
                                 args.push("-r")
