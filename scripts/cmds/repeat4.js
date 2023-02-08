@@ -30,7 +30,9 @@ setInterval(() => {
         process.stdin.read()
         process.stdin.destroy()
         process.stderr.write(`Restarting this stream...${os.EOL}`)
-        process.exit(1)
+        
+        process.kill(process.pid, "SIGKILL") // Kill this pid by itself
+        //process.exit(1)
     }
 }, 2000)
 
