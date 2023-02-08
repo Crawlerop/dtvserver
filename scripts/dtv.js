@@ -187,10 +187,8 @@ RunSignal.once("run", async (params) => {
 
             //tsp_args.push("--nowait")
 
-            /*
             tsp_args.push("--format")
-            tsp_args.push("m2ts")
-            */
+            tsp_args.push("duck")
 
             /*
             tsp_args.push("--buffered-packets")
