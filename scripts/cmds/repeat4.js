@@ -31,7 +31,8 @@ setInterval(() => {
         process.stdin.destroy()
         process.stderr.write(`Restarting this stream...${os.EOL}`)
         
-        process.kill(process.ppid, "SIGINT") // Kill TSP by itself
+        //process.kill(process.ppid, "SIGINT") // Kill TSP by itself
+        process.kill(process.ppid, "SIGKILL")
         process.kill(process.pid, "SIGKILL") // Kill this pid by itself
         //process.exit(1)
     }
@@ -93,5 +94,5 @@ const startProcess = () => {
     //app.stdout.pipe(process.stdout)
 }
 
-process.stderr.write(`PPID: ${process.ppid}${os.EOL}`)
+process.stderr.write(`${args[2]} PPID: ${process.ppid}${os.EOL}`)
 startProcess()
