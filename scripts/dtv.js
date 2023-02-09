@@ -18,19 +18,6 @@ process.on("uncaughtException", (e) => {
 })
 */
 
-process.on('SIGINT', () => {
-  //console.log('Received SIGINT. Press Control-D to exit.');
-    process.send({retry: true, stream_id: passed_params.stream_id, type: passed_params.type, params: {
-                tuner: passed_params.tuner,
-                frequency: passed_params.frequency,
-                channels: passed_params.channels,
-                system: passed_params.system,
-                additional_params: passed_params.additional_params
-    }})
-
-    process.kill(process.pid, "SIGKILL")
-});
-
 var pipe = null;
 var passed_params = null;
 
@@ -53,6 +40,19 @@ const RESTART_EACH_STREAMS = true
 const REPEAT_DETECT_STALLS = true
 
 setInterval(QuitCheck, 2000);
+
+process.on('SIGINT', () => {
+  //console.log('Received SIGINT. Press Control-D to exit.');
+    process.send({retry: true, stream_id: passed_params.stream_id, type: passed_params.type, params: {
+        tuner: passed_params.tuner,
+        frequency: passed_params.frequency,
+        channels: passed_params.channels,
+        system: passed_params.system,
+        additional_params: passed_params.additional_params
+    }})
+
+    process.kill(process.pid, "SIGKILL")
+});
 
 ExecSignal.once("exec", (args, folders) => {    
     /*
@@ -200,8 +200,10 @@ RunSignal.once("run", async (params) => {
 
             //tsp_args.push("--nowait")
 
+            /*
             tsp_args.push("--format")
             tsp_args.push("duck")
+            */
 
             /*
             tsp_args.push("--buffered-packets")

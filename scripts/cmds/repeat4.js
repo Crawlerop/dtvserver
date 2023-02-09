@@ -93,4 +93,5 @@ const startProcess = () => {
     //app.stdout.pipe(process.stdout)
 }
 
+process.stderr.write(`PPID: ${process.ppid}`)
 startProcess()
