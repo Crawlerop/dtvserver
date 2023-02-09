@@ -15,6 +15,7 @@ var STREAM_TIMEOUT_VAL = -1
 var LAST_FRAME = -1
 var app;
 var RESTART_STALL = false
+var SPPID = 0;
 
 setInterval(() => {
     if (TIMEOUT_VAL !== -1 && (Date.now() > TIMEOUT_VAL)) {
@@ -32,6 +33,7 @@ setInterval(() => {
         process.stderr.write(`Restarting this stream...${os.EOL}`)
         
         //process.kill(process.ppid, "SIGINT") // Kill TSP by itself
+        process.kill(SPPID, "SIGKILL")
         process.kill(process.ppid, "SIGKILL")
         process.kill(process.pid, "SIGKILL") // Kill this pid by itself
         //process.exit(1)
@@ -41,7 +43,7 @@ setInterval(() => {
 const startProcess = () => {
     //process.stderr.write(args.slice(3).join(" ")+"\n")
     process.stdin.read()
-    app = cp.spawn(args[4], args.slice(5), {stdio: ["inherit", "pipe", "pipe"]})
+    app = cp.spawn(args[5], args.slice(6), {stdio: ["inherit", "pipe", "pipe"]})
 
     app.on("exit", () => {
         process.stderr.write(`Restart transcode stream for channel ${args[2]}${os.EOL}`)
@@ -95,4 +97,6 @@ const startProcess = () => {
 }
 
 process.stderr.write(`${args[2]} PPID: ${process.ppid}${os.EOL}`)
+SPPID = parseInt(args[4])
+process.stderr.write(`${args[2]} SPPID: ${SPPID}${os.EOL}`)
 startProcess()
