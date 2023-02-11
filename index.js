@@ -966,6 +966,7 @@ if (!cluster.isPrimary) {
                 if (d.retry) {
                     console.log("stream has encountered an error, retrying.")                
                     setTimeout(() => addDTVJobs(d.stream_id, d.type, d.params, d.name), 2000)
+                    StreamDTVJobs[d.stream_id].kill("SIGKILL")
                 } else {            
                     delete StreamDTVJobs[d.stream_id]     
                     delete StreamDTVOutput[d.stream_id]                           
