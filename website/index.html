@@ -158,6 +158,7 @@
                 <div id="pull-setting" hidden>
                     <fast-text-field type="text" id="source" size="50">Source address</fast-text-field><br>
                     <fast-checkbox id="realtime">Realtime</fast-checkbox>
+                    <fast-checkbox id="passthrough">Stream passthrough</fast-checkbox>
                 </div>
             </div>
             <fast-button appearance="accent" id="cancel" style="float: left">Cancel</fast-button>                
@@ -676,6 +677,7 @@
                     $("#rtmp-setting > #passthrough").prop("checked", false)
                     $("#pull-setting > #source").val('')
                     $("#pull-setting > #realtime").prop("checked", false)
+                    $("#pull-setting > #passthrough").prop("checked", false)
                     DTV_SYSTEM = "DVB-T2"
                     DVBAppliedStreams = undefined
                 })
@@ -739,6 +741,7 @@
                         } else if (d.type == "pull") {
                             $("#pull-setting > #source").val(d.params.source)
                             $("#pull-setting > #realtime").prop("checked", d.params.realtime)
+                            $("#pull-setting > #passthrough").prop("checked", d.params.passthrough)
                         }
                     })
                 })
@@ -1063,7 +1066,8 @@
                                     name: $("#add-channels-options > #name").val(),
                                     type: "pull",
                                     source: $("#pull-setting > #source").val(),
-                                    realtime: $("#pull-setting > #realtime").prop("checked")
+                                    realtime: $("#pull-setting > #realtime").prop("checked"),
+                                    passthrough: $("#pull-setting > #passthrough").prop("checked")
                                 }),
                                 contentType: "application/JSON",
                                 type: "POST"

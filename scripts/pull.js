@@ -38,7 +38,8 @@ RunSignal.once("run", (params) => {
         if (probe_streams.length <= 0) {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                 source: params.src,
-                realtime: params.realtime
+                realtime: params.realtime,
+                passthrough: params.passthrough
             }})
             process.exit(1)
         }
@@ -81,9 +82,9 @@ RunSignal.once("run", (params) => {
         const current_rendition = is_hd ? (params.multiple_renditions ? params.renditions_hd : [params.renditions_hd[0]]) : (params.multiple_renditions ? params.renditions_sd : [params.renditions_sd[0]])
         //console.log(current_rendition)
         
-        const PROBE = "32"
+        const PROBE = params.passthrough ? "256k" : "32"
 
-        ffmp_args.genSingle(params.src, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, "", false, params.watermark).then((e) => {
+        (params.passthrough ? ffmp_args.genSinglePass(params.src, params.output_path, params.hls_settings) : ffmp_args.genSingle(params.src, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, "", false, params.watermark)).then((e) => {
             // "-loglevel", "quiet", 
             //const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1"] : []).concat(e)
             const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", PROBE, "-analyzeduration", "0", "-stats_period", "2", "-progress", "-"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", PROBE, "-analyzeduration", "0", "-stats_period", "2", "-progress", "-"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000"] : params.src.endsWith(".m3u8") ? ["-live_start_index", "-1"] : []).concat(e)
@@ -94,7 +95,8 @@ RunSignal.once("run", (params) => {
                 if (!is_quit) {
                     process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                         source: params.src,
-                        realtime: params.realtime                           
+                        realtime: params.realtime,
+                        passthrough: params.passthrough                      
                     }})
                     process.exit(1)
                 } else {
@@ -160,14 +162,16 @@ RunSignal.once("run", (params) => {
         }).catch((e) => {
             process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
                 source: params.src,
-                realtime: params.realtime
+                realtime: params.realtime,
+                passthrough: params.passthrough
             }})
             process.exit(1)
         })        
     }).catch((e) => {        
         process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
             source: params.src,
-            realtime: params.realtime
+            realtime: params.realtime,
+            passthrough: params.passthrough
         }})
         process.exit(1)
     });    

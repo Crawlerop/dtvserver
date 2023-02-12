@@ -951,6 +951,7 @@ if (!cluster.isPrimary) {
                     ffmpeg: config.ffmpeg, 
                     src: params.source,  
                     realtime: params.realtime,                   
+                    passthrough: params.passthrough,
                     stream_id: stream_id,
                     type: type,
                     output_path: out_path, 
@@ -965,8 +966,8 @@ if (!cluster.isPrimary) {
             cur_proc.on("message", (d) => {
                 if (d.retry) {
                     console.log("stream has encountered an error, retrying.")                
-                    setTimeout(() => addDTVJobs(d.stream_id, d.type, d.params, d.name), 2000)
                     StreamDTVJobs[d.stream_id].kill("SIGKILL")
+                    setTimeout(() => addDTVJobs(d.stream_id, d.type, d.params, d.name), 5000)
                 } else {            
                     delete StreamDTVJobs[d.stream_id]     
                     delete StreamDTVOutput[d.stream_id]                           
@@ -1435,7 +1436,8 @@ if (!cluster.isPrimary) {
                     type: req.body.type,
                     params: {
                         source: req.body.source,
-                        realtime: req.body.realtime ? req.body.realtime : false
+                        realtime: req.body.realtime ? req.body.realtime : false,
+                        passthrough: req.body.passthrough ? req.body.passthrough : false
                     }
                 })
                 return res.status(200).json({status: "ok", id: random_id})                                      
@@ -1557,13 +1559,15 @@ if (!cluster.isPrimary) {
                     type: req.body.type,
                     params: JSON.stringify({
                         source: req.body.source,
-                        realtime: req.body.realtime ? req.body.realtime : false
+                        realtime: req.body.realtime ? req.body.realtime : false,
+                        passthrough: req.body.passthrough ? req.body.passthrough : false
                     })
                 }).where("stream_id", '=', req.body.id)
 
                 if (stream[0].active) addDTVJobs(req.body.id, req.body.type, {
                     source: req.body.source,
-                    realtime: req.body.realtime ? req.body.realtime : false
+                    realtime: req.body.realtime ? req.body.realtime : false,
+                    passthrough: req.body.passthrough ? req.body.passthrough : false
                 })
                 return res.status(200).json({status: "ok"})                          
             default:
