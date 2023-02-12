@@ -1016,6 +1016,9 @@ module.exports = {
         args.push("-muxpreload")
         args.push("0")
 
+        args.push("-avoid_negative_ts")
+        args.push("make_zero")
+
         args.push("-hls_time")
         args.push(hls_settings.duration)
         args.push("-hls_list_size")
