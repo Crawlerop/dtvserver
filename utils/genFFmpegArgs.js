@@ -975,11 +975,14 @@ module.exports = {
 
     genSinglePass: async (source, output, hls_settings, escape_filters) => {
         var args = [];
+        const COPYTS_PASS = false
 
         args.push("-threads")
         args.push("1")
 
-        args.push("-copyts")
+        if (COPYTS_PASS) {
+            args.push("-copyts")
+        }
         //args.push("-start_at_zero")
 
         args.push("-nostdin")
@@ -1016,8 +1019,10 @@ module.exports = {
         args.push("-muxpreload")
         args.push("0")
 
-        args.push("-avoid_negative_ts")
-        args.push("make_zero")
+        if (COPYTS_PASS) {
+            args.push("-avoid_negative_ts")
+            args.push("make_zero")
+        }
 
         args.push("-hls_time")
         args.push(hls_settings.duration)
