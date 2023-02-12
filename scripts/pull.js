@@ -84,89 +84,175 @@ RunSignal.once("run", (params) => {
         
         const PROBE = params.passthrough ? "256k" : "32"
 
-        (params.passthrough ? ffmp_args.genSinglePass(params.src, params.output_path, params.hls_settings) : ffmp_args.genSingle(params.src, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, "", false, params.watermark)).then((e) => {
-            // "-loglevel", "quiet", 
-            //const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1"] : []).concat(e)
-            const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", PROBE, "-analyzeduration", "0", "-stats_period", "2", "-progress", "-"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", PROBE, "-analyzeduration", "0", "-stats_period", "2", "-progress", "-"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000"] : params.src.endsWith(".m3u8") ? ["-live_start_index", "-1"] : []).concat(e)
+        if (params.passthrough) {
+            ffmp_args.genSinglePass(params.src, params.output_path, params.hls_settings).then((e) => {
+                // "-loglevel", "quiet", 
+                //const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1"] : []).concat(e)
+                const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", PROBE, "-analyzeduration", "0", "-stats_period", "2", "-progress", "-"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", PROBE, "-analyzeduration", "0", "-stats_period", "2", "-progress", "-"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000"] : params.src.endsWith(".m3u8") ? ["-live_start_index", "-1"] : []).concat(e)
 
-            const ffmp = cp.spawn(params.ffmpeg, args)                
+                const ffmp = cp.spawn(params.ffmpeg, args)                
 
-            ffmp.on("close", () => {
-                if (!is_quit) {
-                    process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
-                        source: params.src,
-                        realtime: params.realtime,
-                        passthrough: params.passthrough                      
-                    }})
-                    process.exit(1)
-                } else {
-                    try {
-                        fs.rmSync(params.output_path, {force: true, recursive: true})
-                    } catch (e) {
-                        console.trace(e)
+                ffmp.on("close", () => {
+                    if (!is_quit) {
+                        process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
+                            source: params.src,
+                            realtime: params.realtime,
+                            passthrough: params.passthrough                      
+                        }})
+                        process.exit(1)
+                    } else {
+                        try {
+                            fs.rmSync(params.output_path, {force: true, recursive: true})
+                        } catch (e) {
+                            console.trace(e)
+                        }
+                        console.log("pull shut down gracefully")
+                        process.exit(0)
                     }
-                    console.log("pull shut down gracefully")
-                    process.exit(0)
-                }
-            })
+                })
 
-            ffmp.stdin.on("error", (e) => {
+                ffmp.stdin.on("error", (e) => {
 
-            })
+                })
 
-            /*
-            ffmp.stdout.on("data", (d) => {
-                const chunks = d.toString().split(os.EOL)
-                for (let i = 0; i<chunks.length; i++) {
-                    if (chunks[i].length >= 0) {
-                        const key = chunks[i].split("=")[0]
-                        const val = chunks[i].split("=")[1]
-        
-                        //STREAM_TIMEOUT_VAL = Date.now() + STREAM_TIMEOUT_DUR
-                        if (key === "frame") {
-                            /*
-                            if (parseInt(val) !== LAST_FRAME) {
-                                LAST_FRAME = parseInt(val)
-                                TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
-                                //process.stderr.write(`Track stalled status\n`)
+                /*
+                ffmp.stdout.on("data", (d) => {
+                    const chunks = d.toString().split(os.EOL)
+                    for (let i = 0; i<chunks.length; i++) {
+                        if (chunks[i].length >= 0) {
+                            const key = chunks[i].split("=")[0]
+                            const val = chunks[i].split("=")[1]
+            
+                            //STREAM_TIMEOUT_VAL = Date.now() + STREAM_TIMEOUT_DUR
+                            if (key === "frame") {
+                                /*
+                                if (parseInt(val) !== LAST_FRAME) {
+                                    LAST_FRAME = parseInt(val)
+                                    TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
+                                    //process.stderr.write(`Track stalled status\n`)
+                                }
+                                /
+                            } else if (key === "fps") {
+                                fps = video.fps <= 30 ? video.fps : video.fps / 2
+                                
+                                if (parseFloat(val) < parseFloat(fps)) {
+                                    console.log(`${params.src} FPS: ${parseFloat(val)} < ${parseFloat(fps)}`)
+                                }
+                                
+                                //
                             }
-                            /
-                        } else if (key === "fps") {
-                            fps = video.fps <= 30 ? video.fps : video.fps / 2
-                            
-                            if (parseFloat(val) < parseFloat(fps)) {
-                                console.log(`${params.src} FPS: ${parseFloat(val)} < ${parseFloat(fps)}`)
-                            }
-                            
-                            //
                         }
                     }
-                }
-            })
-            */
-
-            QuitSignal.once("quit", () => {
-                process.nextTick(() => {
-                    try {
-                        ffmp.kill("SIGTERM")
-                    } catch {}
                 })
-            })                
+                */
 
-            ffmp.stderr.on("data", (d) => {
-                const lines = d.toString().split(os.EOL)
-                for (let ln = 0; ln<lines.length; ln++) {
-                    if (lines[ln].length > 0) process.stderr.write(`${params.src}: ${lines[ln]}${os.EOL}`)
-                }
-            })
-        }).catch((e) => {
-            process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
-                source: params.src,
-                realtime: params.realtime,
-                passthrough: params.passthrough
-            }})
-            process.exit(1)
-        })        
+                QuitSignal.once("quit", () => {
+                    process.nextTick(() => {
+                        try {
+                            ffmp.kill("SIGTERM")
+                        } catch {}
+                    })
+                })                
+
+                ffmp.stderr.on("data", (d) => {
+                    const lines = d.toString().split(os.EOL)
+                    for (let ln = 0; ln<lines.length; ln++) {
+                        if (lines[ln].length > 0) process.stderr.write(`${params.src}: ${lines[ln]}${os.EOL}`)
+                    }
+                })
+            }).catch((e) => {
+                process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
+                    source: params.src,
+                    realtime: params.realtime,
+                    passthrough: params.passthrough
+                }})
+                process.exit(1)
+            })        
+        } else {
+            ffmp_args.genSingle(params.src, current_rendition, program_streams, params.output_path, params.hls_settings, -1, -1, "", false, params.watermark).then((e) => {
+                // "-loglevel", "quiet", 
+                //const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", "32", "-analyzeduration", "0"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000", "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_on_network_error", "1"] : []).concat(e)
+                const args = (params.realtime ? ["-re", "-loglevel", "repeat+level+error", "-y", "-probesize", PROBE, "-analyzeduration", "0", "-stats_period", "2", "-progress", "-"] : ["-loglevel", "repeat+level+error", "-y", "-probesize", PROBE, "-analyzeduration", "0", "-stats_period", "2", "-progress", "-"]).concat(params.src.startsWith("rtsp") ? ["-rtsp_transport", "tcp"] : params.src.startsWith("http") ? ["-rw_timeout", "30000000"] : params.src.endsWith(".m3u8") ? ["-live_start_index", "-1"] : []).concat(e)
+
+                const ffmp = cp.spawn(params.ffmpeg, args)                
+
+                ffmp.on("close", () => {
+                    if (!is_quit) {
+                        process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
+                            source: params.src,
+                            realtime: params.realtime,
+                            passthrough: params.passthrough                      
+                        }})
+                        process.exit(1)
+                    } else {
+                        try {
+                            fs.rmSync(params.output_path, {force: true, recursive: true})
+                        } catch (e) {
+                            console.trace(e)
+                        }
+                        console.log("pull shut down gracefully")
+                        process.exit(0)
+                    }
+                })
+
+                ffmp.stdin.on("error", (e) => {
+
+                })
+
+                /*
+                ffmp.stdout.on("data", (d) => {
+                    const chunks = d.toString().split(os.EOL)
+                    for (let i = 0; i<chunks.length; i++) {
+                        if (chunks[i].length >= 0) {
+                            const key = chunks[i].split("=")[0]
+                            const val = chunks[i].split("=")[1]
+            
+                            //STREAM_TIMEOUT_VAL = Date.now() + STREAM_TIMEOUT_DUR
+                            if (key === "frame") {
+                                /*
+                                if (parseInt(val) !== LAST_FRAME) {
+                                    LAST_FRAME = parseInt(val)
+                                    TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
+                                    //process.stderr.write(`Track stalled status\n`)
+                                }
+                                /
+                            } else if (key === "fps") {
+                                fps = video.fps <= 30 ? video.fps : video.fps / 2
+                                
+                                if (parseFloat(val) < parseFloat(fps)) {
+                                    console.log(`${params.src} FPS: ${parseFloat(val)} < ${parseFloat(fps)}`)
+                                }
+                                
+                                //
+                            }
+                        }
+                    }
+                })
+                */
+
+                QuitSignal.once("quit", () => {
+                    process.nextTick(() => {
+                        try {
+                            ffmp.kill("SIGTERM")
+                        } catch {}
+                    })
+                })                
+
+                ffmp.stderr.on("data", (d) => {
+                    const lines = d.toString().split(os.EOL)
+                    for (let ln = 0; ln<lines.length; ln++) {
+                        if (lines[ln].length > 0) process.stderr.write(`${params.src}: ${lines[ln]}${os.EOL}`)
+                    }
+                })
+            }).catch((e) => {
+                process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
+                    source: params.src,
+                    realtime: params.realtime,
+                    passthrough: params.passthrough
+                }})
+                process.exit(1)
+            })        
+        }
     }).catch((e) => {        
         process.send({retry: true, stream_id: params.stream_id, type: params.type, params: {
             source: params.src,
