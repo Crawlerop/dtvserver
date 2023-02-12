@@ -975,7 +975,7 @@ module.exports = {
 
     genSinglePass: async (source, output, hls_settings, escape_filters) => {
         var args = [];
-        const COPYTS_PASS = false
+        const COPYTS_PASS = true
 
         args.push("-threads")
         args.push("1")
