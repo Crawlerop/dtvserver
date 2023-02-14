@@ -15,7 +15,8 @@ var STREAM_TIMEOUT_VAL = -1
 
 var LAST_FRAME = -1
 var app;
-var RESTART_STALL = config.stall_do_not_restart_mux.indexOf(`${args[5]}-${args[6]}`) === -1
+var DO_RESTART_STALL = config.stall_do_not_restart_mux.indexOf(`${args[5]}-${args[6]}`) === -1
+var RESTART_STALL = false
 var SPPID = 0;
 
 setInterval(() => {
@@ -26,7 +27,7 @@ setInterval(() => {
 
     if (LAST_FRAME === -1) process.stderr.write(`${args[2]} : Pending${os.EOL}`)
 
-    if (RESTART_STALL && STREAM_TIMEOUT_VAL !== -1 && (Date.now() > STREAM_TIMEOUT_VAL)) {
+    if (DO_RESTART_STALL && RESTART_STALL && STREAM_TIMEOUT_VAL !== -1 && (Date.now() > STREAM_TIMEOUT_VAL)) {
         process.stderr.write(`Stream is completely stalled for ${args[2]}${os.EOL}`)
         app.kill("SIGKILL")
         process.stdin.read()
@@ -101,5 +102,5 @@ process.stderr.write(`${args[2]} PPID: ${process.ppid}${os.EOL}`)
 SPPID = parseInt(args[4])
 process.stderr.write(`${args[2]} SPPID: ${SPPID}${os.EOL}`)
 process.stderr.write(`${args[2]} STID: ${args[5]}-${args[6]}${os.EOL}`)
-process.stderr.write(`${args[2]} RESTART STALL: ${RESTART_STALL}${os.EOL}`)
+process.stderr.write(`${args[2]} RESTART STALL: ${DO_RESTART_STALL}${os.EOL}`)
 startProcess()
