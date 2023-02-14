@@ -68,6 +68,7 @@ const config_defaults_nvenc = {
     "vsync": "0",
     "disable_sync": false,
     "dtv_use_fork": true,
+    "stall_do_not_restart_mux": [],
     "renditions_hd": [
         {
             "hwaccel": "nvenc",
@@ -208,6 +209,7 @@ const config_defaults = {
     "vsync": "0",
     "disable_sync": false,
     "dtv_use_fork": true,
+    "stall_do_not_restart_mux": [],
     "renditions_hd": [
         {
             "hwaccel": "nvenc",

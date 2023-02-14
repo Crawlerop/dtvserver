@@ -1,6 +1,7 @@
 const cp = require("child_process")
 const args = require("process").argv
 const os = require("os")
+const config = require("../../config.json")
 
 process.stdin.on("close", () => {
     process.exit(0)
@@ -14,7 +15,7 @@ var STREAM_TIMEOUT_VAL = -1
 
 var LAST_FRAME = -1
 var app;
-var RESTART_STALL = false
+var RESTART_STALL = config.stall_do_not_restart_mux.indexOf(`${args[5]}-${args[6]}`) !== -1
 var SPPID = 0;
 
 setInterval(() => {
@@ -43,7 +44,7 @@ setInterval(() => {
 const startProcess = () => {
     //process.stderr.write(args.slice(3).join(" ")+"\n")
     process.stdin.read()
-    app = cp.spawn(args[5], args.slice(6), {stdio: ["inherit", "pipe", "pipe"]})
+    app = cp.spawn(args[7], args.slice(8), {stdio: ["inherit", "pipe", "pipe"]})
 
     app.on("exit", () => {
         process.stderr.write(`Restart transcode stream for channel ${args[2]}${os.EOL}`)
