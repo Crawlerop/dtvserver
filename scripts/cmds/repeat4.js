@@ -15,7 +15,7 @@ var STREAM_TIMEOUT_VAL = -1
 
 var LAST_FRAME = -1
 var app;
-var RESTART_STALL = config.stall_do_not_restart_mux.indexOf(`${args[5]}-${args[6]}`) !== -1
+var RESTART_STALL = config.stall_do_not_restart_mux.indexOf(`${args[5]}-${args[6]}`) === -1
 var SPPID = 0;
 
 setInterval(() => {
