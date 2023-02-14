@@ -100,4 +100,6 @@ const startProcess = () => {
 process.stderr.write(`${args[2]} PPID: ${process.ppid}${os.EOL}`)
 SPPID = parseInt(args[4])
 process.stderr.write(`${args[2]} SPPID: ${SPPID}${os.EOL}`)
+process.stderr.write(`${args[2]} STID: ${args[5]}-${args[6]}${os.EOL}`)
+process.stderr.write(`${args[2]} RESTART STALL: ${RESTART_STALL}${os.EOL}`)
 startProcess()
