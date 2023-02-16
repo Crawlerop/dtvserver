@@ -213,7 +213,11 @@ RunSignal.once("run", async (params) => {
             const dtv_key = `${params.frequency}-${channel.id}`
 
             if (Object.keys(params.dtv_udp_out).indexOf(dtv_key) !== -1) {
-                tsp_args.push(`tsp -P zap ${channel.id} -O ip ${params.dtv_udp_out[dtv_key]}`)
+                if (params.use_tcp) {
+                    tsp_args.push(`tsp -P zap ${channel.id} | ncat --send-only ${params.dtv_udp_out[dtv_key].split(":")[0]} ${params.dtv_udp_out[dtv_key].split(":")[1]}`)
+                } else {
+                    tsp_args.push(`tsp -P zap ${channel.id} -O ip ${params.dtv_udp_out[dtv_key]}`)
+                }
             } else {
                 if (RESTART_EACH_STREAMS) {
                     //tsp_args.push(`node ${path.join(__dirname, "/cmds")}/repeat.js "${channel.name}" ${params.ffmpeg} -progress - -nostats ${tsp_fork_prm.join(" ")}`)
