@@ -216,7 +216,7 @@ RunSignal.once("run", async (params) => {
                 if (params.use_tcp) {
                     tsp_args.push(`tsp -P zap ${channel.id} | nc ${params.dtv_udp_out[dtv_key].split(":")[0]} ${params.dtv_udp_out[dtv_key].split(":")[1]}`)
                 } else {
-                    tsp_args.push(`tsp -P zap ${channel.id} -O ip ${params.dtv_udp_out[dtv_key]}`)
+                    tsp_args.push(`tsp --realtime --buffer-size-mb 1 --max-flushed-packets 10 --max-input-packets 10 -P zap ${channel.id} -O ip ${params.dtv_udp_out[dtv_key]}`)
                 }
             } else {
                 if (RESTART_EACH_STREAMS) {
