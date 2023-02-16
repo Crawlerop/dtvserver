@@ -214,7 +214,7 @@ RunSignal.once("run", async (params) => {
 
             if (Object.keys(params.dtv_udp_out).indexOf(dtv_key) !== -1) {
                 if (params.use_tcp) {
-                    tsp_args.push(`tsp -P zap ${channel.id} | ncat --send-only ${params.dtv_udp_out[dtv_key].split(":")[0]} ${params.dtv_udp_out[dtv_key].split(":")[1]}`)
+                    tsp_args.push(`tsp -P zap ${channel.id} | nc ${params.dtv_udp_out[dtv_key].split(":")[0]} ${params.dtv_udp_out[dtv_key].split(":")[1]}`)
                 } else {
                     tsp_args.push(`tsp -P zap ${channel.id} -O ip ${params.dtv_udp_out[dtv_key]}`)
                 }
