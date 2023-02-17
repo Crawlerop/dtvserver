@@ -330,7 +330,8 @@ const config_defaults = {
 
 if (!fs_sync.existsSync(path.join(__dirname, "/config.json"))) fs_sync.writeFileSync(path.join(__dirname, "/config.json"), JSON.stringify(config_defaults, null, 4))
 const config = require("./config.json");
-const cluster = require("cluster")
+const cluster = require("cluster");
+const e = require("express");
 
 if (!fs_sync.existsSync(config.dvr_path)) fs_sync.mkdirSync(config.dvr_path, {recursive: true})
 if (!fs_sync.existsSync(config.streams_path)) fs_sync.mkdirSync(config.streams_path, {recursive: true})
@@ -1750,25 +1751,29 @@ if (!cluster.isPrimary) {
                 }
                 */
     
-                const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
+                try {
+                    const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
 
-                if (!n_res.error) {
-                    const zip_code = n_res.address.postcode
-                    switch (geoip_data.country) {
-                        case "ID":
-                            for (d in dtv_postcode) {
-                                if (zip_code.slice(0,3) == d) {                                
-                                    geo_params.region_id = dtv_postcode[d]
-                                    geo_params.dtv_area = getRegion(geoip_data.ll[0], geoip_data.ll[1])
-                                    break
+                    if (!n_res.error) {
+                        const zip_code = n_res.address.postcode
+                        switch (geoip_data.country) {
+                            case "ID":
+                                for (d in dtv_postcode) {
+                                    if (zip_code.slice(0,3) == d) {                                
+                                        geo_params.region_id = dtv_postcode[d]
+                                        geo_params.dtv_area = getRegion(geoip_data.ll[0], geoip_data.ll[1])
+                                        break
+                                    }
                                 }
-                            }
-                            break
-                        default:
-                            geo_params.region_id = `${n_res.address["ISO3166-2-lvl4"]}/${n_res.address.city.toUpperCase()}`
-                            geo_params.dtv_area = n_res.address.city
-                            break
+                                break
+                            default:
+                                geo_params.region_id = `${n_res.address["ISO3166-2-lvl4"]}/${n_res.address.city.toUpperCase()}`
+                                geo_params.dtv_area = n_res.address.city
+                                break
+                        }
                     }
+                } catch (e) {
+                    console.trace(e)
                 }
 
                 for (let i = 0; i < workersCount; i++) {
@@ -1802,25 +1807,29 @@ if (!cluster.isPrimary) {
                     }
                     */
    
-                    const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
+                    try {
+                        const n_res = await nominatim.reverse({lat: geoip_data.ll[0], lon: geoip_data.ll[1], zoom: 17})
 
-                    if (!n_res.error) {
-                        const zip_code = n_res.address.postcode
-                        switch (geoip_data.country) {
-                            case "ID":
-                                for (d in dtv_postcode) {
-                                    if (zip_code.slice(0,3) == d) {                                
-                                        geo_params.region_id = dtv_postcode[d]
-                                        geo_params.dtv_area = getRegion(geoip_data.ll[0], geoip_data.ll[1])
-                                        break
+                        if (!n_res.error) {
+                            const zip_code = n_res.address.postcode
+                            switch (geoip_data.country) {
+                                case "ID":
+                                    for (d in dtv_postcode) {
+                                        if (zip_code.slice(0,3) == d) {                                
+                                            geo_params.region_id = dtv_postcode[d]
+                                            geo_params.dtv_area = getRegion(geoip_data.ll[0], geoip_data.ll[1])
+                                            break
+                                        }
                                     }
-                                }
-                                break
-                            default:
-                                geo_params.region_id = `${n_res.address["ISO3166-2-lvl4"]}/${n_res.address.city.toUpperCase()}`
-                                geo_params.dtv_area = n_res.address.city
-                                break
+                                    break
+                                default:
+                                    geo_params.region_id = `${n_res.address["ISO3166-2-lvl4"]}/${n_res.address.city.toUpperCase()}`
+                                    geo_params.dtv_area = n_res.address.city
+                                    break
+                            }
                         }
+                    } catch (e) {
+                        console.trace(e)
                     }
 
                     for (let i = 0; i < workersCount; i++) {
