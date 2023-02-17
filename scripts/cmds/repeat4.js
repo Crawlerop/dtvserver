@@ -19,6 +19,8 @@ var DO_RESTART_STALL = config.stall_do_not_restart_mux.indexOf(`${args[5]}-${arg
 var RESTART_STALL = false
 var SPPID = 0;
 
+var IS_COMPLETE_STALL = false;
+
 setInterval(() => {
     if (TIMEOUT_VAL !== -1 && (Date.now() > TIMEOUT_VAL)) {
         process.stderr.write(`Transcode stream was stalled for ${args[2]}${os.EOL}`)
@@ -29,15 +31,20 @@ setInterval(() => {
 
     if (DO_RESTART_STALL && RESTART_STALL && STREAM_TIMEOUT_VAL !== -1 && (Date.now() > STREAM_TIMEOUT_VAL)) {
         process.stderr.write(`Stream is completely stalled for ${args[2]}${os.EOL}`)
-        app.kill("SIGKILL")
-        process.stdin.read()
-        process.stdin.destroy()
-        process.stderr.write(`Restarting this stream...${os.EOL}`)
-        
-        //process.kill(process.ppid, "SIGINT") // Kill TSP by itself
-        process.kill(SPPID, "SIGKILL")
-        process.kill(process.ppid, "SIGKILL")
-        process.kill(process.pid, "SIGKILL") // Kill this pid by itself
+        IS_COMPLETE_STALL = true
+        setTimeout(() => {
+            app.kill("SIGKILL")
+            setTimeout(() => {
+                process.stdin.read()
+                process.stdin.destroy()
+                process.stderr.write(`Restarting this stream...${os.EOL}`)
+                
+                //process.kill(process.ppid, "SIGINT") // Kill TSP by itself
+                process.kill(SPPID, "SIGKILL")
+                process.kill(process.ppid, "SIGKILL")
+                process.kill(process.pid, "SIGKILL") // Kill this pid by itself
+            }, 500)
+        }, 2000) 
         //process.exit(1)
     }
 }, 2000)
@@ -48,14 +55,16 @@ const startProcess = () => {
     app = cp.spawn(args[7], args.slice(8), {stdio: ["inherit", "pipe", "pipe"]})
 
     app.on("exit", () => {
-        process.stderr.write(`Restart transcode stream for channel ${args[2]}${os.EOL}`)
-        LAST_FRAME = -1
-        TIMEOUT_VAL = -1
+        if (!IS_COMPLETE_STALL) {
+            process.stderr.write(`Restart transcode stream for channel ${args[2]}${os.EOL}`)
+            LAST_FRAME = -1
+            TIMEOUT_VAL = -1
 
-        RESTART_STALL = true
+            RESTART_STALL = true
 
-        process.stdin.read()
-        setTimeout(startProcess, 500)
+            process.stdin.read()
+            setTimeout(startProcess, 500)
+        }
         //startProcess()
     })
 
