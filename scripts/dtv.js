@@ -213,10 +213,14 @@ RunSignal.once("run", async (params) => {
             const dtv_key = `${params.frequency}-${channel.id}`
 
             if (Object.keys(params.dtv_udp_out).indexOf(dtv_key) !== -1) {
-                if (params.use_tcp) {
+                if (params.use_protocol === "tcp") {
                     tsp_args.push(`tsp -P zap ${channel.id} | nc ${params.dtv_udp_out[dtv_key].split(":")[0]} ${params.dtv_udp_out[dtv_key].split(":")[1]}`)
-                } else {
+                } else if (params.use_protocol === "rtsp") {
+                    tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -copyts -i - -metadata "title=${channel.name}" -vcodec copy -acodec copy -copyinkf -loglevel error -f rtsp -rtsp_transport tcp rtsp://${params.dtv_udp_out[dtv_key]}/`)
+                } else if (params.use_protocol === "udp") {
                     tsp_args.push(`tsp --realtime --buffer-size-mb 4 --max-flushed-packets 7 --max-input-packets 7 -P zap ${channel.id} -O ip ${params.dtv_udp_out[dtv_key]}`)
+                } else {
+                    throw new Error(`Invalid output protocol: ${params.use_protocol}`)
                 }
             } else {
                 if (RESTART_EACH_STREAMS) {

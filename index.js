@@ -70,7 +70,7 @@ const config_defaults_nvenc = {
     "dtv_use_fork": true,
     "stall_do_not_restart_mux": [],
     "dtv_udp_out": {},
-    "use_tcp": false,
+    "use_protocol": "udp",
     "renditions_hd": [
         {
             "hwaccel": "nvenc",
@@ -213,7 +213,7 @@ const config_defaults = {
     "dtv_use_fork": true,
     "stall_do_not_restart_mux": [],
     "dtv_udp_out": {},
-    "use_tcp": false,
+    "use_protocol": "udp",
     "renditions_hd": [
         {
             "hwaccel": "nvenc",
@@ -944,7 +944,7 @@ if (!cluster.isPrimary) {
                     hls_settings: config.hls_settings,
                     dtv_use_fork: config.dtv_use_fork,
                     dtv_udp_out: config.dtv_udp_out,
-                    use_tcp: config.use_tcp,
+                    use_protocol: config.use_protocol,
                     additional_params: params.additional_params,
                     buffer_size: config.dtv_buffer_size,
                     system: params.system ? params.system : "DVB-T2",
