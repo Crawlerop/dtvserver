@@ -215,9 +215,9 @@ RunSignal.once("run", async (params) => {
             if (Object.keys(params.dtv_udp_out).indexOf(dtv_key) !== -1) {
                 if (params.use_protocol === "tcp") {
                     //tsp_args.push(`tsp -P zap ${channel.id} | nc ${params.dtv_udp_out[dtv_key].split(":")[0]} ${params.dtv_udp_out[dtv_key].split(":")[1]}`)
-                    tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -copyts -i - -vcodec copy -acodec copy -copyinkf -loglevel error -f mpegts tcp://${params.dtv_udp_out[dtv_key]}?send_buffer_size=1316`)
+                    tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -copyts -i - -map 0:v:0 ${channel.audio ? `-map 0:a:#${channel.audio.id} ` : ""}-vcodec copy -acodec copy -copyinkf -loglevel error -f mpegts tcp://${params.dtv_udp_out[dtv_key]}?send_buffer_size=1316`)
                 } else if (params.use_protocol === "rtsp") {
-                    tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -copyts -i - -metadata "title=${channel.name}" -vcodec copy -acodec copy -copyinkf -loglevel error -f rtsp -rtsp_transport tcp rtsp://${params.dtv_udp_out[dtv_key]}/`)
+                    tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -copyts -i - -metadata "title=${channel.name}" -map 0:v:0 ${channel.audio ? `-map 0:a:#${channel.audio.id} ` : ""}-vcodec copy -acodec copy -copyinkf -loglevel error -f rtsp -rtsp_transport tcp rtsp://${params.dtv_udp_out[dtv_key]}/`)
                 } else if (params.use_protocol === "udp") {``
                     tsp_args.push(`tsp --realtime --max-flushed-packets 7 --max-output-packets 7 --max-input-packets 7 -P zap ${channel.id} -O ip ${params.dtv_udp_out[dtv_key]}`)
                     //tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -copyts -i - -vcodec copy -acodec copy -copyinkf -loglevel error -f mpegts udp://${params.dtv_udp_out[dtv_key]}?pkt_size=1316`)
