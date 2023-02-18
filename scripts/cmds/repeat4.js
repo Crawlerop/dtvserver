@@ -47,6 +47,15 @@ setInterval(() => {
         }, 2000) 
         //process.exit(1)
     }
+
+    try {
+        process.kill(SPPID, 0)
+    } catch (e) {
+        IS_COMPLETE_STALL = true
+        setTimeout(() => {
+            app.kill("SIGKILL")
+        }, 2000) 
+    }
 }, 2000)
 
 const startProcess = () => {
