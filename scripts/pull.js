@@ -82,7 +82,7 @@ RunSignal.once("run", (params) => {
         const current_rendition = is_hd ? (params.multiple_renditions ? params.renditions_hd : [params.renditions_hd[0]]) : (params.multiple_renditions ? params.renditions_sd : [params.renditions_sd[0]])
         //console.log(current_rendition)
         
-        const PROBE = params.passthrough ? "256k" : "32"
+        const PROBE = params.passthrough ? "2M" : "32"
 
         if (params.passthrough) {
             ffmp_args.genSinglePass(params.src, params.output_path, params.hls_settings).then((e) => {
