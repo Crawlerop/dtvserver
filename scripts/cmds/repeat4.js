@@ -14,6 +14,8 @@ var TIMEOUT_VAL = -1
 var STREAM_TIMEOUT_VAL = -1
 
 var LAST_FRAME = -1
+var LAST_OUT_TIME = -1
+
 var app;
 var DO_RESTART_STALL = config.stall_do_not_restart_mux.indexOf(`${args[5]}-${args[6]}`) === -1
 var RESTART_STALL = false
@@ -99,8 +101,13 @@ const startProcess = () => {
                 if (key === "frame") {
                     if (parseInt(val) !== LAST_FRAME) {
                         LAST_FRAME = parseInt(val)
-                        TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
+                        //TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
                         //process.stderr.write(`Track stalled status\n`)
+                    }
+                } else if (key === "out_time_us") {
+                    if (parseInt(val) !== LAST_OUT_TIME) {
+                        LAST_OUT_TIME = parseInt(val)
+                        TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
                     }
                 } else if (key === "fps") {
                     
