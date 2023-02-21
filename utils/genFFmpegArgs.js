@@ -247,21 +247,23 @@ module.exports = {
                             args.push("-hwaccel_output_format")
                             args.push("nv12")
 
-                            if (video.codec === "h264") { // 1080i
-                                args.push(`-c:v`)
-                                args.push("h264_cuvid")
-                            } else if (video.codec === "mpeg4") {
-                                args.push(`-c:v`)
-                                args.push("mpeg4_cuvid")
-                            } else if (video.codec === "mpeg2video") { // 576i
-                                args.push(`-c:v`)
-                                args.push("mpeg2_cuvid")
-                            } else if (video.codec === "mpeg1video") {
-                                args.push(`-c:v`)
-                                args.push("mpeg1_cuvid")
-                            } else if (video.codec === "hevc") { // 2160p
-                                args.push(`-c:v`)
-                                args.push("hevc_cuvid")
+                            if (video.fps == fps) {
+                                if (video.codec === "h264") { // 1080i
+                                    args.push(`-c:v`)
+                                    args.push("h264_cuvid")
+                                } else if (video.codec === "mpeg4") {
+                                    args.push(`-c:v`)
+                                    args.push("mpeg4_cuvid")
+                                } else if (video.codec === "mpeg2video") { // 576i
+                                    args.push(`-c:v`)
+                                    args.push("mpeg2_cuvid")
+                                } else if (video.codec === "mpeg1video") {
+                                    args.push(`-c:v`)
+                                    args.push("mpeg1_cuvid")
+                                } else if (video.codec === "hevc") { // 2160p
+                                    args.push(`-c:v`)
+                                    args.push("hevc_cuvid")
+                                }
                             }
 
                             if (NVDEC_USE_SCALE) {
@@ -617,21 +619,23 @@ module.exports = {
                             args.push("-hwaccel_output_format")
                             args.push("cuda")
         
-                            if (video.codec === "h264") { // 1080i
-                                args.push(`-c:v`)
-                                args.push("h264_cuvid")
-                            } else if (video.codec === "mpeg4") {
-                                args.push(`-c:v`)
-                                args.push("mpeg4_cuvid")
-                            } else if (video.codec === "mpeg2video") { // 576i
-                                args.push(`-c:v`)
-                                args.push("mpeg2_cuvid")
-                            } else if (video.codec === "mpeg1video") {
-                                args.push(`-c:v`)
-                                args.push("mpeg1_cuvid")
-                            } else if (video.codec === "hevc") { // 2160p
-                                args.push(`-c:v`)
-                                args.push("hevc_cuvid")
+                            if (video.fps == fps) {
+                                if (video.codec === "h264") { // 1080i
+                                    args.push(`-c:v`)
+                                    args.push("h264_cuvid")
+                                } else if (video.codec === "mpeg4") {
+                                    args.push(`-c:v`)
+                                    args.push("mpeg4_cuvid")
+                                } else if (video.codec === "mpeg2video") { // 576i
+                                    args.push(`-c:v`)
+                                    args.push("mpeg2_cuvid")
+                                } else if (video.codec === "mpeg1video") {
+                                    args.push(`-c:v`)
+                                    args.push("mpeg1_cuvid")
+                                } else if (video.codec === "hevc") { // 2160p
+                                    args.push(`-c:v`)
+                                    args.push("hevc_cuvid")
+                                }
                             }
 
                             if (NVDEC_USE_SCALE) {
