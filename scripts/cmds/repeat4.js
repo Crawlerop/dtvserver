@@ -2,6 +2,7 @@ const cp = require("child_process")
 const args = require("process").argv
 const os = require("os")
 const config = require("../../config.json")
+const fs = require("fs")
 
 process.stdin.on("close", () => {
     process.exit(0)
@@ -37,15 +38,22 @@ setInterval(() => {
         setTimeout(() => {
             app.kill("SIGKILL")
             setTimeout(() => {
-                process.stdin.read()
-                process.stdin.destroy()
-                process.stderr.write(`Restarting this stream...${os.EOL}`)
-                
-                //process.kill(process.ppid, "SIGINT") // Kill TSP by itself
-                process.kill(SPPID, "SIGKILL")
-                process.kill(process.ppid, "SIGKILL")
-                process.kill(process.pid, "SIGKILL") // Kill this pid by itself
-            }, 500)
+                setTimeout(() => {
+                    process.stdin.read()
+                    process.stdin.destroy()
+                    process.stderr.write(`Restarting this stream...${os.EOL}`)
+                    
+                    //process.kill(process.ppid, "SIGINT") // Kill TSP by itself
+                    process.kill(SPPID, "SIGKILL")
+                    process.kill(process.ppid, "SIGKILL")
+                    process.kill(process.pid, "SIGKILL") // Kill this pid by itself
+                }, 500)
+                try {
+                    fs.rmSync(args[7], {force: true, recursive: true})
+                } catch (e) {
+
+                }
+            }, 1000)
         }, 2000) 
         //process.exit(1)
     }
@@ -63,7 +71,7 @@ setInterval(() => {
 const startProcess = () => {
     //process.stderr.write(args.slice(3).join(" ")+"\n")
     process.stdin.read()
-    app = cp.spawn(args[7], args.slice(8), {stdio: ["inherit", "pipe", "pipe"]})
+    app = cp.spawn(args[8], args.slice(9), {stdio: ["inherit", "pipe", "pipe"]})
 
     app.on("exit", () => {
         if (!IS_COMPLETE_STALL) {
