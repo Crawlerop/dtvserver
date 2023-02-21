@@ -263,20 +263,20 @@ module.exports = {
                                 } else if (video.codec === "hevc") { // 2160p
                                     args.push(`-c:v`)
                                     args.push("hevc_cuvid")
+                                }                            
+
+                                if (NVDEC_USE_SCALE) {
+                                    args.push("-resize")
+                                    args.push(`${rendition.width}x${rendition.height}`)
                                 }
-                            }
 
-                            if (NVDEC_USE_SCALE) {
-                                args.push("-resize")
-                                args.push(`${rendition.width}x${rendition.height}`)
+                                args.push("-surfaces")
+                                args.push(HW_SURFACES)
+                                args.push("-deint")
+                                args.push("1")
+                                args.push("-drop_second_field")
+                                args.push("1")
                             }
-
-                            args.push("-surfaces")
-                            args.push(HW_SURFACES)
-                            args.push("-deint")
-                            args.push("1")
-                            args.push("-drop_second_field")
-                            args.push("1")
                         }
 
                         if (COPY_TS) {
@@ -635,21 +635,20 @@ module.exports = {
                                 } else if (video.codec === "hevc") { // 2160p
                                     args.push(`-c:v`)
                                     args.push("hevc_cuvid")
+                                }                        
+
+                                if (NVDEC_USE_SCALE) {
+                                    args.push("-resize")
+                                    args.push(`${rendition.width}x${rendition.height}`)
                                 }
-                            }
 
-                            if (NVDEC_USE_SCALE) {
-                                args.push("-resize")
-                                args.push(`${rendition.width}x${rendition.height}`)
-                            }
-
-                            args.push("-surfaces")
-                            args.push(HW_SURFACES)
-                            args.push("-deint")
-                            args.push("1")
-                            args.push("-drop_second_field")
-                            args.push("1")
-                            
+                                args.push("-surfaces")
+                                args.push(HW_SURFACES)
+                                args.push("-deint")
+                                args.push("1")
+                                args.push("-drop_second_field")
+                                args.push("1")
+                            }                            
                         }
     
                         if (COPY_TS) {
