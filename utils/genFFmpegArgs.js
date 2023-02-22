@@ -794,10 +794,7 @@ module.exports = {
                     if (config.ll_mode) {
                         args.push(`-tune:v:${i}`)
                         args.push("ull")
-
-                        args.push(`-zerolatency:v:${i}`)
-                        args.push("1")
-
+                        
                         args.push(`-delay:v:${i}`)
                         args.push("0")
                     }
