@@ -804,7 +804,6 @@ module.exports = {
 
                     args.push(`-b_ref_mode:v:${i}`)
                     args.push("middle")
- 	
 
                     args.push(`-surfaces:v:${i}`)
                     args.push(HW_SURFACES)
@@ -983,10 +982,10 @@ module.exports = {
 
         args.push("-master_pl_name")
         args.push("index.m3u8")
-        /*
+        
         args.push("-master_pl_publish_rate")
-        args.push(10)
-        */
+        args.push(5)
+        
         args.push("-hls_flags")
         args.push("+delete_segments+omit_endlist+append_list+discont_start+program_date_time+second_level_segment_index+temp_file")
         args.push("-strftime")
@@ -1059,10 +1058,10 @@ module.exports = {
 
         args.push("-master_pl_name")
         args.push("index.m3u8")
-        /*
+        
         args.push("-master_pl_publish_rate")
-        args.push(10)
-        */
+        args.push(5)
+        
         args.push("-hls_flags")
         args.push("+delete_segments+omit_endlist+append_list+discont_start+program_date_time+second_level_segment_index+temp_file")
         args.push("-strftime")
