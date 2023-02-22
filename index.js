@@ -180,6 +180,8 @@ const config_defaults_nvenc = {
         "ping": 30,
         "ping_timeout": 60
     },
+    "ll_mode": false,
+    "lookahead": 0,
     "port": 6520,
     "play_port": 6521,
     "dtv_buffer_size": 2
@@ -323,6 +325,8 @@ const config_defaults = {
         "ping": 30,
         "ping_timeout": 60
     },
+    "ll_mode": false,
+    "lookahead": 0,
     "port": 6520,
     "play_port": 6521,
     "dtv_buffer_size": 2

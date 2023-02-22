@@ -276,6 +276,8 @@ module.exports = {
                                 args.push("1")
                                 args.push("-drop_second_field")
                                 args.push("1")
+                            } else {
+                                NVDEC_USE_SCALE = false
                             }
                         }
 
@@ -648,7 +650,9 @@ module.exports = {
                                 args.push("1")
                                 args.push("-drop_second_field")
                                 args.push("1")
-                            }                            
+                            } else {
+                                NVDEC_USE_SCALE = false
+                            }
                         }
     
                         if (COPY_TS) {
@@ -786,11 +790,30 @@ module.exports = {
     
                     args.push(`-rc:v:${i}`)
                     args.push("cbr")
-    
-                    /*
-                    args.push(`-tune:v:${i}`)
-                    args.push("ll")
-                    */
+
+                    if (config.ll_mode) {
+                        args.push(`-tune:v:${i}`)
+                        args.push("ull")
+
+                        args.push(`-zerolatency:v:${i}`)
+                        args.push("1")
+
+                        args.push(`-delay:v:${i}`)
+                        args.push("0")
+                    }
+
+                    args.push(`-b_ref_mode:v:${i}`)
+                    args.push("middle")
+ 	
+
+                    args.push(`-surfaces:v:${i}`)
+                    args.push(HW_SURFACES)
+
+                    if (config.lookahead > 0) {
+                        args.push(`-rc-lookahead:v:${i}`)
+                        args.push(`${config.lookahead}`)
+                    }
+                    
                 } else if (rendition.hwaccel == "none") {
                     if (!is_start) {
                         is_start = true
