@@ -978,9 +978,13 @@ if (!cluster.isPrimary) {
             }
             cur_proc.on("message", (d) => {
                 if (d.retry) {
-                    console.log("stream has encountered an error, retrying.")                
-                    StreamDTVJobs[d.stream_id].kill("SIGKILL")
-                    setTimeout(() => addDTVJobs(d.stream_id, d.type, d.params, d.name), 5000)
+                    console.log("stream has encountered an error, retrying.")  
+                    try {              
+                        StreamDTVJobs[d.stream_id].kill("SIGKILL")
+                    } catch (e) {}
+                    setTimeout(() => {
+                        fs.rmdir(`${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${d.stream_id}/`).catch((e)=>{}).finally(() => addDTVJobs(d.stream_id, d.type, d.params, d.name))                        
+                    }, 5000)
                 } else {            
                     delete StreamDTVJobs[d.stream_id]     
                     delete StreamDTVOutput[d.stream_id]                           
