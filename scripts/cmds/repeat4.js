@@ -80,6 +80,7 @@ const startProcess = () => {
             setTimeout(() => {
                 try {
                     fs.rmSync(args[7], {force: true, recursive: true})
+                    fs.mkdirSync(args[7])
                 } catch (e) {
 
                 }
