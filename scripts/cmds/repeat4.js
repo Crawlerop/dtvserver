@@ -38,7 +38,7 @@ setInterval(() => {
         setTimeout(() => {
             app.kill("SIGKILL")
             setTimeout(() => {
-                setTimeout(() => {
+                //setTimeout(() => {
                     process.stdin.read()
                     process.stdin.destroy()
                     process.stderr.write(`Restarting this stream...${os.EOL}`)
@@ -47,12 +47,7 @@ setInterval(() => {
                     process.kill(SPPID, "SIGKILL")
                     process.kill(process.ppid, "SIGKILL")
                     process.kill(process.pid, "SIGKILL") // Kill this pid by itself
-                }, 500)
-                try {
-                    fs.rmSync(args[7], {force: true, recursive: true})
-                } catch (e) {
-
-                }
+                //}, 500)                
             }, 1000)
         }, 2000) 
         //process.exit(1)
@@ -82,7 +77,14 @@ const startProcess = () => {
             RESTART_STALL = true
 
             process.stdin.read()
-            setTimeout(startProcess, 500)
+            setTimeout(() => {
+                try {
+                    fs.rmSync(args[7], {force: true, recursive: true})
+                } catch (e) {
+
+                }
+                setTimeout(startProcess, 500)
+            })            
         }
         //startProcess()
     })
@@ -136,4 +138,5 @@ SPPID = parseInt(args[4])
 process.stderr.write(`${args[2]} SPPID: ${SPPID}${os.EOL}`)
 process.stderr.write(`${args[2]} STID: ${args[5]}-${args[6]}${os.EOL}`)
 process.stderr.write(`${args[2]} RESTART STALL: ${DO_RESTART_STALL}${os.EOL}`)
+process.stderr.write(`${args[2]} PATH: ${args[7]}${os.EOL}`)
 startProcess()

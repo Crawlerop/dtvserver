@@ -983,7 +983,7 @@ if (!cluster.isPrimary) {
                         StreamDTVJobs[d.stream_id].kill("SIGKILL")
                     } catch (e) {}
                     setTimeout(() => {
-                        fs.rmdir(`${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${d.stream_id}/`).catch((e)=>{}).finally(() => addDTVJobs(d.stream_id, d.type, d.params, d.name))                        
+                        fs.rm(`${config.streams_path.replace(/\(pathname\)/g, __dirname)}/${d.stream_id}/`, {force: true, recursive: true}).catch(console.log).finally(() => addDTVJobs(d.stream_id, d.type, d.params, d.name))                        
                     }, 5000)
                 } else {            
                     delete StreamDTVJobs[d.stream_id]     
