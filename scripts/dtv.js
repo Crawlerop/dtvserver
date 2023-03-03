@@ -166,6 +166,7 @@ RunSignal.once("run", async (params) => {
         const out_folder = `${params.output_path}/${channel.id}/`
         await fs_p.mkdir(out_folder, {recursive: true})
         
+        const dtv_key = `${params.frequency}-${channel.id}`
         folders.push(out_folder)
 
         var streams = [{type: "video", ...channel.video}]
@@ -192,7 +193,7 @@ RunSignal.once("run", async (params) => {
 
         const do_nvdec_scale = params.do_scale_exclude.indexOf(`${params.frequency}-${channel.id}`) === -1
 
-        const tsp_fork_prm = ["-y", "-loglevel", "repeat+level+error", "-probesize", "32", "-analyzeduration", "0"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, -1, channel.audio ? channel.audio.id : -1, audio_filters, passed_params.dtv_use_fork ? true : false, used_watermark, params.do_scale ? do_nvdec_scale : false))
+        const tsp_fork_prm = ["-y", "-loglevel", "repeat+level+error", "-probesize", "32", "-analyzeduration", "0"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, -1, (channel.audio && params.dtv_ignore_map.indexOf(dtv_key) === -1) ? channel.audio.id : -1, audio_filters, passed_params.dtv_use_fork ? true : false, used_watermark, params.do_scale ? do_nvdec_scale : false))
         
         if (passed_params.dtv_use_fork) {
             tsp_args.push("-P")
@@ -208,16 +209,15 @@ RunSignal.once("run", async (params) => {
             /*
             tsp_args.push("--buffered-packets")
             tsp_args.push("10000")           
-            */
-            
-            const dtv_key = `${params.frequency}-${channel.id}`
+            */                    
 
             if (Object.keys(params.dtv_udp_out).indexOf(dtv_key) !== -1) {
                 if (params.use_protocol === "tcp") {
                     //tsp_args.push(`tsp -P zap ${channel.id} | ncat --send-only ${params.dtv_udp_out[dtv_key].split(":")[0]} ${params.dtv_udp_out[dtv_key].split(":")[1]}`)
                     //tsp_args.push(`tsp -P zap ${channel.id} | nc ${params.dtv_udp_out[dtv_key].split(":")[0]} ${params.dtv_udp_out[dtv_key].split(":")[1]}`)
                     //tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -copyts -i - -map 0:v:0 ${channel.audio ? `-map 0:a:#${channel.audio.id} ` : ""}-vcodec copy -acodec copy -copyinkf -loglevel error -f mpegts tcp://${params.dtv_udp_out[dtv_key]}?send_buffer_size=1316`)
-                    tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -loglevel error -f data -raw_packet_size 188 -i - -map 0:0 -f data tcp://${params.dtv_udp_out[dtv_key]}?send_buffer_size=1316`)
+                    //tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -loglevel error -f data -raw_packet_size 188 -i - -map 0:0 -f data tcp://${params.dtv_udp_out[dtv_key]}?send_buffer_size=1316`)
+                    tsp_args.push(`tsp -P zap ${channel.id} | node ${path.join(__dirname, "/cmds")}/repeatp.js "tcp://${params.dtv_udp_out[dtv_key]}?send_buffer_size=188"`)
                 } else if (params.use_protocol === "rtsp") {
                     tsp_args.push(`tsp -P zap ${channel.id} | ${params.ffmpeg} -copyts -i - -metadata "title=${channel.name}" -map 0:v:0 ${channel.audio ? `-map 0:a:#${channel.audio.id} ` : ""}-vcodec copy -acodec copy -copyinkf -loglevel error -f rtsp -rtsp_transport tcp rtsp://${params.dtv_udp_out[dtv_key]}/`)
                 } else if (params.use_protocol === "udp") {``
