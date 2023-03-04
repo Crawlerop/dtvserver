@@ -167,7 +167,8 @@ RunSignal.once("run", async (params) => {
         if (params.dtv_force_hd.indexOf(dtv_key) !== -1) {
             channel.is_hd = true
             channel.video.width = 1920
-            channel.video.height = 1080            
+            channel.video.height = 1080        
+            channel.fps *= 2    
         }
 
         const current_rendition = channel.is_hd ? (params.multiple_renditions ? params.renditions_hd : [params.renditions_hd[0]]) : (params.multiple_renditions ? params.renditions_sd : [params.renditions_sd[0]])
