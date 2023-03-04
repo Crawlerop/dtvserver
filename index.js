@@ -72,6 +72,7 @@ const config_defaults_nvenc = {
     "dtv_udp_out": {},
     "use_protocol": "udp",
     "dtv_ignore_map": [],
+    "dtv_force_hd": [],
     "renditions_hd": [
         {
             "hwaccel": "nvenc",
@@ -218,6 +219,7 @@ const config_defaults = {
     "dtv_udp_out": {},
     "use_protocol": "udp",
     "dtv_ignore_map": [],
+    "dtv_force_hd": [],
     "renditions_hd": [
         {
             "hwaccel": "nvenc",
@@ -955,6 +957,7 @@ if (!cluster.isPrimary) {
                     additional_params: params.additional_params,
                     buffer_size: config.dtv_buffer_size,
                     dtv_ignore_map: config.dtv_ignore_map,
+                    dtv_force_hd: config.dtv_force_hd,
                     system: params.system ? params.system : "DVB-T2",
                     watermark: config.watermark,
                     watermark_ignore_streams: config.watermark_ignore_streams,

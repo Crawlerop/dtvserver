@@ -162,11 +162,18 @@ RunSignal.once("run", async (params) => {
 
     for (let i = 0; i<params.channels.length; i++) {
         const channel = params.channels[i]
+        const dtv_key = `${params.frequency}-${channel.id}`
+
+        if (params.dtv_force_hd.indexOf(dtv_key) !== -1) {
+            channel.is_hd = true
+            channel.video.width = 1920
+            channel.video.height = 1080            
+        }
+
         const current_rendition = channel.is_hd ? (params.multiple_renditions ? params.renditions_hd : [params.renditions_hd[0]]) : (params.multiple_renditions ? params.renditions_sd : [params.renditions_sd[0]])
         const out_folder = `${params.output_path}/${channel.id}/`
         await fs_p.mkdir(out_folder, {recursive: true})
-        
-        const dtv_key = `${params.frequency}-${channel.id}`
+                
         folders.push(out_folder)
 
         var streams = [{type: "video", ...channel.video}]
