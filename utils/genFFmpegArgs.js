@@ -15,7 +15,7 @@ const _globAsync = (pattern) => {
 const NV_HW_DECODER = config.nvenc_use_nvdec
 const VSYNC_MODE = config.vsync
 const ASYNC_MODE = config.async
-const HW_FRAMES = "0"
+const HW_FRAMES = config.use_cuvid ? "0" : "8"
 const HW_SURFACES = "8"
 const COPY_TS = config.use_copyts
 
@@ -247,7 +247,7 @@ module.exports = {
                             args.push("-hwaccel_output_format")
                             args.push("nv12")
 
-                            if (video.fps == fps) {
+                            if (video.fps == fps && config.use_cuvid) {
                                 if (video.codec === "h264") { // 1080i
                                     args.push(`-c:v`)
                                     args.push("h264_cuvid")
@@ -621,7 +621,7 @@ module.exports = {
                             args.push("-hwaccel_output_format")
                             args.push("cuda")
         
-                            if (video.fps == fps) {
+                            if (video.fps == fps && config.use_cuvid) {
                                 if (video.codec === "h264") { // 1080i
                                     args.push(`-c:v`)
                                     args.push("h264_cuvid")
@@ -708,7 +708,7 @@ module.exports = {
                                 if (rend_id < renditions.length-1) filter_complex += ";"
                             }
                         } else {
-                            filter_complex += `setsar=1,fps=${fps}${COPY_TS ? "" : ":start_time=0:round=near"},split=${renditions.length}`
+                            filter_complex += `setsar=1${!(video.fps == fps && config.use_cuvid) ? ",yadif_cuda" : ""},fps=${fps}${COPY_TS ? "" : ":start_time=0:round=near"},split=${renditions.length}`
                             for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
                                 filter_complex += `[a${rend_id}]`
                             }
@@ -718,7 +718,7 @@ module.exports = {
                             for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
                                 filter_complex += `[a${rend_id}]`
                                 //if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
-                                if (!NVDEC_USE_SCALE || rend_id > 0) {
+                                if (!NVDEC_USE_SCALE || !(video.fps == fps && config.use_cuvid) || rend_id > 0) {
                                     filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo}[p${rend_id}]`
                                 } else {
                                     //filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
@@ -766,8 +766,8 @@ module.exports = {
                     args.push("-1")
 
                     /* Disable autoscale */
-                    args.push(`-autoscale:v:${i}`)
-                    args.push("0")
+                    // args.push(`-autoscale:v:${i}`)
+                    // args.push("0")
                     
                     args.push(`-c:v:${i}`)
                     args.push("h264_nvenc")
