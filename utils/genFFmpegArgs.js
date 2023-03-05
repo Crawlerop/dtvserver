@@ -703,7 +703,7 @@ module.exports = {
                                 if (renditions[rend_id].height !== video.height || video.interlace !== 'progressive') {
                                     filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo},setsar=1,fps=${fps}${COPY_TS ? "" : ":start_time=0:round=near"}[p${rend_id}]`
                                 } else {
-                                    filter_complex += `setsar=1,fps=${fps}${COPY_TS ? "" : ":start_time=0:round=near"}[p${rend_id}]`
+                                    filter_complex += `scale_cuda=${video.width}:${video.height}:interp_algo=${renditions[rend_id].interp_algo},setsar=1,fps=${fps}${COPY_TS ? "" : ":start_time=0:round=near"}[p${rend_id}]`
                                 }
                                 if (rend_id < renditions.length-1) filter_complex += ";"
                             }
@@ -722,7 +722,7 @@ module.exports = {
                                     filter_complex += `scale_cuda=${Math.min(Math.floor(video.height*WIDESCREEN), renditions[rend_id].width)}:${Math.min(video.height, renditions[rend_id].height)}:interp_algo=${renditions[rend_id].interp_algo}[p${rend_id}]`
                                 } else {
                                     //filter_complex += `setsar=1,fps=${fps}[p${rend_id}]`
-                                    filter_complex += `null[p${rend_id}]`
+                                    filter_complex += `null[p${rend_id}]` // incase of resolution change, there's no way to autoscale.
                                 }
                                 if (rend_id < renditions.length-1) filter_complex += ";"
                             }
@@ -736,7 +736,7 @@ module.exports = {
                             args.push(filter_complex)
                         }
                     }
-    
+                    
                     args.push("-map")
                     /*
                     if (video_id != -1) {
@@ -764,6 +764,11 @@ module.exports = {
     
                     args.push(`-map_metadata`)
                     args.push("-1")
+
+                    /* Disable autoscale */
+                    args.push(`-autoscale:v:${i}`)
+                    args.push("0")
+                    
                     args.push(`-c:v:${i}`)
                     args.push("h264_nvenc")
 
