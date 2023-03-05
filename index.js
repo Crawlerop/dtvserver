@@ -1341,12 +1341,12 @@ if (!cluster.isPrimary) {
         }
     });
 
-    proc.nextTick(async () => {
+    setTimeout(async () => {
         const active_streams = await streams.query().where("active", '=', true)
         for (let v = 0; v<active_streams.length; v++) {        
             addDTVJobs(active_streams[v].stream_id, active_streams[v].type, JSON.parse(active_streams[v].params), active_streams[v].name)
         }
-    })
+    }, 5000)
 
     app.post("/api/active", async (req, res) => {    
         if (!req.body.id && !req.body.active) return res.status(400).json({error: "A channel id and active flag must be specified."})
