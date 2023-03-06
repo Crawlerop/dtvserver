@@ -119,8 +119,8 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
 
-                            args.push("-r")
-                            args.push(video.fps)
+                            //args.push("-r")
+                            //args.push(video.fps)
                             if (COPYTS_ASYNC) {                                
                                 args.push("-vsync")
                                 args.push("0")
@@ -287,8 +287,8 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
 
-                            args.push("-r")
-                            args.push(video.fps)
+                            //args.push("-r")
+                            //args.push(video.fps)
                             if (COPYTS_ASYNC) {
                                 args.push("-vsync")
                                 args.push("0")
@@ -518,8 +518,8 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
 
-                            args.push("-r")
-                            args.push(video.fps)
+                            //args.push("-r")
+                            //args.push(video.fps)
                             if (COPYTS_ASYNC) {
                                 args.push("-vsync")
                                 args.push("0")
@@ -667,8 +667,8 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
 
-                            args.push("-r")
-                            args.push(video.fps)
+                            //args.push("-r")
+                            //args.push(video.fps)
                             if (COPYTS_ASYNC) {
                                 args.push("-vsync")
                                 args.push("0")
@@ -834,8 +834,8 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
 
-                            args.push("-r")
-                            args.push(video.fps)
+                            //args.push("-r")
+                            //args.push(video.fps)
                             if (COPYTS_ASYNC) {
                                 args.push("-vsync")
                                 args.push("0")
