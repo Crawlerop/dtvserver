@@ -1,7 +1,7 @@
 const check_output = require("./check_output")
 const glob = require("glob")
 const config = require("../config.json")
-const COPYTS_ASYNC = false
+const COPYTS_ASYNC = true
 
 const _globAsync = (pattern) => {
     return new Promise((res, rej) => {
