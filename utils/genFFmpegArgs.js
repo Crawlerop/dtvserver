@@ -826,7 +826,7 @@ module.exports = {
                                 args.push("0")
                             }
                         } else if (!config.disable_sync) {
-                            if (VSYNC_MODE == 1) {
+                            if (VSYNC_MODE == 1 || VSYNC_MODE == 0) {
                                 args.push("-r")
                                 args.push(video.fps)
                             }
