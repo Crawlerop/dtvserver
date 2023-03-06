@@ -119,6 +119,9 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             if (COPYTS_ASYNC) {
+                                args.push("-r")
+                                args.push(video.fps)
+
                                 args.push("-vsync")
                                 args.push("0")
                             }
@@ -284,6 +287,9 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             if (COPYTS_ASYNC) {
+                                args.push("-r")
+                                args.push(video.fps)
+
                                 args.push("-vsync")
                                 args.push("0")
                             }
@@ -512,6 +518,9 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             if (COPYTS_ASYNC) {
+                                args.push("-r")
+                                args.push(video.fps)
+
                                 args.push("-vsync")
                                 args.push("0")
                             }
@@ -658,6 +667,9 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             if (COPYTS_ASYNC) {
+                                args.push("-r")
+                                args.push(video.fps)
+
                                 args.push("-vsync")
                                 args.push("0")
                             }
@@ -822,11 +834,14 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             if (COPYTS_ASYNC) {
+                                args.push("-r")
+                                args.push(video.fps)
+
                                 args.push("-vsync")
                                 args.push("0")
                             }
                         } else if (!config.disable_sync) {
-                            if (VSYNC_MODE == 1 || VSYNC_MODE == 0) {
+                            if (VSYNC_MODE == 1) {
                                 args.push("-r")
                                 args.push(video.fps)
                             }
