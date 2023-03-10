@@ -819,6 +819,9 @@ module.exports = {
                     args.push(`-b_ref_mode:v:${i}`)
                     args.push("each")
 
+                    args.push("-a53cc")
+                    args.push("false")
+
                     args.push(`-surfaces:v:${i}`)
                     args.push(HW_SURFACES)
 
