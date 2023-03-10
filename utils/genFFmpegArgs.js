@@ -817,7 +817,7 @@ module.exports = {
                     }
 
                     args.push(`-b_ref_mode:v:${i}`)
-                    args.push("each")
+                    args.push("middle")
 
                     args.push("-a53cc")
                     args.push("false")
