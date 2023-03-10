@@ -817,7 +817,7 @@ module.exports = {
                     }
 
                     args.push(`-b_ref_mode:v:${i}`)
-                    args.push("middle")
+                    args.push("each")
 
                     args.push(`-surfaces:v:${i}`)
                     args.push(HW_SURFACES)
