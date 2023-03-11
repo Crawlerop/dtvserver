@@ -118,6 +118,8 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
+                            args.push("-frame_drop_threshold")
+                            args.push("1")
 
                             //args.push("-r")
                             //args.push(video.fps)
@@ -286,6 +288,8 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
+                            args.push("-frame_drop_threshold")
+                            args.push("1")
 
                             //args.push("-r")
                             //args.push(video.fps)
@@ -517,6 +521,8 @@ module.exports = {
 
                         if (COPY_TS) {
                             args.push("-copyts")
+                            args.push("-frame_drop_threshold")
+                            args.push("1")
 
                             //args.push("-r")
                             //args.push(video.fps)
@@ -666,6 +672,8 @@ module.exports = {
     
                         if (COPY_TS) {
                             args.push("-copyts")
+                            args.push("-frame_drop_threshold")
+                            args.push("1")
 
                             //args.push("-r")
                             //args.push(video.fps)
@@ -836,6 +844,8 @@ module.exports = {
                             
                         if (COPY_TS) {
                             args.push("-copyts")
+                            args.push("-frame_drop_threshold")
+                            args.push("1")
 
                             //args.push("-r")
                             //args.push(video.fps)
@@ -1027,6 +1037,8 @@ module.exports = {
 
         if (COPYTS_PASS) {
             args.push("-copyts")
+            args.push("-frame_drop_threshold")
+            args.push("1")
         }
         //args.push("-start_at_zero")
 
