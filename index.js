@@ -344,7 +344,12 @@ const cluster = require("cluster");
 const e = require("express");
 
 if (!fs_sync.existsSync(config.dvr_path)) fs_sync.mkdirSync(config.dvr_path, {recursive: true})
-if (!fs_sync.existsSync(config.streams_path)) fs_sync.mkdirSync(config.streams_path, {recursive: true})
+
+if (fs_sync.existsSync(config.streams_path)) {
+    fs_sync.rmSync(config.streams_path, {force: true, recursive: true})
+}
+
+fs_sync.mkdirSync(config.streams_path, {recursive: true})
 
 if (!cluster.isPrimary) {
     const fastify = require("fastify")
