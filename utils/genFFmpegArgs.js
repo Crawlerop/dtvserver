@@ -1,7 +1,7 @@
 const check_output = require("./check_output")
 const glob = require("glob")
 const config = require("../config.json")
-const COPYTS_ASYNC = false
+const COPYTS_ASYNC = true
 
 const _globAsync = (pattern) => {
     return new Promise((res, rej) => {
@@ -119,7 +119,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-frame_drop_threshold")
-                            args.push("1")
+                            args.push("0")
 
                             //args.push("-r")
                             //args.push(video.fps)
@@ -289,7 +289,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-frame_drop_threshold")
-                            args.push("1")
+                            args.push("0")
 
                             //args.push("-r")
                             //args.push(video.fps)
@@ -522,7 +522,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-frame_drop_threshold")
-                            args.push("1")
+                            args.push("0")
 
                             //args.push("-r")
                             //args.push(video.fps)
@@ -673,7 +673,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-frame_drop_threshold")
-                            args.push("1")
+                            args.push("0")
 
                             //args.push("-r")
                             //args.push(video.fps)
@@ -845,7 +845,7 @@ module.exports = {
                         if (COPY_TS) {
                             args.push("-copyts")
                             args.push("-frame_drop_threshold")
-                            args.push("1")
+                            args.push("0")
 
                             //args.push("-r")
                             //args.push(video.fps)
