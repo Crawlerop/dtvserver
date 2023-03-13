@@ -161,7 +161,7 @@ RunSignal.once("run", async (params) => {
     const LS_SOCKET = path.join(__dirname, `/../sock/${params.stream_id}`)
 
     for (let i = 0; i<params.channels.length; i++) {
-        const channel = {...params.channels[i]}
+        const channel = JSON.stringify(JSON.parse(params.channels[i]))
         const dtv_key = `${params.frequency}-${channel.id}`
 
         if (params.dtv_force_hd.indexOf(dtv_key) !== -1) {
