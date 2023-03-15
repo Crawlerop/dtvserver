@@ -20,7 +20,7 @@ const HW_SURFACES = "8"
 const COPY_TS = config.use_copyts
 
 module.exports = {
-    genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="", NVDEC_USE_SCALE=config.nvdec_use_scale) => {
+    genSingle: async (source, renditions, stream, output, hls_settings, video_id=-1, audio_id=-1, audio_filters="", escape_filters=false, watermark="", NVDEC_USE_SCALE=config.nvdec_use_scale, want_nvdec=true) => {
         const WIDESCREEN = (640/360)
         var args = [];
 
@@ -246,7 +246,7 @@ module.exports = {
                     if (!is_start) {
                         is_start = true
 
-                        if (NV_HW_DECODER) {
+                        if (NV_HW_DECODER && want_nvdec) {
                             args.push("-hwaccel")
                             args.push("cuda")
                             args.push("-hwaccel_output_format")
@@ -630,7 +630,7 @@ module.exports = {
                     if (!is_start) {
                         is_start = true
 
-                        if (NV_HW_DECODER) {
+                        if (NV_HW_DECODER && want_nvdec) {
                             args.push("-hwaccel")
                             args.push("cuda")
                             args.push("-hwaccel_output_format")
@@ -710,7 +710,7 @@ module.exports = {
                             filter_complex += "[0:v:0]"
                         }
                         
-                        if (!NV_HW_DECODER) {
+                        if (!(NV_HW_DECODER && want_nvdec)) {
                             filter_complex += `hwupload_cuda,yadif_cuda,split=${renditions.length}`
                             for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
                                 filter_complex += `[a${rend_id}]`

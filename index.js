@@ -64,6 +64,7 @@ const config_defaults_nvenc = {
     "nvdec_use_scale": false,
     "use_cuvid": false,
     "nvdec_scale_exclude": [],
+    "nvdec_hw_decode": [],
     "use_copyts": false,
     "async": "1",
     "vsync": "0",
@@ -212,6 +213,7 @@ const config_defaults = {
     "nvdec_use_scale": false,
     "use_cuvid": false,
     "nvdec_scale_exclude": [],
+    "nvdec_hw_decode": [],
     "use_copyts": false,
     "async": "1",
     "vsync": "0",
@@ -970,7 +972,8 @@ if (!cluster.isPrimary) {
                     watermark_ignore_streams: config.watermark_ignore_streams,
                     pathname: __dirname,
                     do_scale: config.nvdec_use_scale,
-                    do_scale_exclude: config.nvdec_scale_exclude
+                    do_scale_exclude: config.nvdec_scale_exclude,
+                    do_sw_decode: config.nvdec_hw_decode
                 })
             } else if (type == "pull") {
                 cur_proc.send({

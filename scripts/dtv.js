@@ -200,8 +200,9 @@ RunSignal.once("run", async (params) => {
         }
 
         const do_nvdec_scale = params.do_scale_exclude.indexOf(`${params.frequency}-${channel.id}`) === -1
+        const do_hw_decoding = params.do_sw_decode.indexOf(`${params.frequency}-${channel.id}`) === -1
 
-        const tsp_fork_prm = ["-y", "-loglevel", "repeat+level+error", "-probesize", "32", "-analyzeduration", "0"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, -1, (channel.audio && params.dtv_ignore_map.indexOf(dtv_key) === -1) ? channel.audio.id : -1, audio_filters, passed_params.dtv_use_fork ? true : false, used_watermark, params.do_scale ? do_nvdec_scale : false))
+        const tsp_fork_prm = ["-y", "-loglevel", "repeat+level+error", "-probesize", "32", "-analyzeduration", "0"].concat(await ffmp_args.genSingle(params.dtv_use_fork ? "-" : `unix:${LS_SOCKET}`, current_rendition, streams, out_folder, params.hls_settings, -1, (channel.audio && params.dtv_ignore_map.indexOf(dtv_key) === -1) ? channel.audio.id : -1, audio_filters, passed_params.dtv_use_fork ? true : false, used_watermark, params.do_scale ? do_nvdec_scale : false, do_hw_decoding))
         
         if (passed_params.dtv_use_fork) {
             tsp_args.push("-P")
