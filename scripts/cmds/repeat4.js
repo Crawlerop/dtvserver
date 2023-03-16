@@ -116,8 +116,8 @@ const startProcess = () => {
                         //process.stderr.write(`Track stalled status\n`)
                     }
                 } else if (key === "out_time_us") {
-                    if (parseInt(val) !== LAST_OUT_TIME) {
-                        LAST_OUT_TIME = parseInt(val)
+                    if (Math.floor(parseInt(val) / 1e6) !== LAST_OUT_TIME) {
+                        LAST_OUT_TIME = Math.floor(parseInt(val) / 1e6)
                         TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
                     }
                 } else if (key === "fps") {
