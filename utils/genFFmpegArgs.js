@@ -1037,8 +1037,8 @@ module.exports = {
 
         if (COPYTS_PASS) {
             args.push("-copyts")
-            args.push("-frame_drop_threshold")
-            args.push("0")
+            //args.push("-frame_drop_threshold")
+            //args.push("0")
         }
         //args.push("-start_at_zero")
 
