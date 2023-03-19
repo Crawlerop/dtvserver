@@ -73,6 +73,7 @@ const config_defaults_nvenc = {
     "stall_do_not_restart_mux": [],
     "dtv_udp_out": {},
     "use_protocol": "udp",
+    "dtv_tcp_use_copy": [],
     "dtv_ignore_map": [],
     "dtv_force_hd": [],
     "renditions_hd": [
@@ -222,6 +223,7 @@ const config_defaults = {
     "stall_do_not_restart_mux": [],
     "dtv_udp_out": {},
     "use_protocol": "udp",
+    "dtv_tcp_use_copy": [],
     "dtv_ignore_map": [],
     "dtv_force_hd": [],
     "renditions_hd": [
@@ -963,6 +965,7 @@ if (!cluster.isPrimary) {
                     dtv_use_fork: config.dtv_use_fork,
                     dtv_udp_out: config.dtv_udp_out,
                     use_protocol: config.use_protocol,
+                    dtv_tcp_use_copy: config.dtv_tcp_use_copy,
                     additional_params: params.additional_params,
                     buffer_size: config.dtv_buffer_size,
                     dtv_ignore_map: config.dtv_ignore_map,
