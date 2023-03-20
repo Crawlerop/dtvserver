@@ -1037,8 +1037,8 @@ module.exports = {
 
         if (COPYTS_PASS) {
             args.push("-copyts")
-            //args.push("-frame_drop_threshold")
-            //args.push("0")
+            args.push("-frame_drop_threshold")
+            args.push("0")
         }
         //args.push("-start_at_zero")
 
@@ -1095,7 +1095,7 @@ module.exports = {
         args.push(5)
         
         args.push("-hls_flags")
-        args.push("+delete_segments+omit_endlist+append_list+discont_start+program_date_time+second_level_segment_index+temp_file")
+        args.push("+delete_segments+omit_endlist+append_list+discont_start+program_date_time+second_level_segment_index+temp_file+split_by_time")
         args.push("-strftime")
         args.push(1)
         args.push("-hls_segment_filename")
