@@ -1095,7 +1095,7 @@ module.exports = {
         args.push(5)
         
         args.push("-hls_flags")
-        args.push("+delete_segments+omit_endlist+append_list+discont_start+program_date_time+second_level_segment_index+temp_file+split_by_time")
+        args.push("+delete_segments+omit_endlist+append_list+discont_start+program_date_time+second_level_segment_index+temp_file")
         args.push("-strftime")
         args.push(1)
         args.push("-hls_segment_filename")
