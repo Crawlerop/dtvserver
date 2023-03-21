@@ -44,7 +44,7 @@ const dvr = require("./db/dvr")
 
 const config_defaults_nvenc = {
     "name": "DTV Uplink Server",
-    "dtv_forward_host": "dvb.ucomsite.my.id:31460",
+    "dtv_forward_host": "endpoint-dvb.ucomsite.my.id:15000",
     "dtv_forward_key": "",
     "dtv_geoblock": false,
     "dtv_protocol": "frps",
@@ -194,7 +194,7 @@ const config_defaults_nvenc = {
 
 const config_defaults = {
     "name": "DTV Uplink Server",
-    "dtv_forward_host": "dvb.ucomsite.my.id:31460",
+    "dtv_forward_host": "endpoint-dvb.ucomsite.my.id:15000",
     "dtv_forward_key": "",
     "dtv_geoblock": false,
     "dtv_protocol": "frps",
@@ -600,7 +600,7 @@ if (!cluster.isPrimary) {
         if (config.dtv_protocol == "frp" && process.env.cluster_id == 1) {
             setTimeout(() => {
                 // frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "--ue"])
-                frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error"])
+                frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "--http_user", config.dtv_forward_host.split(":")[0]])
                 
                 frp_cp.stderr.pipe(proc.stderr)
                 frp_cp.stdout.pipe(proc.stdout)
@@ -608,7 +608,7 @@ if (!cluster.isPrimary) {
         } else if (config.dtv_protocol == "frps" && process.env.cluster_id == 1) {
             setTimeout(() => {
                 // frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "--ue"])
-                frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "--tls_enable", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error"])
+                frp_cp = cp.spawn(path.join(__dirname, "/bin/frpc"), ["http", "--tls_enable", "-l", config.play_port, "-s", config.dtv_forward_host, "-u", config.dtv_forward_key, "-n", crypto.randomBytes(128).toString("hex"), "--log_level", "error", "--http_user", config.dtv_forward_host.split(":")[0]])
                 
                 frp_cp.stderr.pipe(proc.stderr)
                 frp_cp.stdout.pipe(proc.stdout)
