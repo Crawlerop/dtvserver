@@ -24,6 +24,9 @@ var SPPID = 0;
 
 var IS_COMPLETE_STALL = false;
 
+var FRAME_TICK = false;
+var TIMESTAMP_TICK = false;
+
 setInterval(() => {
     if (TIMEOUT_VAL !== -1 && (Date.now() > TIMEOUT_VAL)) {
         process.stderr.write(`Transcode stream was stalled for ${args[2]}${os.EOL}`)
@@ -73,6 +76,8 @@ const startProcess = () => {
             process.stderr.write(`Restart transcode stream for channel ${args[2]}${os.EOL}`)
             LAST_FRAME = -1
             TIMEOUT_VAL = -1
+            FRAME_TICK = false
+            TIMESTAMP_TICK = false
 
             RESTART_STALL = true
 
@@ -114,11 +119,12 @@ const startProcess = () => {
                         LAST_FRAME = parseInt(val)
                         //TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
                         //process.stderr.write(`Track stalled status\n`)
+                        FRAME_TICK = true
                     }
                 } else if (key === "out_time_us") {
                     if (Math.floor(parseInt(val) / 1e6) !== LAST_OUT_TIME) {
                         LAST_OUT_TIME = Math.floor(parseInt(val) / 1e6)
-                        TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
+                        TIMESTAMP_TICK = true
                     }
                 } else if (key === "fps") {
                     
@@ -129,6 +135,12 @@ const startProcess = () => {
                     //
                 }
             }
+        }
+
+        if (TIMESTAMP_TICK && FRAME_TICK) {
+            TIMEOUT_VAL = Date.now() + TIMEOUT_DUR
+            TIMESTAMP_TICK = false
+            FRAME_TICK = false
         }
     })
     //app.stdout.pipe(process.stdout)
