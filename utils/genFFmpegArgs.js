@@ -88,7 +88,7 @@ module.exports = {
                                 if (va_check.includes('VAEntrypointEncSlice')) {
                                     dri_to_use = render_devices[j]
                                     try {
-                                        await check_output(config.ffmpeg, ['-loglevel', 'error', '-hwaccel', 'vaapi', '-vaapi_device', `${render_devices[j]}`, '-f', 'lavfi', '-i', 'testsrc', '-f', 'lavfi', '-i', 'testsrc', '-filter_complex', '[0:v]format=nv12,hwupload[a];[1:v]format=nv12,hwupload[b];[a][b]overlay_vaapi', '-vcodec', 'h264_vaapi', '-f', 'null', '-frames', '1', '-'])
+                                        await check_output(config.ffmpeg, ['-loglevel', 'error', '-hwaccel', 'vaapi', '-vaapi_device', `${render_devices[j]}`, '-f', 'lavfi', '-i', 'testsrc', '-f', 'lavfi', '-i', 'testsrc', '-filter_complex', '[0:v]format=nv12,hwupload[a];[1:v]format=nv12,hwupload[b];[a][b]overlay_vaapi=x=16:y=H-h-16', '-vcodec', 'h264_vaapi', '-f', 'null', '-frames', '1', '-'])
                                         supports_overlay = true
                                     } catch (e) {}
                                     break
