@@ -509,6 +509,9 @@ module.exports = {
                         args.push(dri_to_use)
                         args.push("-hwaccel_output_format")
                         args.push("vaapi")
+                        args.push("-hwaccel_flags")
+                        args.push("+allow_profile_mismatch")
+
                         /*
                         if (video.codec === "h264") {
                             args.push(`-c:v:${i}`)
