@@ -508,7 +508,7 @@ module.exports = {
                         args.push("-hwaccel_device")
                         args.push(dri_to_use)
                         args.push("-hwaccel_output_format")
-                        args.push("nv12")
+                        args.push("vaapi")
                         /*
                         if (video.codec === "h264") {
                             args.push(`-c:v:${i}`)
@@ -559,7 +559,7 @@ module.exports = {
                             filter_complex += "[0:v:0]"
                         }
                         
-                        filter_complex += `format=nv12|vaapi,hwupload,deinterlace_vaapi,split=${renditions.length}`
+                        filter_complex += `deinterlace_vaapi=rate=frame,split=${renditions.length}`
                         for (let rend_id = 0; rend_id<renditions.length; rend_id++) {
                             filter_complex += `[a${rend_id}]`
                         }
